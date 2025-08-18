@@ -7,11 +7,12 @@ an asynchronous client using pymodbus to poll and write registers.
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import csv
 from dataclasses import dataclass
-from pathlib import Path
-import contextlib
+from decimal import Decimal
 import inspect
+from pathlib import Path
 from typing import Callable, Dict, Iterable, Optional
 
 from pymodbus.client import AsyncModbusTcpClient
@@ -165,7 +166,8 @@ class ModbusRTUOverTCPClient:
             return data.decode(errors="ignore").rstrip("\x00")
         else:
             value = response.registers[0]
-        return value * reg.scale
+        scaled = Decimal(value) * Decimal(str(reg.scale))
+        return float(scaled)
 
     async def write_register(
         self, name: str, value: float | str, retries: int = 3
