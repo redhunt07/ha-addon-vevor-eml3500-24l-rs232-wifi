@@ -1,0 +1,58 @@
+views:
+  - title: VEVOR Inverter
+    cards:
+      - type: entities
+        entities:
+          - sensor.vevor_working_mode
+          - sensor.vevor_mains_voltage
+          - sensor.vevor_mains_frequency
+          - sensor.vevor_mains_power
+          - sensor.vevor_inverter_voltage
+          - sensor.vevor_inverter_current
+          - sensor.vevor_inverter_frequency
+          - sensor.vevor_inverter_power
+          - sensor.vevor_inverter_charging_power
+          - sensor.vevor_output_voltage
+          - sensor.vevor_output_current
+          - sensor.vevor_output_frequency
+          - sensor.vevor_output_active_power
+          - sensor.vevor_output_apparent_power
+          - sensor.vevor_battery_voltage
+          - sensor.vevor_battery_current
+          - sensor.vevor_battery_power
+          - sensor.vevor_battery_current_filter_average
+          - sensor.vevor_battery_soc
+          - sensor.vevor_pv_voltage
+          - sensor.vevor_pv_current
+          - sensor.vevor_pv_power
+          - sensor.vevor_pv_charging_power
+          - sensor.vevor_inverter_charging_current
+          - sensor.vevor_pv_charging_current
+          - sensor.vevor_power_flow_status
+          - sensor.vevor_load_percent
+          - sensor.vevor_dcdc_temperature
+          - sensor.vevor_inverter_temperature
+          - sensor.vevor_faults
+          - sensor.vevor_warnings
+      - type: gauge
+        entity: sensor.vevor_battery_soc
+        min: 0
+        max: 100
+        name: Battery SOC
+      - type: entities
+        title: Controls
+        entities:
+          - entity: number.vevor_warnings
+            name: Clear Warnings
+          - entity: number.vevor_battery_discharge_soc_limit
+            name: Battery SOC Limit
+          - entity: select.vevor_output_mode
+            name: Output Mode
+          - entity: number.vevor_output_voltage_setting
+            name: Output Voltage
+          - entity: number.vevor_max_charge_current
+            name: Max Charge Current
+          - entity: select.vevor_battery_type
+            name: Battery Type
+          - entity: select.vevor_remote_switch
+            name: Remote Switch

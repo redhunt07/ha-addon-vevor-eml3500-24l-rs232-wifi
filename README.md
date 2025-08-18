@@ -167,7 +167,7 @@ mqtt:
 
 The complete register table is available in [docs/registers.md](docs/registers.md).
 
-## MQTT register topics
+## Writable entities
 
 For each register, the poller publishes the latest value to `{prefix}/{slug}`. The default prefix is `vevor_eml3500`, so the mains voltage is exposed on `vevor_eml3500/mains_voltage`.
 
@@ -216,7 +216,24 @@ Writable registers are updated by publishing to `{prefix}/set` with a JSON paylo
 | `remote_switch` | Remote switch | `{"remote_switch": "remote power-on"}` |
 | `fault_info_query_index` | Fault info query index | `{"fault_info_query_index": 0}` |
 
-## Lovelace dashboard example
+## Script example
+
+The following Home Assistant script publishes a command to the inverter via MQTT:
+
+```yaml
+script:
+  vevor_clear_warnings:
+    alias: Clear VEVOR warnings
+    sequence:
+      - service: mqtt.publish
+        data:
+          topic: vevor_eml3500/set
+          payload: '{"warnings": 0}'
+```
+
+## Dashboard YAML
+
+A full dashboard example is available in [docs/dashboard_example.yaml](docs/dashboard_example.yaml).
 
 ```yaml
 views:
