@@ -6,7 +6,7 @@ Home Assistant add-on to communicate with and monitor the VEVOR EML3500-24L inve
 
 1. In Home Assistant, open **Settings → Add-ons → Add-on Store**.
 2. Use the menu in the top-right to add the repository URL for this add-on.
-3. Locate **VEVOR EML3500 RS232 Wi-Fi bridge** and click **Install**.
+3. Locate **VEVOR EML3500-24L RS232 Wi-Fi bridge** and click **Install**.
 4. Configure the options described below and start the add-on.
 5. Check the add-on logs to confirm successful connection to the bridge and MQTT broker.
 
