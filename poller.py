@@ -28,7 +28,13 @@ async def poll_once(client: ModbusRTUOverTCPClient) -> tuple[str, str]:
 def publish_discovery(
     client: mqtt.Client, prefix: str = "vevor_eml3500"
 ) -> None:
-    """Publish Home Assistant MQTT discovery config."""
+    """Publish Home Assistant MQTT discovery config with device metadata."""
+    device_info = {
+        "identifiers": [prefix],
+        "manufacturer": "VEVOR",
+        "model": "EML3500-24L",
+        "name": "VEVOR EML3500-24L",
+    }
     sensors = {
         "faults": "Faults",
         "warnings": "Warnings",
@@ -40,9 +46,21 @@ def publish_discovery(
                 "name": f"VEVOR {name}",
                 "state_topic": f"{prefix}/{key}",
                 "unique_id": f"{prefix}_{key}",
+                "device": device_info,
             }
         )
         client.publish(topic, payload, retain=True)
+
+
+def publish_telemetry(
+    client: mqtt.Client,
+    prefix: str,
+    fault_state: str,
+    warning_state: str,
+) -> None:
+    """Publish telemetry JSON for each poll cycle."""
+    payload = json.dumps({"faults": fault_state, "warnings": warning_state})
+    client.publish(f"{prefix}/telemetry", payload, retain=False)
 
 
 async def main(args: argparse.Namespace) -> None:
@@ -53,6 +71,7 @@ async def main(args: argparse.Namespace) -> None:
     )
 
     mqtt_client: Optional[mqtt.Client] = None
+    prefix = "vevor_eml3500"
     if args.mqtt_host:
         mqtt_client = mqtt.Client()
         if args.mqtt_username:
@@ -60,17 +79,20 @@ async def main(args: argparse.Namespace) -> None:
                 args.mqtt_username, args.mqtt_password or ""
             )
         mqtt_client.connect(args.mqtt_host, args.mqtt_port)
-        publish_discovery(mqtt_client)
+        publish_discovery(mqtt_client, prefix)
 
     try:
         while True:
             fault_state, warning_state = await poll_once(modbus)
             if mqtt_client:
                 mqtt_client.publish(
-                    "vevor_eml3500/faults", fault_state, retain=True
+                    f"{prefix}/faults", fault_state, retain=True
                 )
                 mqtt_client.publish(
-                    "vevor_eml3500/warnings", warning_state, retain=True
+                    f"{prefix}/warnings", warning_state, retain=True
+                )
+                publish_telemetry(
+                    mqtt_client, prefix, fault_state, warning_state
                 )
                 mqtt_client.loop(0.1)
             await asyncio.sleep(args.poll_interval)
