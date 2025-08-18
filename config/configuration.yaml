@@ -1,0 +1,18 @@
+mqtt:
+  broker: "mqtt.example.com"
+  username: "your_username"
+  password: "your_password"
+  discovery: true
+  discovery_prefix: homeassistant
+  number:
+    - name: "Vevor Setting"
+      command_topic: "vevor_eml3500_24l_vevor/set"
+      min: 0
+      max: 100
+      step: 1
+  select:
+    - name: "Vevor Mode"
+      command_topic: "vevor_eml3500_24l_vevor/set"
+      options:
+        - option1
+        - option2
