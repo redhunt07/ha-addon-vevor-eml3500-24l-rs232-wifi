@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
-from typing import Optional
+from typing import Optional, Dict, Any
 
 import paho.mqtt.client as mqtt
 
@@ -13,16 +13,64 @@ from .modbus_client import ModbusRTUOverTCPClient
 from .fault_decoder import decode_faults, decode_warnings
 
 
-async def poll_once(client: ModbusRTUOverTCPClient) -> tuple[str, str]:
-    fault_val = await client.read_register("Equipment fault code")
-    warn_val = await client.read_register(
-        "Obtain the warning code after shield processing"
-    )
-    faults = decode_faults(int(fault_val))
-    warnings = decode_warnings(int(warn_val))
-    fault_state = ", ".join(faults) if faults else "OK"
-    warning_state = ", ".join(warnings) if warnings else "OK"
-    return fault_state, warning_state
+REGISTER_MAP = {
+    "faults": {
+        "register": "Equipment fault code",
+        "name": "Faults",
+        "decoder": decode_faults,
+    },
+    "warnings": {
+        "register": "Obtain the warning code after shield processing",
+        "name": "Warnings",
+        "decoder": decode_warnings,
+        "writable": True,
+    },
+    "mains_voltage": {
+        "register": "Mains voltage effective value",
+        "name": "Mains Voltage",
+        "unit": "V",
+    },
+    "mains_frequency": {
+        "register": "Mains frequency",
+        "name": "Mains Frequency",
+        "unit": "Hz",
+    },
+    "mains_power": {
+        "register": "Average mains power",
+        "name": "Mains Power",
+        "unit": "W",
+    },
+    "inverter_voltage": {
+        "register": "Effective value of inverter voltage",
+        "name": "Inverter Voltage",
+        "unit": "V",
+    },
+    "inverter_current": {
+        "register": "Effective value of inverter current",
+        "name": "Inverter Current",
+        "unit": "A",
+    },
+}
+
+WRITABLE_REGISTERS = {
+    slug: info["register"]
+    for slug, info in REGISTER_MAP.items()
+    if info.get("writable")
+}
+
+
+async def poll_once(client: ModbusRTUOverTCPClient) -> Dict[str, Any]:
+    """Read all relevant registers and return slug-value mapping."""
+
+    results: Dict[str, Any] = {}
+    for slug, info in REGISTER_MAP.items():
+        value = await client.read_register(info["register"])
+        decoder = info.get("decoder")
+        if decoder:
+            decoded = decoder(int(value))
+            value = ", ".join(decoded) if decoded else "OK"
+        results[slug] = value
+    return results
 
 
 def publish_discovery(
@@ -35,32 +83,48 @@ def publish_discovery(
         "model": "EML3500-24L",
         "name": "VEVOR EML3500-24L",
     }
-    sensors = {
-        "faults": "Faults",
-        "warnings": "Warnings",
-    }
-    for key, name in sensors.items():
-        topic = f"homeassistant/sensor/{prefix}_{key}/config"
-        payload = json.dumps(
-            {
-                "name": f"VEVOR {name}",
-                "state_topic": f"{prefix}/{key}",
-                "unique_id": f"{prefix}_{key}",
-                "device": device_info,
-            }
-        )
-        client.publish(topic, payload, retain=True)
+    for slug, info in REGISTER_MAP.items():
+        topic = f"homeassistant/sensor/{prefix}_{slug}/config"
+        payload: Dict[str, Any] = {
+            "name": f"VEVOR {info['name']}",
+            "state_topic": f"{prefix}/{slug}",
+            "unique_id": f"{prefix}_{slug}",
+            "device": device_info,
+        }
+        if unit := info.get("unit"):
+            payload["unit_of_measurement"] = unit
+        client.publish(topic, json.dumps(payload), retain=True)
 
 
 def publish_telemetry(
     client: mqtt.Client,
     prefix: str,
-    fault_state: str,
-    warning_state: str,
+    data: Dict[str, Any],
 ) -> None:
     """Publish telemetry JSON for each poll cycle."""
-    payload = json.dumps({"faults": fault_state, "warnings": warning_state})
+    payload = json.dumps(data)
     client.publish(f"{prefix}/telemetry", payload, retain=False)
+
+
+async def handle_command(
+    modbus: ModbusRTUOverTCPClient, payload: str
+) -> None:
+    """Handle MQTT command payload to write registers."""
+    try:
+        data = json.loads(payload)
+    except json.JSONDecodeError:
+        return
+    if not isinstance(data, dict):
+        return
+    for slug, value in data.items():
+        if slug not in WRITABLE_REGISTERS:
+            continue
+        if not isinstance(value, (int, float)):
+            continue
+        try:
+            await modbus.write_register(WRITABLE_REGISTERS[slug], float(value))
+        except Exception:
+            continue
 
 
 async def main(args: argparse.Namespace) -> None:
@@ -85,21 +149,25 @@ async def main(args: argparse.Namespace) -> None:
             mqtt_client = None
         else:
             publish_discovery(mqtt_client, prefix)
+            mqtt_client.subscribe(f"{prefix}/set")
+
+            def on_message(
+                client: mqtt.Client, userdata: Any, msg: mqtt.MQTTMessage
+            ) -> None:
+                asyncio.create_task(handle_command(modbus, msg.payload.decode()))
+
+            mqtt_client.on_message = on_message
 
     try:
         while True:
-            fault_state, warning_state = await poll_once(modbus)
+            data = await poll_once(modbus)
             if mqtt_client:
                 try:
-                    mqtt_client.publish(
-                        f"{prefix}/faults", fault_state, retain=True
-                    )
-                    mqtt_client.publish(
-                        f"{prefix}/warnings", warning_state, retain=True
-                    )
-                    publish_telemetry(
-                        mqtt_client, prefix, fault_state, warning_state
-                    )
+                    for slug, value in data.items():
+                        mqtt_client.publish(
+                            f"{prefix}/{slug}", str(value), retain=True
+                        )
+                    publish_telemetry(mqtt_client, prefix, data)
                     mqtt_client.loop(0.1)
                 except OSError as err:  # pragma: no cover - network error
                     print(f"MQTT publish failed: {err}")
@@ -117,6 +185,12 @@ async def main(args: argparse.Namespace) -> None:
                     mqtt_client = None
                 else:
                     publish_discovery(mqtt_client, prefix)
+                    mqtt_client.subscribe(f"{prefix}/set")
+                    mqtt_client.on_message = (
+                        lambda c, u, m: asyncio.create_task(
+                            handle_command(modbus, m.payload.decode())
+                        )
+                    )
             await asyncio.sleep(args.poll_interval)
     finally:
         await modbus.close()
