@@ -50,6 +50,71 @@ REGISTER_MAP = {
         "name": "Inverter Current",
         "unit": "A",
     },
+    "battery_voltage": {
+        "register": "Average battery voltage",
+        "name": "Battery Voltage",
+        "unit": "V",
+        "device_class": "voltage",
+    },
+    "battery_current": {
+        "register": "Average battery current",
+        "name": "Battery Current",
+        "unit": "A",
+        "device_class": "current",
+    },
+    "battery_power": {
+        "register": "Average battery power",
+        "name": "Battery Power",
+        "unit": "W",
+        "device_class": "power",
+    },
+    "battery_soc": {
+        "register": "Battery percentage",
+        "name": "Battery SOC",
+        "unit": "%",
+        "device_class": "battery",
+    },
+    "pv_voltage": {
+        "register": "Average PV voltage",
+        "name": "PV Voltage",
+        "unit": "V",
+        "device_class": "voltage",
+    },
+    "pv_current": {
+        "register": "Average PV current",
+        "name": "PV Current",
+        "unit": "A",
+        "device_class": "current",
+    },
+    "pv_power": {
+        "register": "Average PV power",
+        "name": "PV Power",
+        "unit": "W",
+        "device_class": "power",
+    },
+    "load_percent": {
+        "register": "Percent of load",
+        "name": "Load Percent",
+        "unit": "%",
+    },
+    "dcdc_temperature": {
+        "register": "DCDC temperature",
+        "name": "DCDC Temperature",
+        "unit": "°C",
+        "device_class": "temperature",
+    },
+    "inverter_temperature": {
+        "register": "Inverter temperature",
+        "name": "Inverter Temperature",
+        "unit": "°C",
+        "device_class": "temperature",
+    },
+    "battery_discharge_soc_limit": {
+        "register": "Battery discharge SOC protection value in off-grid mode",
+        "name": "Battery Discharge SOC Limit",
+        "unit": "%",
+        "writable": True,
+    },
 }
 
 WRITABLE_REGISTERS = {
@@ -93,6 +158,9 @@ def publish_discovery(
         }
         if unit := info.get("unit"):
             payload["unit_of_measurement"] = unit
+            payload["state_class"] = "measurement"
+        if device_class := info.get("device_class"):
+            payload["device_class"] = device_class
         client.publish(topic, json.dumps(payload), retain=True)
 
 

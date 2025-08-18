@@ -71,6 +71,7 @@ Writable registers are updated by publishing to `{prefix}/set` with a JSON paylo
 | Slug | Description | Topic | Example payload |
 | ---- | ----------- | ----- | --------------- |
 | `warnings` | Clear warning code | `{prefix}/set` | `{"warnings": 0}` |
+| `battery_discharge_soc_limit` | Set battery discharge SOC limit | `{prefix}/set` | `{"battery_discharge_soc_limit": 20}` |
 
 ## Lovelace dashboard example
 
@@ -85,21 +86,30 @@ views:
           - sensor.vevor_mains_power
           - sensor.vevor_inverter_voltage
           - sensor.vevor_inverter_current
+          - sensor.vevor_battery_voltage
+          - sensor.vevor_battery_current
+          - sensor.vevor_battery_power
+          - sensor.vevor_battery_soc
+          - sensor.vevor_pv_voltage
+          - sensor.vevor_pv_current
+          - sensor.vevor_pv_power
           - sensor.vevor_faults
           - sensor.vevor_warnings
       - type: gauge
-        entity: sensor.vevor_mains_power
+        entity: sensor.vevor_battery_soc
         min: 0
-        max: 3500
-        name: Mains Power
+        max: 100
+        name: Battery SOC
       - type: entities
         title: Controls
         entities:
           - entity: number.vevor_warnings
             name: Clear Warnings
+          - entity: number.vevor_battery_discharge_soc_limit
+            name: Battery SOC Limit
 ```
 
-To enable the `number.vevor_warnings` entity, add the following to your `configuration.yaml`:
+To enable the `number.vevor_warnings` and `number.vevor_battery_discharge_soc_limit` entities, add the following to your `configuration.yaml`:
 
 ```yaml
 mqtt:
@@ -110,6 +120,13 @@ mqtt:
       command_template: '{"warnings": {{ value }} }'
       min: 0
       max: 0
+      step: 1
+    - unique_id: vevor_battery_discharge_soc_limit
+      name: VEVOR Battery SOC Limit
+      command_topic: "vevor_eml3500/set"
+      command_template: '{"battery_discharge_soc_limit": {{ value }} }'
+      min: 3
+      max: 30
       step: 1
 ```
 
@@ -124,6 +141,16 @@ When discovery is enabled, the following entities are created in Home Assistant:
 - `sensor.vevor_mains_power` – average mains power.
 - `sensor.vevor_inverter_voltage` – inverter output voltage.
 - `sensor.vevor_inverter_current` – inverter output current.
+- `sensor.vevor_battery_voltage` – battery voltage.
+- `sensor.vevor_battery_current` – battery current.
+- `sensor.vevor_battery_power` – battery power.
+- `sensor.vevor_battery_soc` – battery state of charge.
+- `sensor.vevor_pv_voltage` – PV input voltage.
+- `sensor.vevor_pv_current` – PV input current.
+- `sensor.vevor_pv_power` – PV input power.
+- `sensor.vevor_load_percent` – load percentage.
+- `sensor.vevor_dcdc_temperature` – DCDC temperature.
+- `sensor.vevor_inverter_temperature` – inverter temperature.
 
 ## RS232-to-WiFi bridge troubleshooting
 
