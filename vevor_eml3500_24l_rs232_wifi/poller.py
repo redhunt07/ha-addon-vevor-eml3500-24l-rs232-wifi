@@ -78,23 +78,45 @@ async def main(args: argparse.Namespace) -> None:
             mqtt_client.username_pw_set(
                 args.mqtt_username, args.mqtt_password or ""
             )
-        mqtt_client.connect(args.mqtt_host, args.mqtt_port)
-        publish_discovery(mqtt_client, prefix)
+        try:
+            mqtt_client.connect(args.mqtt_host, args.mqtt_port)
+        except OSError as err:  # pragma: no cover - network error
+            print(f"MQTT connect failed: {err}")
+            mqtt_client = None
+        else:
+            publish_discovery(mqtt_client, prefix)
 
     try:
         while True:
             fault_state, warning_state = await poll_once(modbus)
             if mqtt_client:
-                mqtt_client.publish(
-                    f"{prefix}/faults", fault_state, retain=True
-                )
-                mqtt_client.publish(
-                    f"{prefix}/warnings", warning_state, retain=True
-                )
-                publish_telemetry(
-                    mqtt_client, prefix, fault_state, warning_state
-                )
-                mqtt_client.loop(0.1)
+                try:
+                    mqtt_client.publish(
+                        f"{prefix}/faults", fault_state, retain=True
+                    )
+                    mqtt_client.publish(
+                        f"{prefix}/warnings", warning_state, retain=True
+                    )
+                    publish_telemetry(
+                        mqtt_client, prefix, fault_state, warning_state
+                    )
+                    mqtt_client.loop(0.1)
+                except OSError as err:  # pragma: no cover - network error
+                    print(f"MQTT publish failed: {err}")
+                    mqtt_client = None
+            elif args.mqtt_host:
+                try:
+                    mqtt_client = mqtt.Client()
+                    if args.mqtt_username:
+                        mqtt_client.username_pw_set(
+                            args.mqtt_username, args.mqtt_password or ""
+                        )
+                    mqtt_client.connect(args.mqtt_host, args.mqtt_port)
+                except OSError as err:  # pragma: no cover - network error
+                    print(f"MQTT reconnect failed: {err}")
+                    mqtt_client = None
+                else:
+                    publish_discovery(mqtt_client, prefix)
             await asyncio.sleep(args.poll_interval)
     finally:
         await modbus.close()
