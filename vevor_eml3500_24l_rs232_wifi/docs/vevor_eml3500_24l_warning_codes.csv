@@ -1,0 +1,23 @@
+Bit/Code,Explain
+bit 0,Mains supply zero-crossing loss
+bit 1,Mains waveform is abnormal
+bit 2,Mains overvoltage
+bit 3,Mains undervoltage
+bit 4,The mains supply is too frequent
+bit 5,Mains underfrequency
+bit 6,PV undervoltage
+bit 7,Overtemperature
+bit 8,Low battery voltage
+bit 9,Battery is not connected
+bit 10,Overload
+bit 11,Charge the battery Eq
+bit 12,The battery is discharged to a low voltage and has not been charged back to the recovery point
+bit 13,Output power derating
+bit 14,The fan is blocked
+bit 15,PV energy too low to use
+bit 16,Parallel communication is interrupted
+bit 17,Inconsistent single parallel output mode
+bit 18,Excessive voltage difference of parallel battery
+bit19,Abnormal lithium battery communication
+bit20,Battery discharge current exceeds the set value
+bit 21~31,Reserved

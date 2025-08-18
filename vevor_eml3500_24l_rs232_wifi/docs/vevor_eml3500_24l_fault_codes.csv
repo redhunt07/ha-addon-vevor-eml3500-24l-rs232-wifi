@@ -1,0 +1,31 @@
+Bit/Code,Explain
+bit1,Inverter overtemperature
+bit2,DCDC overtemperature
+bit3,Battery overvoltage
+bit4,PV overtemperature
+bit5,The output is shorted
+bit6,Inverter overvoltage
+bit7,Output overload
+bit8,Busbar overvoltage
+bit9,Bus soft start timeout
+bit10,PV overcurrent
+bit11,PV overpressure
+bit12,Battery overcurrent
+bit13,Inverter overcurrent
+bit14,Busbar low voltage
+bit15,Reserved
+bit16,Inverter DC component is too high
+bit17,Reserved
+bit18,Output current zero bias is too large
+bit19,Inverter current zero bias is too large
+bit20,Excessive zero bias of battery current
+bit21,PV current zero bias is too large
+bit22,Inverter low voltage
+bit23,Inverter negative power protection
+bit24,Loss of parallel system host
+bit25,Abnormal synchronization signal of parallel system
+bit26,Incompatible battery type
+bit27,Incompatible parallel version
+Character type,1
+Integer,1
+Long,2
