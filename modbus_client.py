@@ -92,7 +92,9 @@ def load_register_definitions(csv_path: Path) -> Dict[str, RegisterDefinition]:
     return registers
 
 
-DEFAULT_REGISTER_CSV = Path(__file__).resolve().parent / "docs" / "vevor_eml3500_24l_registers.csv"
+DEFAULT_REGISTER_CSV = (
+    Path(__file__).resolve().parent / "docs" / "vevor_eml3500_24l_registers.csv"
+)
 
 
 class ModbusRTUOverTCPClient:
@@ -133,7 +135,7 @@ class ModbusRTUOverTCPClient:
         )
         if response.isError():
             raise RuntimeError(f"Read failed for {name}: {response}")
-        
+
         if reg.data_format == "ULong":
             value = (response.registers[0] << 16) + response.registers[1]
         elif reg.data_format == "UInt":
