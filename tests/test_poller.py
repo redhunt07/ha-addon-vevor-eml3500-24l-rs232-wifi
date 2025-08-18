@@ -8,7 +8,11 @@ import pytest
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from poller import poll_once, publish_discovery, publish_telemetry  # noqa: E402
+from vevor_eml3500_rs232_wifi.poller import (
+    poll_once,
+    publish_discovery,
+    publish_telemetry,
+)
 
 
 def test_publish_discovery_includes_device_metadata():
