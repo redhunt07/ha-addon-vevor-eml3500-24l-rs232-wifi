@@ -1,8 +1,8 @@
 ---
-name: Vevor EML3500 RS232 Wi-Fi bridge
+name: VEVOR EML3500-24L RS232 Wi-Fi bridge
 version: "0.1.0"
-slug: vevor_eml3500_rs232_wifi
-description: Polls Vevor EML3500 via RS232/WiFi bridge and publishes to MQTT.
+slug: vevor_eml3500_24l_rs232_wifi
+description: Polls VEVOR EML3500-24L via RS232/WiFi bridge and publishes to MQTT.
 arch:
   - amd64
   - armv7

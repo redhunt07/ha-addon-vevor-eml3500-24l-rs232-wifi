@@ -3,7 +3,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from vevor_eml3500_rs232_wifi.fault_decoder import (
+from vevor_eml3500_24l_rs232_wifi.fault_decoder import (
     decode_faults,
     decode_warnings,
 )

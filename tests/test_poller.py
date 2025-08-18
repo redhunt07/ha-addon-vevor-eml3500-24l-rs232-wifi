@@ -8,7 +8,7 @@ import pytest
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from vevor_eml3500_rs232_wifi.poller import (
+from vevor_eml3500_24l_rs232_wifi.poller import (
     poll_once,
     publish_discovery,
     publish_telemetry,

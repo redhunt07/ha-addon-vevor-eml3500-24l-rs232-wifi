@@ -1,0 +1,25 @@
+configuration:
+  bridge_host:
+    name: RS232-to-WiFi Bridge Host
+    description: IP address of the RS232-to-WiFi bridge
+  bridge_port:
+    name: RS232-to-WiFi Bridge Port
+    description: TCP port of the RS232-to-WiFi bridge
+  poll_interval:
+    name: Poll Interval
+    description: Time between Modbus polls in seconds
+  mqtt:
+    name: MQTT Settings
+    description: MQTT broker connection settings
+  mqtt.host:
+    name: MQTT Host
+    description: MQTT broker hostname or IP address
+  mqtt.port:
+    name: MQTT Port
+    description: MQTT broker port
+  mqtt.username:
+    name: MQTT Username
+    description: Username for MQTT authentication
+  mqtt.password:
+    name: MQTT Password
+    description: Password for MQTT authentication

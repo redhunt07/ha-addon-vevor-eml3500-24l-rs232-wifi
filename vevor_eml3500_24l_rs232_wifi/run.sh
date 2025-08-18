@@ -10,8 +10,8 @@ MQTT_PORT="$(bashio::config 'mqtt.port')"
 MQTT_USER="$(bashio::config 'mqtt.username')"
 MQTT_PASS="$(bashio::config 'mqtt.password')"
 
-bashio::log.info "Starting Vevor EML3500 poller"
-exec python3 -m vevor_eml3500_rs232_wifi.poller \
+bashio::log.info "Starting VEVOR EML3500-24L poller"
+exec python3 -m vevor_eml3500_24l_rs232_wifi.poller \
     --bridge-host "${BRIDGE_HOST}" \
     --bridge-port "${BRIDGE_PORT}" \
     --poll-interval "${POLL_INTERVAL}" \
