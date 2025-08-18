@@ -1,0 +1,22 @@
+Bit,Explain
+bit0~1,"0: PV is not connected to the system
+1: PV is connected to the system"
+bit2~3,"0: The mains supply is not connected to the system
+1: The mains supply has been connected to the system"
+bit4~5,"0: The battery will not be charged or discharged
+1: Battery charging
+2: Battery discharge"
+bit6~7,"0: The system does not output on-load
+1: System output with load"
+bit8,"0: Mains power is not charged
+1: Mains charging"
+bit9,"0: PV not charged
+1: PV charging"
+bit10,"0: Battery icon is on
+1: Battery icon off"
+bit11,"0: PV icon is on
+1: PV icon off"
+bit12,"0: The electric map of the city lights up
+1: Mains icon off"
+bit13,"0: The load icon is on
+1: Load icon off"
