@@ -58,12 +58,72 @@ mqtt:
 | `homeassistant/sensor/vevor_eml3500_faults/config` | MQTT discovery for faults sensor |
 | `homeassistant/sensor/vevor_eml3500_warnings/config` | MQTT discovery for warnings sensor |
 
+## Register map
+
+The complete register table is available in [docs/registers.md](docs/registers.md).
+
+## MQTT register topics
+
+For each register, the poller publishes the latest value to `{prefix}/{slug}`. The default prefix is `vevor_eml3500`, so the mains voltage is exposed on `vevor_eml3500/mains_voltage`.
+
+Writable registers are updated by publishing to `{prefix}/set` with a JSON payload mapping slugs to the desired values. Available command slugs are:
+
+| Slug | Description | Topic | Example payload |
+| ---- | ----------- | ----- | --------------- |
+| `warnings` | Clear warning code | `{prefix}/set` | `{"warnings": 0}` |
+
+## Lovelace dashboard example
+
+```yaml
+views:
+  - title: VEVOR Inverter
+    cards:
+      - type: entities
+        entities:
+          - sensor.vevor_mains_voltage
+          - sensor.vevor_mains_frequency
+          - sensor.vevor_mains_power
+          - sensor.vevor_inverter_voltage
+          - sensor.vevor_inverter_current
+          - sensor.vevor_faults
+          - sensor.vevor_warnings
+      - type: gauge
+        entity: sensor.vevor_mains_power
+        min: 0
+        max: 3500
+        name: Mains Power
+      - type: entities
+        title: Controls
+        entities:
+          - entity: number.vevor_warnings
+            name: Clear Warnings
+```
+
+To enable the `number.vevor_warnings` entity, add the following to your `configuration.yaml`:
+
+```yaml
+mqtt:
+  number:
+    - unique_id: vevor_warnings
+      name: VEVOR Warnings
+      command_topic: "vevor_eml3500/set"
+      command_template: '{"warnings": {{ value }} }'
+      min: 0
+      max: 0
+      step: 1
+```
+
 ## Entities
 
 When discovery is enabled, the following entities are created in Home Assistant:
 
 - `sensor.vevor_faults` – reports the most recent fault or `OK`.
 - `sensor.vevor_warnings` – reports the most recent warning or `OK`.
+- `sensor.vevor_mains_voltage` – mains voltage.
+- `sensor.vevor_mains_frequency` – mains frequency.
+- `sensor.vevor_mains_power` – average mains power.
+- `sensor.vevor_inverter_voltage` – inverter output voltage.
+- `sensor.vevor_inverter_current` – inverter output current.
 
 ## RS232-to-WiFi bridge troubleshooting
 
