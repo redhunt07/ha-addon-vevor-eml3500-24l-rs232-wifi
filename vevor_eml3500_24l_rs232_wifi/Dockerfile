@@ -7,7 +7,7 @@ FROM ${BUILD_FROM}
 RUN apk add --no-cache python3 py3-pip
 
 # Install required Python packages
-RUN pip install --no-cache-dir pymodbus paho-mqtt
+RUN pip install --no-cache-dir --break-system-packages pymodbus paho-mqtt
 
 # Copy run script
 COPY run.sh /run.sh
