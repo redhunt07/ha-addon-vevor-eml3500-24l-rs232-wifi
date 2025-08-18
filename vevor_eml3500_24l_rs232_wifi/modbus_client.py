@@ -167,19 +167,39 @@ class ModbusRTUOverTCPClient:
             value = response.registers[0]
         return value * reg.scale
 
-    async def write_register(self, name: str, value: float, retries: int = 3) -> None:
+    async def write_register(
+        self, name: str, value: float | str, retries: int = 3
+    ) -> None:
         """Write a scaled value to a register with retry and reconnect logic."""
         reg = self.registers[name]
         if "W" not in reg.access:
             raise PermissionError(f"Register {name} is not writable")
-        raw = int(value / reg.scale)
         for attempt in range(retries):
             try:
                 await self.connect()
                 kwargs = {self._slave_kwarg: self.unit} if self._slave_kwarg else {}
-                response = await self.client.write_register(
-                    reg.address, value=raw, **kwargs
-                )
+                if reg.data_format in {"ASC", "ASCII"} and isinstance(value, str):
+                    data = value.encode()
+                    data = data.ljust(reg.count * 2, b"\x00")[: reg.count * 2]
+                    regs = [
+                        int.from_bytes(data[i : i + 2], "big")
+                        for i in range(0, len(data), 2)
+                    ]
+                    response = await self.client.write_registers(
+                        reg.address, regs, **kwargs
+                    )
+                else:
+                    raw = int(float(value) / reg.scale)
+                    if reg.data_format == "ULong" or reg.count > 1:
+                        hi = (raw >> 16) & 0xFFFF
+                        lo = raw & 0xFFFF
+                        response = await self.client.write_registers(
+                            reg.address, [hi, lo], **kwargs
+                        )
+                    else:
+                        response = await self.client.write_register(
+                            reg.address, value=raw, **kwargs
+                        )
                 if not response.isError():
                     return
             except Exception:

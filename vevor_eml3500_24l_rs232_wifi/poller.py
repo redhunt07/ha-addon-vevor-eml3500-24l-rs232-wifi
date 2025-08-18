@@ -11,7 +11,26 @@ import paho.mqtt.client as mqtt
 
 from .modbus_client import ModbusRTUOverTCPClient
 from .fault_decoder import decode_faults, decode_warnings
-from .status_decoder import decode_working_mode, decode_power_flow
+from .status_decoder import (
+    decode_working_mode,
+    decode_power_flow,
+    decode_output_mode,
+    encode_output_mode,
+    decode_output_priority,
+    encode_output_priority,
+    decode_input_voltage_range,
+    encode_input_voltage_range,
+    decode_buzzer_mode,
+    encode_buzzer_mode,
+    decode_battery_type,
+    encode_battery_type,
+    decode_battery_charging_priority,
+    encode_battery_charging_priority,
+    decode_boot_mode,
+    encode_boot_mode,
+    decode_remote_switch,
+    encode_remote_switch,
+)
 
 
 REGISTER_MAP = {
@@ -196,6 +215,231 @@ REGISTER_MAP = {
         "unit": "%",
         "writable": True,
     },
+    "device_name": {
+        "register": "Device name",
+        "name": "Device Name",
+        "writable": True,
+    },
+    "output_mode": {
+        "register": "Output mode",
+        "name": "Output Mode",
+        "decoder": decode_output_mode,
+        "encoder": encode_output_mode,
+        "writable": True,
+    },
+    "output_priority": {
+        "register": "Output priority",
+        "name": "Output Priority",
+        "decoder": decode_output_priority,
+        "encoder": encode_output_priority,
+        "writable": True,
+    },
+    "input_voltage_range": {
+        "register": "Input voltage range",
+        "name": "Input Voltage Range",
+        "decoder": decode_input_voltage_range,
+        "encoder": encode_input_voltage_range,
+        "writable": True,
+    },
+    "buzzer_mode": {
+        "register": "Buzzer mode",
+        "name": "Buzzer Mode",
+        "decoder": decode_buzzer_mode,
+        "encoder": encode_buzzer_mode,
+        "writable": True,
+    },
+    "lcd_backlight": {
+        "register": "LCD backlight",
+        "name": "LCD Backlight",
+        "writable": True,
+    },
+    "lcd_return_home": {
+        "register": "LCD automatically returns to the home page",
+        "name": "LCD Return Home",
+        "writable": True,
+    },
+    "energy_saving_mode_switch": {
+        "register": "Energy saving mode switch",
+        "name": "Energy Saving Mode Switch",
+        "writable": True,
+    },
+    "overload_auto_restart": {
+        "register": "Overload automatic restart",
+        "name": "Overload Automatic Restart",
+        "writable": True,
+    },
+    "over_temperature_auto_restart": {
+        "register": "Over-temperature automatic restart",
+        "name": "Over-temperature Automatic Restart",
+        "writable": True,
+    },
+    "overload_bypass_enable": {
+        "register": "Overload Bypass Enable",
+        "name": "Overload Bypass Enable",
+        "writable": True,
+    },
+    "battery_eq_mode_enable": {
+        "register": "Battery Eq Mode Enable",
+        "name": "Battery Eq Mode Enable",
+        "writable": True,
+    },
+    "warning_mask": {
+        "register": "Warning Mask [I]",
+        "name": "Warning Mask",
+        "decoder": decode_warnings,
+        "writable": True,
+    },
+    "dry_contact": {
+        "register": "Dry contact",
+        "name": "Dry Contact",
+        "writable": True,
+    },
+    "output_voltage_setting": {
+        "register": "Output voltage",
+        "name": "Output Voltage Setting",
+        "unit": "V",
+        "writable": True,
+    },
+    "output_frequency_setting": {
+        "register": "Output frequency",
+        "name": "Output Frequency Setting",
+        "unit": "Hz",
+        "writable": True,
+    },
+    "battery_type": {
+        "register": "Battery type",
+        "name": "Battery Type",
+        "decoder": decode_battery_type,
+        "encoder": encode_battery_type,
+        "writable": True,
+    },
+    "battery_overvoltage_protection": {
+        "register": "Battery overvoltage protection point [A]",
+        "name": "Battery Overvoltage Protection",
+        "unit": "V",
+        "writable": True,
+    },
+    "max_charge_voltage": {
+        "register": "Maximum charge voltage [B]",
+        "name": "Maximum Charge Voltage",
+        "unit": "V",
+        "writable": True,
+    },
+    "floating_charge_voltage": {
+        "register": "Floating charge voltage | [C]",
+        "name": "Floating Charge Voltage",
+        "unit": "V",
+        "writable": True,
+    },
+    "mains_discharge_recovery_point": {
+        "register": "Mains mode battery discharge recovery point [D]",
+        "name": "Mains Discharge Recovery Point",
+        "unit": "V",
+        "writable": True,
+    },
+    "mains_low_voltage_protection_point": {
+        "register": "Battery low voltage protection point in mains mode [E]",
+        "name": "Mains Low Voltage Protection Point",
+        "unit": "V",
+        "writable": True,
+    },
+    "off_grid_low_voltage_protection_point": {
+        "register": "Off-grid mode battery low voltage protection point [F]",
+        "name": "Off-grid Low Voltage Protection Point",
+        "unit": "V",
+        "writable": True,
+    },
+    "cv_to_float_wait_time": {
+        "register": "Waiting time from constant voltage to floating charge",
+        "name": "CV to Float Wait Time",
+        "unit": "min",
+        "writable": True,
+    },
+    "battery_charging_priority": {
+        "register": "Battery charging priority",
+        "name": "Battery Charging Priority",
+        "decoder": decode_battery_charging_priority,
+        "encoder": encode_battery_charging_priority,
+        "writable": True,
+    },
+    "max_charge_current": {
+        "register": "Maximum charge current [G]",
+        "name": "Maximum Charge Current",
+        "unit": "A",
+        "writable": True,
+    },
+    "max_mains_charging_current": {
+        "register": "Maximum mains charging current [H]",
+        "name": "Maximum Mains Charging Current",
+        "unit": "A",
+        "writable": True,
+    },
+    "eq_charging_voltage": {
+        "register": "The charging voltage of Eq",
+        "name": "Eq Charging Voltage",
+        "unit": "V",
+        "writable": True,
+    },
+    "battery_eq_time": {
+        "register": "bat_eq_time",
+        "name": "Battery Eq Time",
+        "unit": "min",
+        "writable": True,
+    },
+    "eq_timeout": {
+        "register": "Eq timed out",
+        "name": "Eq Timeout",
+        "unit": "min",
+        "writable": True,
+    },
+    "eq_interval": {
+        "register": "Two-time Eq charge interval",
+        "name": "Eq Interval",
+        "unit": "day",
+        "writable": True,
+    },
+    "automatic_mains_output_enable": {
+        "register": "Automatic Mains Output Enable",
+        "name": "Automatic Mains Output Enable",
+        "writable": True,
+    },
+    "mains_discharge_soc_protection_value": {
+        "register": "Mains mode battery discharge SOC protection value [K]",
+        "name": "Mains Discharge SOC Protection Value",
+        "unit": "%",
+        "writable": True,
+    },
+    "mains_discharge_soc_recovery_value": {
+        "register": "Mains mode battery discharge SOC recovery value",
+        "name": "Mains Discharge SOC Recovery Value",
+        "unit": "%",
+        "writable": True,
+    },
+    "max_discharge_current_protection": {
+        "register": "Maximum discharge current protection",
+        "name": "Maximum Discharge Current Protection",
+        "unit": "A",
+        "writable": True,
+    },
+    "boot_mode": {
+        "register": "Boot mode",
+        "name": "Boot Mode",
+        "decoder": decode_boot_mode,
+        "encoder": encode_boot_mode,
+        "writable": True,
+    },
+    "remote_switch": {
+        "register": "Remote switch",
+        "name": "Remote Switch",
+        "decoder": decode_remote_switch,
+        "encoder": encode_remote_switch,
+        "writable": True,
+    },
+    "fault_info_query_index": {
+        "register": "Fault Information Query Index",
+        "name": "Fault Information Query Index",
+        "writable": True,
+    },
 }
 
 WRITABLE_REGISTERS = {
@@ -271,10 +515,21 @@ async def handle_command(
     for slug, value in data.items():
         if slug not in WRITABLE_REGISTERS:
             continue
-        if not isinstance(value, (int, float)):
+        info = REGISTER_MAP[slug]
+        encoder = info.get("encoder")
+        if encoder:
+            try:
+                value = encoder(value)
+            except Exception:
+                continue
+        elif isinstance(value, str) and slug != "device_name":
+            continue
+        if not isinstance(value, (int, float, str)):
             continue
         try:
-            await modbus.write_register(WRITABLE_REGISTERS[slug], float(value))
+            await modbus.write_register(
+                info["register"], value if isinstance(value, str) else float(value)
+            )
         except Exception:
             continue
 

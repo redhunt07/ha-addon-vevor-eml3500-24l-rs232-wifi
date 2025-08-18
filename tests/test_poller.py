@@ -97,14 +97,18 @@ async def test_poll_once_reads_registers_and_decodes():
 
 
 @pytest.mark.asyncio
-async def test_handle_command_writes_register():
+@pytest.mark.parametrize(
+    "payload,register,expected",
+    [
+        ({"warnings": 0}, "Obtain the warning code after shield processing", 0.0),
+        ({"output_mode": "parallel"}, "Output mode", 1.0),
+        ({"device_name": "MyDevice"}, "Device name", "MyDevice"),
+    ],
+)
+async def test_handle_command_writes_register(payload, register, expected):
     modbus = AsyncMock()
-    await handle_command(
-        modbus, json.dumps({"warnings": 0})
-    )
-    modbus.write_register.assert_awaited_once_with(
-        "Obtain the warning code after shield processing", 0.0
-    )
+    await handle_command(modbus, json.dumps(payload))
+    modbus.write_register.assert_awaited_once_with(register, expected)
 
 
 @pytest.mark.asyncio
