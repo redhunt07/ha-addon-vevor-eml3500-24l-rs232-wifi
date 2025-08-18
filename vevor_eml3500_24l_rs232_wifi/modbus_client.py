@@ -148,7 +148,7 @@ class ModbusRTUOverTCPClient:
         await self.connect()
         kwargs = {self._slave_kwarg: self.unit} if self._slave_kwarg else {}
         response = await self.client.read_holding_registers(
-            reg.address, reg.count, **kwargs
+            reg.address, count=reg.count, **kwargs
         )
         if response.isError():
             raise RuntimeError(f"Read failed for {name}: {response}")
@@ -178,7 +178,7 @@ class ModbusRTUOverTCPClient:
                 await self.connect()
                 kwargs = {self._slave_kwarg: self.unit} if self._slave_kwarg else {}
                 response = await self.client.write_register(
-                    reg.address, raw, **kwargs
+                    reg.address, value=raw, **kwargs
                 )
                 if not response.isError():
                     return
