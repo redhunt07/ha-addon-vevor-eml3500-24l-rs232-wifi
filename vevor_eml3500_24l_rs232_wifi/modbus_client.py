@@ -11,7 +11,8 @@ import csv
 from dataclasses import dataclass
 from pathlib import Path
 import contextlib
-from typing import Dict, Iterable, Optional, Callable
+import inspect
+from typing import Callable, Dict, Iterable, Optional
 
 from pymodbus.client import AsyncModbusTcpClient
 from pymodbus.framer import FramerType
@@ -115,6 +116,15 @@ class ModbusRTUOverTCPClient:
         self.unit = unit
         self.poll_interval = poll_interval
         self.client = AsyncModbusTcpClient(host, port=port, framer=FramerType.RTU)
+        params = inspect.signature(
+            self.client.read_holding_registers
+        ).parameters
+        if "unit" in params:
+            self._slave_kwarg = "unit"
+        elif "slave" in params:
+            self._slave_kwarg = "slave"
+        else:
+            self._slave_kwarg = None
         self.registers = registers or load_register_definitions(DEFAULT_REGISTER_CSV)
         self.values: Dict[str, float | str] = {}
         self._poll_task: Optional[asyncio.Task] = None
@@ -122,18 +132,23 @@ class ModbusRTUOverTCPClient:
     async def connect(self) -> None:
         """Connect the underlying pymodbus client if not connected."""
         if not self.client.connected:
-            await self.client.connect()
+            result = self.client.connect()
+            if asyncio.iscoroutine(result):
+                await result
 
     async def close(self) -> None:
         """Close the underlying pymodbus client."""
-        await self.client.close()
+        result = self.client.close()
+        if asyncio.iscoroutine(result):
+            await result
 
     async def read_register(self, name: str) -> float | str:
         """Read a register by name and return the scaled value."""
         reg = self.registers[name]
         await self.connect()
+        kwargs = {self._slave_kwarg: self.unit} if self._slave_kwarg else {}
         response = await self.client.read_holding_registers(
-            reg.address, reg.count, unit=self.unit
+            reg.address, reg.count, **kwargs
         )
         if response.isError():
             raise RuntimeError(f"Read failed for {name}: {response}")
@@ -161,8 +176,9 @@ class ModbusRTUOverTCPClient:
         for attempt in range(retries):
             try:
                 await self.connect()
+                kwargs = {self._slave_kwarg: self.unit} if self._slave_kwarg else {}
                 response = await self.client.write_register(
-                    reg.address, raw, unit=self.unit
+                    reg.address, raw, **kwargs
                 )
                 if not response.isError():
                     return
