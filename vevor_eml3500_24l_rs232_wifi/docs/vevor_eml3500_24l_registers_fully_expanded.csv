@@ -1,0 +1,657 @@
+Address,AddressHex,RegisterIndex,Data name,Unit,Data format,Read/Write,Remark,Source Start address,Source Number of registers
+100,0x0064,0,Equipment fault code,,ULong,R,"32-bit fault code. Each bit corresponds to a fault code. See the fault code table for details. Fault code 1 corresponds to bit1, fault code 2 corresponds to bit2, and so on.",100,2.0
+101,0x0065,1,Equipment fault code,,ULong,R,"32-bit fault code. Each bit corresponds to a fault code. See the fault code table for details. Fault code 1 corresponds to bit1, fault code 2 corresponds to bit2, and so on.",100,2.0
+102,0x0066,0,Reserved,,,,Reserved address,102,2.0
+103,0x0067,1,Reserved,,,,Reserved address,102,2.0
+104,0x0068,0,Obtain the warning code for unmasked processing,,,,The 32-bit warning code is described in the warning code description,104,2.0
+105,0x0069,1,Obtain the warning code for unmasked processing,,,,The 32-bit warning code is described in the warning code description,104,2.0
+106,0x006A,0,Reserved,,,,Reserved address,106,2.0
+107,0x006B,1,Reserved,,,,Reserved address,106,2.0
+108,0x006C,0,Obtain the warning code after shield processing,,ULong,R/W,The 32-bit warning code is described in the warning code description,108,2.0
+109,0x006D,1,Obtain the warning code after shield processing,,ULong,R/W,The 32-bit warning code is described in the warning code description,108,2.0
+110,0x006E,0,Reserved,,,,Reserved address,110,61.0
+111,0x006F,1,Reserved,,,,Reserved address,110,61.0
+112,0x0070,2,Reserved,,,,Reserved address,110,61.0
+113,0x0071,3,Reserved,,,,Reserved address,110,61.0
+114,0x0072,4,Reserved,,,,Reserved address,110,61.0
+115,0x0073,5,Reserved,,,,Reserved address,110,61.0
+116,0x0074,6,Reserved,,,,Reserved address,110,61.0
+117,0x0075,7,Reserved,,,,Reserved address,110,61.0
+118,0x0076,8,Reserved,,,,Reserved address,110,61.0
+119,0x0077,9,Reserved,,,,Reserved address,110,61.0
+120,0x0078,10,Reserved,,,,Reserved address,110,61.0
+121,0x0079,11,Reserved,,,,Reserved address,110,61.0
+122,0x007A,12,Reserved,,,,Reserved address,110,61.0
+123,0x007B,13,Reserved,,,,Reserved address,110,61.0
+124,0x007C,14,Reserved,,,,Reserved address,110,61.0
+125,0x007D,15,Reserved,,,,Reserved address,110,61.0
+126,0x007E,16,Reserved,,,,Reserved address,110,61.0
+127,0x007F,17,Reserved,,,,Reserved address,110,61.0
+128,0x0080,18,Reserved,,,,Reserved address,110,61.0
+129,0x0081,19,Reserved,,,,Reserved address,110,61.0
+130,0x0082,20,Reserved,,,,Reserved address,110,61.0
+131,0x0083,21,Reserved,,,,Reserved address,110,61.0
+132,0x0084,22,Reserved,,,,Reserved address,110,61.0
+133,0x0085,23,Reserved,,,,Reserved address,110,61.0
+134,0x0086,24,Reserved,,,,Reserved address,110,61.0
+135,0x0087,25,Reserved,,,,Reserved address,110,61.0
+136,0x0088,26,Reserved,,,,Reserved address,110,61.0
+137,0x0089,27,Reserved,,,,Reserved address,110,61.0
+138,0x008A,28,Reserved,,,,Reserved address,110,61.0
+139,0x008B,29,Reserved,,,,Reserved address,110,61.0
+140,0x008C,30,Reserved,,,,Reserved address,110,61.0
+141,0x008D,31,Reserved,,,,Reserved address,110,61.0
+142,0x008E,32,Reserved,,,,Reserved address,110,61.0
+143,0x008F,33,Reserved,,,,Reserved address,110,61.0
+144,0x0090,34,Reserved,,,,Reserved address,110,61.0
+145,0x0091,35,Reserved,,,,Reserved address,110,61.0
+146,0x0092,36,Reserved,,,,Reserved address,110,61.0
+147,0x0093,37,Reserved,,,,Reserved address,110,61.0
+148,0x0094,38,Reserved,,,,Reserved address,110,61.0
+149,0x0095,39,Reserved,,,,Reserved address,110,61.0
+150,0x0096,40,Reserved,,,,Reserved address,110,61.0
+151,0x0097,41,Reserved,,,,Reserved address,110,61.0
+152,0x0098,42,Reserved,,,,Reserved address,110,61.0
+153,0x0099,43,Reserved,,,,Reserved address,110,61.0
+154,0x009A,44,Reserved,,,,Reserved address,110,61.0
+155,0x009B,45,Reserved,,,,Reserved address,110,61.0
+156,0x009C,46,Reserved,,,,Reserved address,110,61.0
+157,0x009D,47,Reserved,,,,Reserved address,110,61.0
+158,0x009E,48,Reserved,,,,Reserved address,110,61.0
+159,0x009F,49,Reserved,,,,Reserved address,110,61.0
+160,0x00A0,50,Reserved,,,,Reserved address,110,61.0
+161,0x00A1,51,Reserved,,,,Reserved address,110,61.0
+162,0x00A2,52,Reserved,,,,Reserved address,110,61.0
+163,0x00A3,53,Reserved,,,,Reserved address,110,61.0
+164,0x00A4,54,Reserved,,,,Reserved address,110,61.0
+165,0x00A5,55,Reserved,,,,Reserved address,110,61.0
+166,0x00A6,56,Reserved,,,,Reserved address,110,61.0
+167,0x00A7,57,Reserved,,,,Reserved address,110,61.0
+168,0x00A8,58,Reserved,,,,Reserved address,110,61.0
+169,0x00A9,59,Reserved,,,,Reserved address,110,61.0
+170,0x00AA,60,Reserved,,,,Reserved address,110,61.0
+171,0x00AB,0,Device type,,UInt,R,,171,1.0
+172,0x00AC,0,Device name,,ASC,R/W,"Device name, written or read in ASCII",172,12.0
+173,0x00AD,1,Device name,,ASC,R/W,"Device name, written or read in ASCII",172,12.0
+174,0x00AE,2,Device name,,ASC,R/W,"Device name, written or read in ASCII",172,12.0
+175,0x00AF,3,Device name,,ASC,R/W,"Device name, written or read in ASCII",172,12.0
+176,0x00B0,4,Device name,,ASC,R/W,"Device name, written or read in ASCII",172,12.0
+177,0x00B1,5,Device name,,ASC,R/W,"Device name, written or read in ASCII",172,12.0
+178,0x00B2,6,Device name,,ASC,R/W,"Device name, written or read in ASCII",172,12.0
+179,0x00B3,7,Device name,,ASC,R/W,"Device name, written or read in ASCII",172,12.0
+180,0x00B4,8,Device name,,ASC,R/W,"Device name, written or read in ASCII",172,12.0
+181,0x00B5,9,Device name,,ASC,R/W,"Device name, written or read in ASCII",172,12.0
+182,0x00B6,10,Device name,,ASC,R/W,"Device name, written or read in ASCII",172,12.0
+183,0x00B7,11,Device name,,ASC,R/W,"Device name, written or read in ASCII",172,12.0
+184,0x00B8,0,Invalid data,,UInt,R,"Agreement number, return 1 for this agreement",184,1.0
+185,0x00B9,0,Reserved,,,,Reserved address,185,1.0
+186,0x00BA,0,Device serial number,,ASC,R,,186,12.0
+187,0x00BB,1,Device serial number,,ASC,R,,186,12.0
+188,0x00BC,2,Device serial number,,ASC,R,,186,12.0
+189,0x00BD,3,Device serial number,,ASC,R,,186,12.0
+190,0x00BE,4,Device serial number,,ASC,R,,186,12.0
+191,0x00BF,5,Device serial number,,ASC,R,,186,12.0
+192,0x00C0,6,Device serial number,,ASC,R,,186,12.0
+193,0x00C1,7,Device serial number,,ASC,R,,186,12.0
+194,0x00C2,8,Device serial number,,ASC,R,,186,12.0
+195,0x00C3,9,Device serial number,,ASC,R,,186,12.0
+196,0x00C4,10,Device serial number,,ASC,R,,186,12.0
+197,0x00C5,11,Device serial number,,ASC,R,,186,12.0
+198,0x00C6,0,Reserved,,,,Reserved address,198,2.0
+199,0x00C7,1,Reserved,,,,Reserved address,198,2.0
+200,0x00C8,0,Invalid data,,UInt,,Internal command,200,1.0
+201,0x00C9,0,Working mode,,UInt,R,0: Power on mode | 1: Standby mode | 2: Mains mode | 3: Off-grid mode | 4: Bypass mode | 5: Charging mode | 6: Failure Mode,201,1.0
+202,0x00CA,0,Mains voltage effective value,0.1v,Int,R,,202,1.0
+203,0x00CB,0,Mains frequency,0.01Hz,Int,R,,203,1.0
+204,0x00CC,0,Average mains power,1w,Int,R,,204,1.0
+205,0x00CD,0,Effective value of inverter voltage,0.1v,Int,R,,205,1.0
+206,0x00CE,0,Effective value of inverter current,0.1A,Int,R,,206,1.0
+207,0x00CF,0,Inverter frequency,0.01Hz,Int,R,,207,1.0
+208,0x00D0,0,Inverter power average,1w,Int,R,Positive indicates inverter output and negative indicates inverter input,208,1.0
+209,0x00D1,0,Inverter charging power,1w,Int,R,,209,1.0
+210,0x00D2,0,Effective value of output voltage,0.1v,Int,R,,210,1.0
+211,0x00D3,0,Effective value of output current,0.1A,Int,R,,211,1.0
+212,0x00D4,0,Output frequency,0.01Hz,Int,R,,212,1.0
+213,0x00D5,0,Output active power,1w,Int,R,,213,1.0
+214,0x00D6,0,Output apparent power,1VA,Int,R,,214,1.0
+215,0x00D7,0,Average battery voltage,0.1v,Int,R,,215,1.0
+216,0x00D8,0,Average battery current,0.1A,Int,R,,216,1.0
+217,0x00D9,0,Average battery power,1w,Int,R,,217,1.0
+218,0x00DA,0,Invalid data,,,,Internal command,218,1.0
+219,0x00DB,0,Average PV voltage,0.1v,Int,R,,219,1.0
+220,0x00DC,0,Average PV current,0.1A,Int,R,,220,1.0
+221,0x00DD,0,Reserved,,,,Reserved address,221,2.0
+222,0x00DE,1,Reserved,,,,Reserved address,221,2.0
+223,0x00DF,0,Average PV power,1w,Int,R,,223,1.0
+224,0x00E0,0,Average PV charging power,1w,Int,R,,224,1.0
+225,0x00E1,0,Percent of load,1%,Int,R,,225,1.0
+226,0x00E2,0,DCDC temperature,1℃,Int,R,,226,1.0
+227,0x00E3,0,Inverter temperature,1℃,Int,R,,227,1.0
+228,0x00E4,0,Reserved,,,,Reserved address,228,1.0
+229,0x00E5,0,Battery percentage,1%,UInt,R,,229,1.0
+230,0x00E6,0,Invalid data,,,,Internal command,230,1.0
+231,0x00E7,0,Power flow status,,UInt,R,See the description of power flow flag bit for details.,231,1.0
+232,0x00E8,0,Battery current filter average,0.1A,Int,R,A positive number indicates charging and a negative number indicates discharging.,232,1.0
+233,0x00E9,0,Average value of inverter charging current,0.1A,Int,R,,233,1.0
+234,0x00EA,0,Average PV charging current,0.1A,Int,R,,234,1.0
+235,0x00EB,0,Invalid data,,,,Internal command,235,1.0
+236,0x00EC,0,Invalid data,,,,Internal command,236,1.0
+237,0x00ED,0,Reserved,,,,Reserved address,237,63.0
+238,0x00EE,1,Reserved,,,,Reserved address,237,63.0
+239,0x00EF,2,Reserved,,,,Reserved address,237,63.0
+240,0x00F0,3,Reserved,,,,Reserved address,237,63.0
+241,0x00F1,4,Reserved,,,,Reserved address,237,63.0
+242,0x00F2,5,Reserved,,,,Reserved address,237,63.0
+243,0x00F3,6,Reserved,,,,Reserved address,237,63.0
+244,0x00F4,7,Reserved,,,,Reserved address,237,63.0
+245,0x00F5,8,Reserved,,,,Reserved address,237,63.0
+246,0x00F6,9,Reserved,,,,Reserved address,237,63.0
+247,0x00F7,10,Reserved,,,,Reserved address,237,63.0
+248,0x00F8,11,Reserved,,,,Reserved address,237,63.0
+249,0x00F9,12,Reserved,,,,Reserved address,237,63.0
+250,0x00FA,13,Reserved,,,,Reserved address,237,63.0
+251,0x00FB,14,Reserved,,,,Reserved address,237,63.0
+252,0x00FC,15,Reserved,,,,Reserved address,237,63.0
+253,0x00FD,16,Reserved,,,,Reserved address,237,63.0
+254,0x00FE,17,Reserved,,,,Reserved address,237,63.0
+255,0x00FF,18,Reserved,,,,Reserved address,237,63.0
+256,0x0100,19,Reserved,,,,Reserved address,237,63.0
+257,0x0101,20,Reserved,,,,Reserved address,237,63.0
+258,0x0102,21,Reserved,,,,Reserved address,237,63.0
+259,0x0103,22,Reserved,,,,Reserved address,237,63.0
+260,0x0104,23,Reserved,,,,Reserved address,237,63.0
+261,0x0105,24,Reserved,,,,Reserved address,237,63.0
+262,0x0106,25,Reserved,,,,Reserved address,237,63.0
+263,0x0107,26,Reserved,,,,Reserved address,237,63.0
+264,0x0108,27,Reserved,,,,Reserved address,237,63.0
+265,0x0109,28,Reserved,,,,Reserved address,237,63.0
+266,0x010A,29,Reserved,,,,Reserved address,237,63.0
+267,0x010B,30,Reserved,,,,Reserved address,237,63.0
+268,0x010C,31,Reserved,,,,Reserved address,237,63.0
+269,0x010D,32,Reserved,,,,Reserved address,237,63.0
+270,0x010E,33,Reserved,,,,Reserved address,237,63.0
+271,0x010F,34,Reserved,,,,Reserved address,237,63.0
+272,0x0110,35,Reserved,,,,Reserved address,237,63.0
+273,0x0111,36,Reserved,,,,Reserved address,237,63.0
+274,0x0112,37,Reserved,,,,Reserved address,237,63.0
+275,0x0113,38,Reserved,,,,Reserved address,237,63.0
+276,0x0114,39,Reserved,,,,Reserved address,237,63.0
+277,0x0115,40,Reserved,,,,Reserved address,237,63.0
+278,0x0116,41,Reserved,,,,Reserved address,237,63.0
+279,0x0117,42,Reserved,,,,Reserved address,237,63.0
+280,0x0118,43,Reserved,,,,Reserved address,237,63.0
+281,0x0119,44,Reserved,,,,Reserved address,237,63.0
+282,0x011A,45,Reserved,,,,Reserved address,237,63.0
+283,0x011B,46,Reserved,,,,Reserved address,237,63.0
+284,0x011C,47,Reserved,,,,Reserved address,237,63.0
+285,0x011D,48,Reserved,,,,Reserved address,237,63.0
+286,0x011E,49,Reserved,,,,Reserved address,237,63.0
+287,0x011F,50,Reserved,,,,Reserved address,237,63.0
+288,0x0120,51,Reserved,,,,Reserved address,237,63.0
+289,0x0121,52,Reserved,,,,Reserved address,237,63.0
+290,0x0122,53,Reserved,,,,Reserved address,237,63.0
+291,0x0123,54,Reserved,,,,Reserved address,237,63.0
+292,0x0124,55,Reserved,,,,Reserved address,237,63.0
+293,0x0125,56,Reserved,,,,Reserved address,237,63.0
+294,0x0126,57,Reserved,,,,Reserved address,237,63.0
+295,0x0127,58,Reserved,,,,Reserved address,237,63.0
+296,0x0128,59,Reserved,,,,Reserved address,237,63.0
+297,0x0129,60,Reserved,,,,Reserved address,237,63.0
+298,0x012A,61,Reserved,,,,Reserved address,237,63.0
+299,0x012B,62,Reserved,,,,Reserved address,237,63.0
+300,0x012C,0,Output mode,,Uint,R/W,0: single machine; | 1: parallel; | 2: Three-phase combination-P1 | 3: Three-phase combination-P2 | 4: Three-phase combination-P3,300,1.0
+301,0x012D,0,Output priority,,Uint,R/W,0: Main-PV-Battery (UTI) | 1: PV-mains-battery (SOL) [priority inverter] | 2: PV-battery-mains (SBU) | 3: PV-Mains-Battery (SUB) [Priority Mains],301,1.0
+302,0x012E,0,Input voltage range,,Uint,R/W,0：APL； | 1：UPS；,302,1.0
+303,0x012F,0,Buzzer mode,,Uint,R/W,0: mute in all cases; | 1: Sound when the input source changes or there is a specific warning or fault; 2: Sound when there is a specific warning or fault; | 3: Sound in case of fault;,303,1.0
+304,0x0130,0,Reserved,,,R/W,Reserved address,304,1.0
+305,0x0131,0,LCD backlight,,Uint,R/W,0: Timed closing; | 1: Always on;,305,1.0
+306,0x0132,0,LCD automatically returns to the home page,,Uint,R/W,0: Do not return automatically; | 1: Automatic return after 1 minute;,306,1.0
+307,0x0133,0,Energy saving mode switch,,Uint,R/W,0: Energy saving mode off; | 1: Energy-saving mode on;,307,1.0
+308,0x0134,0,Overload automatic restart,,Uint,R/W,0: Overload failure does not restart; | 1: Automatic restart in case of overload;,308,1.0
+309,0x0135,0,Over-temperature automatic restart,,Uint,R/W,0: No restart for over-temperature fault; | 1: Automatic restart for over-temperature fault;,309,1.0
+310,0x0136,0,Overload Bypass Enable,,Uint,R/W,0: forbidden; | 1: Enable;,310,1.0
+311,0x0137,0,Reserved,,,,Reserved address,311,2.0
+312,0x0138,1,Reserved,,,,Reserved address,311,2.0
+313,0x0139,0,Battery Eq Mode Enable,,Uint,R/W,0: forbidden; | 1: Enable;,313,1.0
+314,0x013A,0,Warning Mask [I],,ULong,R/W,"The warning corresponding to 1 is normally displayed, and the warning corresponding to 0 is shielded.",314,2.0
+315,0x013B,1,Warning Mask [I],,ULong,R/W,"The warning corresponding to 1 is normally displayed, and the warning corresponding to 0 is shielded.",314,2.0
+316,0x013C,0,Dry contact,,Uint,R/W,0: normal mode; | 1: Grounding box mode;,316,1.0
+317,0x013D,0,Reserved,,,,Reserved address,317,3.0
+318,0x013E,1,Reserved,,,,Reserved address,317,3.0
+319,0x013F,2,Reserved,,,,Reserved address,317,3.0
+320,0x0140,0,Output voltage,0.1v,Uint,R/W,2200: 220V output; | 2300: 230v output; | 2400: 240v output;,320,1.0
+321,0x0141,0,Output frequency,0.01Hz,Uint,R/W,5000: 50Hz output; | 6000: 60Hz output;,321,1.0
+322,0x0142,0,Battery type,,Uint,R/W,0：AGM； | 1：FLD； | 2：USER； | 3：Li1 | 4：Li2 | 5：Li3 | 6：Li4,322,1.0
+323,0x0143,0,Battery overvoltage protection point [A],0.1v,Uint,R/W,Range: (B + 1V * J) ~ 16.5v * J,323,1.0
+324,0x0144,0,Maximum charge voltage [B],0.1v,Uint,R/W,Range: C ~ (A-1v),324,1.0
+325,0x0145,0,Floating charge voltage | [C],0.1v,Uint,R/W,Range: (12v * J) ~ B,325,1.0
+326,0x0146,0,Mains mode battery discharge recovery point [D],0.1v,Uint,R/W,"Range: (B-0.5V * J) ~ Max (12V * J, E) | Set to 0 to indicate a full recovery",326,1.0
+327,0x0147,0,Battery low voltage protection point in mains mode [E],0.1v,Uint,R/W,"Range: Min (14.3v * J, D) ~ Max (11v * J, F)",327,1.0
+328,0x0148,0,Reserved,,,,Reserved address,328,1.0
+329,0x0149,0,Off-grid mode battery low voltage protection point [F],0.1v,Uint,R/W,"Range: (10v * J) ~ Min (13.5v * J, E)",329,1.0
+330,0x014A,0,Waiting time from constant voltage to floating charge,min,Uint,R/W,Range: 1 ~ 900 min | Set to 0 to default to 10 min,330,1.0
+331,0x014B,0,Battery charging priority,,Uint,R/W,0: mains supply is preferred; | 1: PV priority; | 2: PV is at the same level as mains supply; | 3: PV charging only allowed,331,1.0
+332,0x014C,0,Maximum charge current [G],0.1A,Uint,R/W,"Range: Max (10 A, H) ~ 80 A",332,1.0
+333,0x014D,0,Maximum mains charging current [H],0.1A,Uint,R/W,Range: 2A ~ G,333,1.0
+334,0x014E,0,The charging voltage of Eq,0.1v,Uint,R/W,Range: C ~ (A-0.5v * J)http://c/,334,1.0
+335,0x014F,0,bat_eq_time,min,Uint,R/W,Range: 0 ~ 900,335,1.0
+336,0x0150,0,Eq timed out,min,Uint,R/W,Range: 0 ~ 900,336,1.0
+337,0x0151,0,Two-time Eq charge interval,day,Uint,R/W,Range: 1 ~ 90,337,1.0
+338,0x0152,0,Automatic Mains Output Enable,,Uint,R/W,0: No mains power output without pressing the power button 1: Automatic mains power output without pressing the power button,338,1.0
+339,0x0153,0,Reserved,,,,Reserved address,339,2.0
+340,0x0154,1,Reserved,,,,Reserved address,339,2.0
+341,0x0155,0,Mains mode battery discharge SOC protection value [K],1%,Uint,R/W,Range: 20% ~ 50%,341,1.0
+342,0x0156,0,Mains mode battery discharge SOC recovery value,1%,Uint,R/W,Range: 60% ~ 100%,342,1.0
+343,0x0157,0,Battery discharge SOC protection value in off-grid mode,1%,Uint,R/W,"Range: 3% ~ Min (K, 30%)",343,1.0
+344,0x0158,0,Reserved,,,,,344,7.0
+345,0x0159,1,Reserved,,,,,344,7.0
+346,0x015A,2,Reserved,,,,,344,7.0
+347,0x015B,3,Reserved,,,,,344,7.0
+348,0x015C,4,Reserved,,,,,344,7.0
+349,0x015D,5,Reserved,,,,,344,7.0
+350,0x015E,6,Reserved,,,,,344,7.0
+351,0x015F,0,Maximum discharge current protection,1A,Uint,R/W,Maximum discharge current protection value in stand-alone mode,351,1.0
+352,0x0160,0,Reserved,,,,,352,54.0
+353,0x0161,1,Reserved,,,,,352,54.0
+354,0x0162,2,Reserved,,,,,352,54.0
+355,0x0163,3,Reserved,,,,,352,54.0
+356,0x0164,4,Reserved,,,,,352,54.0
+357,0x0165,5,Reserved,,,,,352,54.0
+358,0x0166,6,Reserved,,,,,352,54.0
+359,0x0167,7,Reserved,,,,,352,54.0
+360,0x0168,8,Reserved,,,,,352,54.0
+361,0x0169,9,Reserved,,,,,352,54.0
+362,0x016A,10,Reserved,,,,,352,54.0
+363,0x016B,11,Reserved,,,,,352,54.0
+364,0x016C,12,Reserved,,,,,352,54.0
+365,0x016D,13,Reserved,,,,,352,54.0
+366,0x016E,14,Reserved,,,,,352,54.0
+367,0x016F,15,Reserved,,,,,352,54.0
+368,0x0170,16,Reserved,,,,,352,54.0
+369,0x0171,17,Reserved,,,,,352,54.0
+370,0x0172,18,Reserved,,,,,352,54.0
+371,0x0173,19,Reserved,,,,,352,54.0
+372,0x0174,20,Reserved,,,,,352,54.0
+373,0x0175,21,Reserved,,,,,352,54.0
+374,0x0176,22,Reserved,,,,,352,54.0
+375,0x0177,23,Reserved,,,,,352,54.0
+376,0x0178,24,Reserved,,,,,352,54.0
+377,0x0179,25,Reserved,,,,,352,54.0
+378,0x017A,26,Reserved,,,,,352,54.0
+379,0x017B,27,Reserved,,,,,352,54.0
+380,0x017C,28,Reserved,,,,,352,54.0
+381,0x017D,29,Reserved,,,,,352,54.0
+382,0x017E,30,Reserved,,,,,352,54.0
+383,0x017F,31,Reserved,,,,,352,54.0
+384,0x0180,32,Reserved,,,,,352,54.0
+385,0x0181,33,Reserved,,,,,352,54.0
+386,0x0182,34,Reserved,,,,,352,54.0
+387,0x0183,35,Reserved,,,,,352,54.0
+388,0x0184,36,Reserved,,,,,352,54.0
+389,0x0185,37,Reserved,,,,,352,54.0
+390,0x0186,38,Reserved,,,,,352,54.0
+391,0x0187,39,Reserved,,,,,352,54.0
+392,0x0188,40,Reserved,,,,,352,54.0
+393,0x0189,41,Reserved,,,,,352,54.0
+394,0x018A,42,Reserved,,,,,352,54.0
+395,0x018B,43,Reserved,,,,,352,54.0
+396,0x018C,44,Reserved,,,,,352,54.0
+397,0x018D,45,Reserved,,,,,352,54.0
+398,0x018E,46,Reserved,,,,,352,54.0
+399,0x018F,47,Reserved,,,,,352,54.0
+400,0x0190,48,Reserved,,,,,352,54.0
+401,0x0191,49,Reserved,,,,,352,54.0
+402,0x0192,50,Reserved,,,,,352,54.0
+403,0x0193,51,Reserved,,,,,352,54.0
+404,0x0194,52,Reserved,,,,,352,54.0
+405,0x0195,53,Reserved,,,,,352,54.0
+406,0x0196,0,Boot mode,,Uint,R/W,0: Can be powered on locally or remotely | 1: Only local boot | 2: Remote boot only,406,1.0
+407,0x0197,0,Reserved,,,,Reserved address,407,13.0
+408,0x0198,1,Reserved,,,,Reserved address,407,13.0
+409,0x0199,2,Reserved,,,,Reserved address,407,13.0
+410,0x019A,3,Reserved,,,,Reserved address,407,13.0
+411,0x019B,4,Reserved,,,,Reserved address,407,13.0
+412,0x019C,5,Reserved,,,,Reserved address,407,13.0
+413,0x019D,6,Reserved,,,,Reserved address,407,13.0
+414,0x019E,7,Reserved,,,,Reserved address,407,13.0
+415,0x019F,8,Reserved,,,,Reserved address,407,13.0
+416,0x01A0,9,Reserved,,,,Reserved address,407,13.0
+417,0x01A1,10,Reserved,,,,Reserved address,407,13.0
+418,0x01A2,11,Reserved,,,,Reserved address,407,13.0
+419,0x01A3,12,Reserved,,,,Reserved address,407,13.0
+420,0x01A4,0,Remote switch,,Uint,R/W,0: Remote shutdown | 1: Remote power-on,420,1.0
+421,0x01A5,0,Invalid data,,,,Internal command,421,1.0
+422,0x01A6,0,Reserved,,,,Reserved address,422,3.0
+423,0x01A7,1,Reserved,,,,Reserved address,422,3.0
+424,0x01A8,2,Reserved,,,,Reserved address,422,3.0
+425,0x01A9,0,Forcing the charge of Eq,,Uint,W,1: Manually force Eq to charge once,425,
+426,0x01AA,0,Exits the fail-locked state,,Uint,W,1: Exit the fault lock state (it will take effect only when the machine enters the fault mode),426,
+427,0x01AB,0,Invalid data,,,,Internal command,427,1.0
+428,0x01AC,0,Reserved,,,,Reserved address,428,22.0
+429,0x01AD,1,Reserved,,,,Reserved address,428,22.0
+430,0x01AE,2,Reserved,,,,Reserved address,428,22.0
+431,0x01AF,3,Reserved,,,,Reserved address,428,22.0
+432,0x01B0,4,Reserved,,,,Reserved address,428,22.0
+433,0x01B1,5,Reserved,,,,Reserved address,428,22.0
+434,0x01B2,6,Reserved,,,,Reserved address,428,22.0
+435,0x01B3,7,Reserved,,,,Reserved address,428,22.0
+436,0x01B4,8,Reserved,,,,Reserved address,428,22.0
+437,0x01B5,9,Reserved,,,,Reserved address,428,22.0
+438,0x01B6,10,Reserved,,,,Reserved address,428,22.0
+439,0x01B7,11,Reserved,,,,Reserved address,428,22.0
+440,0x01B8,12,Reserved,,,,Reserved address,428,22.0
+441,0x01B9,13,Reserved,,,,Reserved address,428,22.0
+442,0x01BA,14,Reserved,,,,Reserved address,428,22.0
+443,0x01BB,15,Reserved,,,,Reserved address,428,22.0
+444,0x01BC,16,Reserved,,,,Reserved address,428,22.0
+445,0x01BD,17,Reserved,,,,Reserved address,428,22.0
+446,0x01BE,18,Reserved,,,,Reserved address,428,22.0
+447,0x01BF,19,Reserved,,,,Reserved address,428,22.0
+448,0x01C0,20,Reserved,,,,Reserved address,428,22.0
+449,0x01C1,21,Reserved,,,,Reserved address,428,22.0
+450,0x01C2,0,Invalid data,,,,Internal command,450,7.0
+451,0x01C3,1,Invalid data,,,,Internal command,450,7.0
+452,0x01C4,2,Invalid data,,,,Internal command,450,7.0
+453,0x01C5,3,Invalid data,,,,Internal command,450,7.0
+454,0x01C6,4,Invalid data,,,,Internal command,450,7.0
+455,0x01C7,5,Invalid data,,,,Internal command,450,7.0
+456,0x01C8,6,Invalid data,,,,Internal command,450,7.0
+457,0x01C9,0,Reserved,,,,Reserved address,457,3.0
+458,0x01CA,1,Reserved,,,,Reserved address,457,3.0
+459,0x01CB,2,Reserved,,,,Reserved address,457,3.0
+460,0x01CC,0,Clear the record,,,W,0 xAA: clear the operation record and fault record (effective in non-off-grid mode),460,1.0
+461,0x01CD,0,Reset user parameters,,,W,0 xAA: User parameters are restored to default values (works in non-off-grid mode),461,1.0
+462,0x01CE,0,Invalid data,,,,Internal command,462,6.0
+463,0x01CF,1,Invalid data,,,,Internal command,462,6.0
+464,0x01D0,2,Invalid data,,,,Internal command,462,6.0
+465,0x01D1,3,Invalid data,,,,Internal command,462,6.0
+466,0x01D2,4,Invalid data,,,,Internal command,462,6.0
+467,0x01D3,5,Invalid data,,,,Internal command,462,6.0
+468,0x01D4,0,Reserved,,,,Reserved address,468,32.0
+469,0x01D5,1,Reserved,,,,Reserved address,468,32.0
+470,0x01D6,2,Reserved,,,,Reserved address,468,32.0
+471,0x01D7,3,Reserved,,,,Reserved address,468,32.0
+472,0x01D8,4,Reserved,,,,Reserved address,468,32.0
+473,0x01D9,5,Reserved,,,,Reserved address,468,32.0
+474,0x01DA,6,Reserved,,,,Reserved address,468,32.0
+475,0x01DB,7,Reserved,,,,Reserved address,468,32.0
+476,0x01DC,8,Reserved,,,,Reserved address,468,32.0
+477,0x01DD,9,Reserved,,,,Reserved address,468,32.0
+478,0x01DE,10,Reserved,,,,Reserved address,468,32.0
+479,0x01DF,11,Reserved,,,,Reserved address,468,32.0
+480,0x01E0,12,Reserved,,,,Reserved address,468,32.0
+481,0x01E1,13,Reserved,,,,Reserved address,468,32.0
+482,0x01E2,14,Reserved,,,,Reserved address,468,32.0
+483,0x01E3,15,Reserved,,,,Reserved address,468,32.0
+484,0x01E4,16,Reserved,,,,Reserved address,468,32.0
+485,0x01E5,17,Reserved,,,,Reserved address,468,32.0
+486,0x01E6,18,Reserved,,,,Reserved address,468,32.0
+487,0x01E7,19,Reserved,,,,Reserved address,468,32.0
+488,0x01E8,20,Reserved,,,,Reserved address,468,32.0
+489,0x01E9,21,Reserved,,,,Reserved address,468,32.0
+490,0x01EA,22,Reserved,,,,Reserved address,468,32.0
+491,0x01EB,23,Reserved,,,,Reserved address,468,32.0
+492,0x01EC,24,Reserved,,,,Reserved address,468,32.0
+493,0x01ED,25,Reserved,,,,Reserved address,468,32.0
+494,0x01EE,26,Reserved,,,,Reserved address,468,32.0
+495,0x01EF,27,Reserved,,,,Reserved address,468,32.0
+496,0x01F0,28,Reserved,,,,Reserved address,468,32.0
+497,0x01F1,29,Reserved,,,,Reserved address,468,32.0
+498,0x01F2,30,Reserved,,,,Reserved address,468,32.0
+499,0x01F3,31,Reserved,,,,Reserved address,468,32.0
+500,0x01F4,0,Invalid data,,,,Internal command,500,34.0
+501,0x01F5,1,Invalid data,,,,Internal command,500,34.0
+502,0x01F6,2,Invalid data,,,,Internal command,500,34.0
+503,0x01F7,3,Invalid data,,,,Internal command,500,34.0
+504,0x01F8,4,Invalid data,,,,Internal command,500,34.0
+505,0x01F9,5,Invalid data,,,,Internal command,500,34.0
+506,0x01FA,6,Invalid data,,,,Internal command,500,34.0
+507,0x01FB,7,Invalid data,,,,Internal command,500,34.0
+508,0x01FC,8,Invalid data,,,,Internal command,500,34.0
+509,0x01FD,9,Invalid data,,,,Internal command,500,34.0
+510,0x01FE,10,Invalid data,,,,Internal command,500,34.0
+511,0x01FF,11,Invalid data,,,,Internal command,500,34.0
+512,0x0200,12,Invalid data,,,,Internal command,500,34.0
+513,0x0201,13,Invalid data,,,,Internal command,500,34.0
+514,0x0202,14,Invalid data,,,,Internal command,500,34.0
+515,0x0203,15,Invalid data,,,,Internal command,500,34.0
+516,0x0204,16,Invalid data,,,,Internal command,500,34.0
+517,0x0205,17,Invalid data,,,,Internal command,500,34.0
+518,0x0206,18,Invalid data,,,,Internal command,500,34.0
+519,0x0207,19,Invalid data,,,,Internal command,500,34.0
+520,0x0208,20,Invalid data,,,,Internal command,500,34.0
+521,0x0209,21,Invalid data,,,,Internal command,500,34.0
+522,0x020A,22,Invalid data,,,,Internal command,500,34.0
+523,0x020B,23,Invalid data,,,,Internal command,500,34.0
+524,0x020C,24,Invalid data,,,,Internal command,500,34.0
+525,0x020D,25,Invalid data,,,,Internal command,500,34.0
+526,0x020E,26,Invalid data,,,,Internal command,500,34.0
+527,0x020F,27,Invalid data,,,,Internal command,500,34.0
+528,0x0210,28,Invalid data,,,,Internal command,500,34.0
+529,0x0211,29,Invalid data,,,,Internal command,500,34.0
+530,0x0212,30,Invalid data,,,,Internal command,500,34.0
+531,0x0213,31,Invalid data,,,,Internal command,500,34.0
+532,0x0214,32,Invalid data,,,,Internal command,500,34.0
+533,0x0215,33,Invalid data,,,,Internal command,500,34.0
+534,0x0216,0,Reserved,,,,Reserved address,534,66.0
+535,0x0217,1,Reserved,,,,Reserved address,534,66.0
+536,0x0218,2,Reserved,,,,Reserved address,534,66.0
+537,0x0219,3,Reserved,,,,Reserved address,534,66.0
+538,0x021A,4,Reserved,,,,Reserved address,534,66.0
+539,0x021B,5,Reserved,,,,Reserved address,534,66.0
+540,0x021C,6,Reserved,,,,Reserved address,534,66.0
+541,0x021D,7,Reserved,,,,Reserved address,534,66.0
+542,0x021E,8,Reserved,,,,Reserved address,534,66.0
+543,0x021F,9,Reserved,,,,Reserved address,534,66.0
+544,0x0220,10,Reserved,,,,Reserved address,534,66.0
+545,0x0221,11,Reserved,,,,Reserved address,534,66.0
+546,0x0222,12,Reserved,,,,Reserved address,534,66.0
+547,0x0223,13,Reserved,,,,Reserved address,534,66.0
+548,0x0224,14,Reserved,,,,Reserved address,534,66.0
+549,0x0225,15,Reserved,,,,Reserved address,534,66.0
+550,0x0226,16,Reserved,,,,Reserved address,534,66.0
+551,0x0227,17,Reserved,,,,Reserved address,534,66.0
+552,0x0228,18,Reserved,,,,Reserved address,534,66.0
+553,0x0229,19,Reserved,,,,Reserved address,534,66.0
+554,0x022A,20,Reserved,,,,Reserved address,534,66.0
+555,0x022B,21,Reserved,,,,Reserved address,534,66.0
+556,0x022C,22,Reserved,,,,Reserved address,534,66.0
+557,0x022D,23,Reserved,,,,Reserved address,534,66.0
+558,0x022E,24,Reserved,,,,Reserved address,534,66.0
+559,0x022F,25,Reserved,,,,Reserved address,534,66.0
+560,0x0230,26,Reserved,,,,Reserved address,534,66.0
+561,0x0231,27,Reserved,,,,Reserved address,534,66.0
+562,0x0232,28,Reserved,,,,Reserved address,534,66.0
+563,0x0233,29,Reserved,,,,Reserved address,534,66.0
+564,0x0234,30,Reserved,,,,Reserved address,534,66.0
+565,0x0235,31,Reserved,,,,Reserved address,534,66.0
+566,0x0236,32,Reserved,,,,Reserved address,534,66.0
+567,0x0237,33,Reserved,,,,Reserved address,534,66.0
+568,0x0238,34,Reserved,,,,Reserved address,534,66.0
+569,0x0239,35,Reserved,,,,Reserved address,534,66.0
+570,0x023A,36,Reserved,,,,Reserved address,534,66.0
+571,0x023B,37,Reserved,,,,Reserved address,534,66.0
+572,0x023C,38,Reserved,,,,Reserved address,534,66.0
+573,0x023D,39,Reserved,,,,Reserved address,534,66.0
+574,0x023E,40,Reserved,,,,Reserved address,534,66.0
+575,0x023F,41,Reserved,,,,Reserved address,534,66.0
+576,0x0240,42,Reserved,,,,Reserved address,534,66.0
+577,0x0241,43,Reserved,,,,Reserved address,534,66.0
+578,0x0242,44,Reserved,,,,Reserved address,534,66.0
+579,0x0243,45,Reserved,,,,Reserved address,534,66.0
+580,0x0244,46,Reserved,,,,Reserved address,534,66.0
+581,0x0245,47,Reserved,,,,Reserved address,534,66.0
+582,0x0246,48,Reserved,,,,Reserved address,534,66.0
+583,0x0247,49,Reserved,,,,Reserved address,534,66.0
+584,0x0248,50,Reserved,,,,Reserved address,534,66.0
+585,0x0249,51,Reserved,,,,Reserved address,534,66.0
+586,0x024A,52,Reserved,,,,Reserved address,534,66.0
+587,0x024B,53,Reserved,,,,Reserved address,534,66.0
+588,0x024C,54,Reserved,,,,Reserved address,534,66.0
+589,0x024D,55,Reserved,,,,Reserved address,534,66.0
+590,0x024E,56,Reserved,,,,Reserved address,534,66.0
+591,0x024F,57,Reserved,,,,Reserved address,534,66.0
+592,0x0250,58,Reserved,,,,Reserved address,534,66.0
+593,0x0251,59,Reserved,,,,Reserved address,534,66.0
+594,0x0252,60,Reserved,,,,Reserved address,534,66.0
+595,0x0253,61,Reserved,,,,Reserved address,534,66.0
+596,0x0254,62,Reserved,,,,Reserved address,534,66.0
+597,0x0255,63,Reserved,,,,Reserved address,534,66.0
+598,0x0256,64,Reserved,,,,Reserved address,534,66.0
+599,0x0257,65,Reserved,,,,Reserved address,534,66.0
+600,0x0258,0,Invalid data,,,,Internal command,600,34.0
+601,0x0259,1,Invalid data,,,,Internal command,600,34.0
+602,0x025A,2,Invalid data,,,,Internal command,600,34.0
+603,0x025B,3,Invalid data,,,,Internal command,600,34.0
+604,0x025C,4,Invalid data,,,,Internal command,600,34.0
+605,0x025D,5,Invalid data,,,,Internal command,600,34.0
+606,0x025E,6,Invalid data,,,,Internal command,600,34.0
+607,0x025F,7,Invalid data,,,,Internal command,600,34.0
+608,0x0260,8,Invalid data,,,,Internal command,600,34.0
+609,0x0261,9,Invalid data,,,,Internal command,600,34.0
+610,0x0262,10,Invalid data,,,,Internal command,600,34.0
+611,0x0263,11,Invalid data,,,,Internal command,600,34.0
+612,0x0264,12,Invalid data,,,,Internal command,600,34.0
+613,0x0265,13,Invalid data,,,,Internal command,600,34.0
+614,0x0266,14,Invalid data,,,,Internal command,600,34.0
+615,0x0267,15,Invalid data,,,,Internal command,600,34.0
+616,0x0268,16,Invalid data,,,,Internal command,600,34.0
+617,0x0269,17,Invalid data,,,,Internal command,600,34.0
+618,0x026A,18,Invalid data,,,,Internal command,600,34.0
+619,0x026B,19,Invalid data,,,,Internal command,600,34.0
+620,0x026C,20,Invalid data,,,,Internal command,600,34.0
+621,0x026D,21,Invalid data,,,,Internal command,600,34.0
+622,0x026E,22,Invalid data,,,,Internal command,600,34.0
+623,0x026F,23,Invalid data,,,,Internal command,600,34.0
+624,0x0270,24,Invalid data,,,,Internal command,600,34.0
+625,0x0271,25,Invalid data,,,,Internal command,600,34.0
+626,0x0272,0,Program version,,ASC,R,,626,8.0
+626,0x0272,26,Invalid data,,,,Internal command,600,34.0
+627,0x0273,1,Program version,,ASC,R,,626,8.0
+627,0x0273,27,Invalid data,,,,Internal command,600,34.0
+628,0x0274,2,Program version,,ASC,R,,626,8.0
+628,0x0274,28,Invalid data,,,,Internal command,600,34.0
+629,0x0275,3,Program version,,ASC,R,,626,8.0
+629,0x0275,29,Invalid data,,,,Internal command,600,34.0
+630,0x0276,4,Program version,,ASC,R,,626,8.0
+630,0x0276,30,Invalid data,,,,Internal command,600,34.0
+631,0x0277,5,Program version,,ASC,R,,626,8.0
+631,0x0277,31,Invalid data,,,,Internal command,600,34.0
+632,0x0278,6,Program version,,ASC,R,,626,8.0
+632,0x0278,32,Invalid data,,,,Internal command,600,34.0
+633,0x0279,7,Program version,,ASC,R,,626,8.0
+633,0x0279,33,Invalid data,,,,Internal command,600,34.0
+634,0x027A,0,Reserved,,,,Reserved address,634,7.0
+635,0x027B,1,Reserved,,,,Reserved address,634,7.0
+636,0x027C,2,Reserved,,,,Reserved address,634,7.0
+637,0x027D,3,Reserved,,,,Reserved address,634,7.0
+638,0x027E,4,Reserved,,,,Reserved address,634,7.0
+639,0x027F,5,Reserved,,,,Reserved address,634,7.0
+640,0x0280,6,Reserved,,,,Reserved address,634,7.0
+643,0x0283,0,Rated power,w,UInt,R,,643,1.0
+644,0x0284,0,Rated number of cells [J],PCS,UInt,R,,644,1.0
+645,0x0285,0,Reserved,,,,Reserved address,645,55.0
+646,0x0286,1,Reserved,,,,Reserved address,645,55.0
+647,0x0287,2,Reserved,,,,Reserved address,645,55.0
+648,0x0288,3,Reserved,,,,Reserved address,645,55.0
+649,0x0289,4,Reserved,,,,Reserved address,645,55.0
+650,0x028A,5,Reserved,,,,Reserved address,645,55.0
+651,0x028B,6,Reserved,,,,Reserved address,645,55.0
+652,0x028C,7,Reserved,,,,Reserved address,645,55.0
+653,0x028D,8,Reserved,,,,Reserved address,645,55.0
+654,0x028E,9,Reserved,,,,Reserved address,645,55.0
+655,0x028F,10,Reserved,,,,Reserved address,645,55.0
+656,0x0290,11,Reserved,,,,Reserved address,645,55.0
+657,0x0291,12,Reserved,,,,Reserved address,645,55.0
+658,0x0292,13,Reserved,,,,Reserved address,645,55.0
+659,0x0293,14,Reserved,,,,Reserved address,645,55.0
+660,0x0294,15,Reserved,,,,Reserved address,645,55.0
+661,0x0295,16,Reserved,,,,Reserved address,645,55.0
+662,0x0296,17,Reserved,,,,Reserved address,645,55.0
+663,0x0297,18,Reserved,,,,Reserved address,645,55.0
+664,0x0298,19,Reserved,,,,Reserved address,645,55.0
+665,0x0299,20,Reserved,,,,Reserved address,645,55.0
+666,0x029A,21,Reserved,,,,Reserved address,645,55.0
+667,0x029B,22,Reserved,,,,Reserved address,645,55.0
+668,0x029C,23,Reserved,,,,Reserved address,645,55.0
+669,0x029D,24,Reserved,,,,Reserved address,645,55.0
+670,0x029E,25,Reserved,,,,Reserved address,645,55.0
+671,0x029F,26,Reserved,,,,Reserved address,645,55.0
+672,0x02A0,27,Reserved,,,,Reserved address,645,55.0
+673,0x02A1,28,Reserved,,,,Reserved address,645,55.0
+674,0x02A2,29,Reserved,,,,Reserved address,645,55.0
+675,0x02A3,30,Reserved,,,,Reserved address,645,55.0
+676,0x02A4,31,Reserved,,,,Reserved address,645,55.0
+677,0x02A5,32,Reserved,,,,Reserved address,645,55.0
+678,0x02A6,33,Reserved,,,,Reserved address,645,55.0
+679,0x02A7,34,Reserved,,,,Reserved address,645,55.0
+680,0x02A8,35,Reserved,,,,Reserved address,645,55.0
+681,0x02A9,36,Reserved,,,,Reserved address,645,55.0
+682,0x02AA,37,Reserved,,,,Reserved address,645,55.0
+683,0x02AB,38,Reserved,,,,Reserved address,645,55.0
+684,0x02AC,39,Reserved,,,,Reserved address,645,55.0
+685,0x02AD,40,Reserved,,,,Reserved address,645,55.0
+686,0x02AE,41,Reserved,,,,Reserved address,645,55.0
+687,0x02AF,42,Reserved,,,,Reserved address,645,55.0
+688,0x02B0,43,Reserved,,,,Reserved address,645,55.0
+689,0x02B1,44,Reserved,,,,Reserved address,645,55.0
+690,0x02B2,45,Reserved,,,,Reserved address,645,55.0
+691,0x02B3,46,Reserved,,,,Reserved address,645,55.0
+692,0x02B4,47,Reserved,,,,Reserved address,645,55.0
+693,0x02B5,48,Reserved,,,,Reserved address,645,55.0
+694,0x02B6,49,Reserved,,,,Reserved address,645,55.0
+695,0x02B7,50,Reserved,,,,Reserved address,645,55.0
+696,0x02B8,51,Reserved,,,,Reserved address,645,55.0
+697,0x02B9,52,Reserved,,,,Reserved address,645,55.0
+698,0x02BA,53,Reserved,,,,Reserved address,645,55.0
+699,0x02BB,54,Reserved,,,,Reserved address,645,55.0
+700,0x02BC,0,Fault record storage information [K],,ULong,R,Upper 16 bits: the position of the latest record; | Lower 16 bits: total number of existing fault messages,700,2.0
+701,0x02BD,1,Fault record storage information [K],,ULong,R,Upper 16 bits: the position of the latest record; | Lower 16 bits: total number of existing fault messages,700,2.0
+702,0x02BE,0,Fault Information Query Index,,Uint,R/W,"Set the fault information index to be queried, range: 0 ~ total number of existing fault information",702,1.0
+703,0x02BF,0,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+704,0x02C0,1,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+705,0x02C1,2,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+706,0x02C2,3,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+707,0x02C3,4,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+708,0x02C4,5,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+709,0x02C5,6,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+710,0x02C6,7,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+711,0x02C7,8,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+712,0x02C8,9,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+713,0x02C9,10,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+714,0x02CA,11,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+715,0x02CB,12,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+716,0x02CC,13,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+717,0x02CD,14,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+718,0x02CE,15,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+719,0x02CF,16,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+720,0x02D0,17,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+721,0x02D1,18,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+722,0x02D2,19,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+723,0x02D3,20,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+724,0x02D4,21,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+725,0x02D5,22,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+726,0x02D6,23,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+727,0x02D7,24,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+728,0x02D8,25,Fault Record [M],,,R,See the fault record format for details.,703,26.0
+729,0x02D9,0,Run the log,,,R,See the operation log description for details,729,16.0
+730,0x02DA,1,Run the log,,,R,See the operation log description for details,729,16.0
+731,0x02DB,2,Run the log,,,R,See the operation log description for details,729,16.0
+732,0x02DC,3,Run the log,,,R,See the operation log description for details,729,16.0
+733,0x02DD,4,Run the log,,,R,See the operation log description for details,729,16.0
+734,0x02DE,5,Run the log,,,R,See the operation log description for details,729,16.0
+735,0x02DF,6,Run the log,,,R,See the operation log description for details,729,16.0
+736,0x02E0,7,Run the log,,,R,See the operation log description for details,729,16.0
+737,0x02E1,8,Run the log,,,R,See the operation log description for details,729,16.0
+738,0x02E2,9,Run the log,,,R,See the operation log description for details,729,16.0
+739,0x02E3,10,Run the log,,,R,See the operation log description for details,729,16.0
+740,0x02E4,11,Run the log,,,R,See the operation log description for details,729,16.0
+741,0x02E5,12,Run the log,,,R,See the operation log description for details,729,16.0
+742,0x02E6,13,Run the log,,,R,See the operation log description for details,729,16.0
+743,0x02E7,14,Run the log,,,R,See the operation log description for details,729,16.0
+744,0x02E8,15,Run the log,,,R,See the operation log description for details,729,16.0
+745,0x02E9,0,Reserved,,,,Reserved address,745,5.0
+746,0x02EA,1,Reserved,,,,Reserved address,745,5.0
+747,0x02EB,2,Reserved,,,,Reserved address,745,5.0
+748,0x02EC,3,Reserved,,,,Reserved address,745,5.0
+749,0x02ED,4,Reserved,,,,Reserved address,745,5.0
