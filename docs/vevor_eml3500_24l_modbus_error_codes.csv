@@ -1,0 +1,4 @@
+Code,Explain
+01H,Read-only register operated on
+03H,Write data that exceeds the acceptable range
+07H,Registers that are not allowed to be modified in the current operating mode
