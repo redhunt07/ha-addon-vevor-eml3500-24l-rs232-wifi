@@ -93,7 +93,9 @@ def load_register_definitions(csv_path: Path) -> Dict[str, RegisterDefinition]:
 
 
 DEFAULT_REGISTER_CSV = (
-    Path(__file__).resolve().parent / "docs" / "vevor_eml3500_24l_registers.csv"
+    Path(__file__).resolve().parent.parent
+    / "docs"
+    / "vevor_eml3500_24l_registers.csv"
 )
 
 

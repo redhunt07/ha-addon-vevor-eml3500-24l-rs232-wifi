@@ -12,8 +12,9 @@ import csv
 from typing import Dict, List
 
 BASE_DIR = Path(__file__).resolve().parent
-FAULT_CODES_CSV = BASE_DIR / "docs" / "vevor_eml3500_24l_fault_codes.csv"
-WARNING_CODES_CSV = BASE_DIR / "docs" / "vevor_eml3500_24l_warning_codes.csv"
+DOCS_DIR = BASE_DIR.parent / "docs"
+FAULT_CODES_CSV = DOCS_DIR / "vevor_eml3500_24l_fault_codes.csv"
+WARNING_CODES_CSV = DOCS_DIR / "vevor_eml3500_24l_warning_codes.csv"
 
 
 def _load_codes(path: Path) -> Dict[int, str]:

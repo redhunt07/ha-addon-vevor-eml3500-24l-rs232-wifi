@@ -1,8 +1,12 @@
-
 import sys
 from pathlib import Path
+
 sys.path.append(str(Path(__file__).resolve().parents[1]))
-from modbus_client import load_register_definitions, DEFAULT_REGISTER_CSV
+
+from vevor_eml3500_rs232_wifi.modbus_client import (
+    DEFAULT_REGISTER_CSV,
+    load_register_definitions,
+)
 
 
 def test_load_registers():

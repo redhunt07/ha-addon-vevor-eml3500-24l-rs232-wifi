@@ -3,7 +3,10 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from fault_decoder import decode_faults, decode_warnings  # noqa: E402
+from vevor_eml3500_rs232_wifi.fault_decoder import (
+    decode_faults,
+    decode_warnings,
+)
 
 
 def test_decode_faults():
