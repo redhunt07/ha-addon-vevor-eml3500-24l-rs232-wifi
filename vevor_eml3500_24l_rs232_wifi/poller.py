@@ -73,7 +73,7 @@ async def main(args: argparse.Namespace) -> None:
     mqtt_client: Optional[mqtt.Client] = None
     prefix = "vevor_eml3500"
     if args.mqtt_host:
-        mqtt_client = mqtt.Client()
+        mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
         if args.mqtt_username:
             mqtt_client.username_pw_set(
                 args.mqtt_username, args.mqtt_password or ""
@@ -106,7 +106,7 @@ async def main(args: argparse.Namespace) -> None:
                     mqtt_client = None
             elif args.mqtt_host:
                 try:
-                    mqtt_client = mqtt.Client()
+                    mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
                     if args.mqtt_username:
                         mqtt_client.username_pw_set(
                             args.mqtt_username, args.mqtt_password or ""
