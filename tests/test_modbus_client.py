@@ -56,3 +56,39 @@ async def test_read_register_uses_keyword_count(monkeypatch):
     client.client.read_holding_registers = fake_read
     value = await client.read_register("test")
     assert value == 42
+
+
+@pytest.mark.asyncio
+async def test_read_register_scales_without_float_error(monkeypatch):
+    client = ModbusRTUOverTCPClient("example.com")
+    client.registers = {
+        "voltage": RegisterDefinition(
+            name="voltage",
+            unit="",
+            data_format="UInt",
+            address=0,
+            count=1,
+            access="R",
+            remark="",
+            scale=0.1,
+        )
+    }
+
+    async def fake_connect():
+        return None
+
+    client.connect = fake_connect
+
+    async def fake_read(address, *, count=1, **kwargs):
+        class Resp:
+            def __init__(self):
+                self.registers = [249]
+
+            def isError(self):
+                return False
+
+        return Resp()
+
+    client.client.read_holding_registers = fake_read
+    value = await client.read_register("voltage")
+    assert value == 24.9
