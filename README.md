@@ -54,9 +54,114 @@ mqtt:
 | ----- | ------- |
 | `vevor_eml3500/faults` | Current inverter fault state (retained) |
 | `vevor_eml3500/warnings` | Current inverter warning state (retained) |
-| `vevor_eml3500/telemetry` | JSON payload containing `faults` and `warnings` |
-| `homeassistant/sensor/vevor_eml3500_faults/config` | MQTT discovery for faults sensor |
-| `homeassistant/sensor/vevor_eml3500_warnings/config` | MQTT discovery for warnings sensor |
+| `vevor_eml3500/working_mode` | Current working mode |
+| `vevor_eml3500/mains_voltage` | Mains voltage (V) |
+| `vevor_eml3500/mains_frequency` | Mains frequency (Hz) |
+| `vevor_eml3500/mains_power` | Average mains power (W) |
+| `vevor_eml3500/inverter_voltage` | Inverter output voltage (V) |
+| `vevor_eml3500/inverter_current` | Inverter output current (A) |
+| `vevor_eml3500/inverter_frequency` | Inverter output frequency (Hz) |
+| `vevor_eml3500/inverter_power` | Inverter output power (W) |
+| `vevor_eml3500/inverter_charging_power` | Inverter charging power (W) |
+| `vevor_eml3500/output_voltage` | Output voltage (V) |
+| `vevor_eml3500/output_current` | Output current (A) |
+| `vevor_eml3500/output_frequency` | Output frequency (Hz) |
+| `vevor_eml3500/output_active_power` | Output active power (W) |
+| `vevor_eml3500/output_apparent_power` | Output apparent power (VA) |
+| `vevor_eml3500/battery_voltage` | Battery voltage (V) |
+| `vevor_eml3500/battery_current` | Battery current (A) |
+| `vevor_eml3500/battery_power` | Battery power (W) |
+| `vevor_eml3500/battery_current_filter_average` | Battery current filter average (A) |
+| `vevor_eml3500/battery_soc` | Battery state of charge (%) |
+| `vevor_eml3500/pv_voltage` | PV input voltage (V) |
+| `vevor_eml3500/pv_current` | PV input current (A) |
+| `vevor_eml3500/pv_power` | PV input power (W) |
+| `vevor_eml3500/pv_charging_power` | PV charging power (W) |
+| `vevor_eml3500/inverter_charging_current` | Inverter charging current (A) |
+| `vevor_eml3500/pv_charging_current` | PV charging current (A) |
+| `vevor_eml3500/power_flow_status` | Power flow status |
+| `vevor_eml3500/load_percent` | Load percentage (%) |
+| `vevor_eml3500/dcdc_temperature` | DCDC temperature (°C) |
+| `vevor_eml3500/inverter_temperature` | Inverter temperature (°C) |
+| `vevor_eml3500/telemetry` | JSON payload containing all fields |
+| `homeassistant/sensor/vevor_eml3500_<slug>/config` | MQTT discovery for each sensor |
+
+### Telemetry payload example
+
+```json
+{
+  "faults": "OK",
+  "warnings": "OK",
+  "working_mode": "Mains mode",
+  "mains_voltage": 230.0,
+  "mains_frequency": 50.0,
+  "mains_power": 1000.0,
+  "inverter_voltage": 230.0,
+  "inverter_current": 5.0,
+  "inverter_frequency": 50.0,
+  "inverter_power": 1200.0,
+  "inverter_charging_power": 500.0,
+  "output_voltage": 230.0,
+  "output_current": 5.0,
+  "output_frequency": 50.0,
+  "output_active_power": 1000.0,
+  "output_apparent_power": 1100.0,
+  "battery_voltage": 48.0,
+  "battery_current": -10.0,
+  "battery_power": -480.0,
+  "battery_current_filter_average": -9.5,
+  "battery_soc": 80,
+  "pv_voltage": 150.0,
+  "pv_current": 4.0,
+  "pv_power": 600.0,
+  "pv_charging_power": 400.0,
+  "inverter_charging_current": 10.0,
+  "pv_charging_current": 6.0,
+  "power_flow_status": "PV connected, Mains connected, Battery charging, Load powered",
+  "load_percent": 30,
+  "dcdc_temperature": 35.0,
+  "inverter_temperature": 40.0,
+  "battery_discharge_soc_limit": 20,
+  "device_name": "VEVOR",
+  "output_mode": "single machine",
+  "output_priority": "Main-PV-Battery (UTI)",
+  "input_voltage_range": "APL",
+  "buzzer_mode": "mute",
+  "lcd_backlight": 1,
+  "lcd_return_home": 0,
+  "energy_saving_mode_switch": 0,
+  "overload_auto_restart": 1,
+  "over_temperature_auto_restart": 1,
+  "overload_bypass_enable": 0,
+  "battery_eq_mode_enable": 0,
+  "warning_mask": "OK",
+  "dry_contact": 0,
+  "output_voltage_setting": 230,
+  "output_frequency_setting": 50,
+  "battery_type": "AGM",
+  "battery_overvoltage_protection": 63.0,
+  "max_charge_voltage": 58.4,
+  "floating_charge_voltage": 54.0,
+  "mains_discharge_recovery_point": 52.0,
+  "mains_low_voltage_protection_point": 48.0,
+  "off_grid_low_voltage_protection_point": 46.0,
+  "cv_to_float_wait_time": 120,
+  "battery_charging_priority": "mains first",
+  "max_charge_current": 60,
+  "max_mains_charging_current": 30,
+  "eq_charging_voltage": 58.8,
+  "battery_eq_time": 30,
+  "eq_timeout": 180,
+  "eq_interval": 30,
+  "automatic_mains_output_enable": 1,
+  "mains_discharge_soc_protection_value": 30,
+  "mains_discharge_soc_recovery_value": 40,
+  "max_discharge_current_protection": 80,
+  "boot_mode": "local or remote",
+  "remote_switch": "remote power-on",
+  "fault_info_query_index": 0
+}
+```
 
 ## Register map
 
@@ -68,10 +173,48 @@ For each register, the poller publishes the latest value to `{prefix}/{slug}`. T
 
 Writable registers are updated by publishing to `{prefix}/set` with a JSON payload mapping slugs to the desired values. Available command slugs are:
 
-| Slug | Description | Topic | Example payload |
-| ---- | ----------- | ----- | --------------- |
-| `warnings` | Clear warning code | `{prefix}/set` | `{"warnings": 0}` |
-| `battery_discharge_soc_limit` | Set battery discharge SOC limit | `{prefix}/set` | `{"battery_discharge_soc_limit": 20}` |
+| Slug | Description | Example payload |
+| ---- | ----------- | --------------- |
+| `warnings` | Clear warning code | `{"warnings": 0}` |
+| `battery_discharge_soc_limit` | Set battery discharge SOC limit | `{"battery_discharge_soc_limit": 20}` |
+| `device_name` | Set device name | `{"device_name": "MyDevice"}` |
+| `output_mode` | Set output mode | `{"output_mode": "parallel"}` |
+| `output_priority` | Set output priority | `{"output_priority": "PV-mains-battery (SOL)"}` |
+| `input_voltage_range` | Set input voltage range | `{"input_voltage_range": "UPS"}` |
+| `buzzer_mode` | Set buzzer mode | `{"buzzer_mode": "mute"}` |
+| `lcd_backlight` | Set LCD backlight | `{"lcd_backlight": 1}` |
+| `lcd_return_home` | LCD automatically returns to home | `{"lcd_return_home": 1}` |
+| `energy_saving_mode_switch` | Toggle energy saving mode | `{"energy_saving_mode_switch": 1}` |
+| `overload_auto_restart` | Toggle overload auto restart | `{"overload_auto_restart": 1}` |
+| `over_temperature_auto_restart` | Toggle over-temperature auto restart | `{"over_temperature_auto_restart": 1}` |
+| `overload_bypass_enable` | Enable overload bypass | `{"overload_bypass_enable": 1}` |
+| `battery_eq_mode_enable` | Enable battery EQ mode | `{"battery_eq_mode_enable": 1}` |
+| `warning_mask` | Set warning mask bits | `{"warning_mask": 0}` |
+| `dry_contact` | Control dry contact | `{"dry_contact": 1}` |
+| `output_voltage_setting` | Output voltage setting | `{"output_voltage_setting": 230}` |
+| `output_frequency_setting` | Output frequency setting | `{"output_frequency_setting": 50}` |
+| `battery_type` | Set battery type | `{"battery_type": "AGM"}` |
+| `battery_overvoltage_protection` | Battery overvoltage protection | `{"battery_overvoltage_protection": 63}` |
+| `max_charge_voltage` | Maximum charge voltage | `{"max_charge_voltage": 58.4}` |
+| `floating_charge_voltage` | Floating charge voltage | `{"floating_charge_voltage": 54}` |
+| `mains_discharge_recovery_point` | Mains discharge recovery point | `{"mains_discharge_recovery_point": 52}` |
+| `mains_low_voltage_protection_point` | Mains low voltage protection | `{"mains_low_voltage_protection_point": 48}` |
+| `off_grid_low_voltage_protection_point` | Off-grid low voltage protection | `{"off_grid_low_voltage_protection_point": 46}` |
+| `cv_to_float_wait_time` | CV to float wait time (min) | `{"cv_to_float_wait_time": 120}` |
+| `battery_charging_priority` | Battery charging priority | `{"battery_charging_priority": "mains first"}` |
+| `max_charge_current` | Maximum charge current | `{"max_charge_current": 60}` |
+| `max_mains_charging_current` | Max mains charging current | `{"max_mains_charging_current": 30}` |
+| `eq_charging_voltage` | Equalization charging voltage | `{"eq_charging_voltage": 58.8}` |
+| `battery_eq_time` | Battery EQ time (min) | `{"battery_eq_time": 30}` |
+| `eq_timeout` | EQ timeout (min) | `{"eq_timeout": 180}` |
+| `eq_interval` | EQ interval (days) | `{"eq_interval": 30}` |
+| `automatic_mains_output_enable` | Automatic mains output enable | `{"automatic_mains_output_enable": 1}` |
+| `mains_discharge_soc_protection_value` | Mains discharge SOC protection (%) | `{"mains_discharge_soc_protection_value": 30}` |
+| `mains_discharge_soc_recovery_value` | Mains discharge SOC recovery (%) | `{"mains_discharge_soc_recovery_value": 40}` |
+| `max_discharge_current_protection` | Max discharge current protection | `{"max_discharge_current_protection": 80}` |
+| `boot_mode` | Boot mode | `{"boot_mode": "remote only"}` |
+| `remote_switch` | Remote switch | `{"remote_switch": "remote power-on"}` |
+| `fault_info_query_index` | Fault info query index | `{"fault_info_query_index": 0}` |
 
 ## Lovelace dashboard example
 
@@ -81,18 +224,35 @@ views:
     cards:
       - type: entities
         entities:
+          - sensor.vevor_working_mode
           - sensor.vevor_mains_voltage
           - sensor.vevor_mains_frequency
           - sensor.vevor_mains_power
           - sensor.vevor_inverter_voltage
           - sensor.vevor_inverter_current
+          - sensor.vevor_inverter_frequency
+          - sensor.vevor_inverter_power
+          - sensor.vevor_inverter_charging_power
+          - sensor.vevor_output_voltage
+          - sensor.vevor_output_current
+          - sensor.vevor_output_frequency
+          - sensor.vevor_output_active_power
+          - sensor.vevor_output_apparent_power
           - sensor.vevor_battery_voltage
           - sensor.vevor_battery_current
           - sensor.vevor_battery_power
+          - sensor.vevor_battery_current_filter_average
           - sensor.vevor_battery_soc
           - sensor.vevor_pv_voltage
           - sensor.vevor_pv_current
           - sensor.vevor_pv_power
+          - sensor.vevor_pv_charging_power
+          - sensor.vevor_inverter_charging_current
+          - sensor.vevor_pv_charging_current
+          - sensor.vevor_power_flow_status
+          - sensor.vevor_load_percent
+          - sensor.vevor_dcdc_temperature
+          - sensor.vevor_inverter_temperature
           - sensor.vevor_faults
           - sensor.vevor_warnings
       - type: gauge
@@ -107,9 +267,19 @@ views:
             name: Clear Warnings
           - entity: number.vevor_battery_discharge_soc_limit
             name: Battery SOC Limit
+          - entity: select.vevor_output_mode
+            name: Output Mode
+          - entity: number.vevor_output_voltage_setting
+            name: Output Voltage
+          - entity: number.vevor_max_charge_current
+            name: Max Charge Current
+          - entity: select.vevor_battery_type
+            name: Battery Type
+          - entity: select.vevor_remote_switch
+            name: Remote Switch
 ```
 
-To enable the `number.vevor_warnings` and `number.vevor_battery_discharge_soc_limit` entities, add the following to your `configuration.yaml`:
+To enable the control entities, add the following to your `configuration.yaml`:
 
 ```yaml
 mqtt:
@@ -128,6 +298,50 @@ mqtt:
       min: 3
       max: 30
       step: 1
+    - unique_id: vevor_output_voltage_setting
+      name: VEVOR Output Voltage
+      command_topic: "vevor_eml3500/set"
+      command_template: '{"output_voltage_setting": {{ value }} }'
+      min: 200
+      max: 240
+      step: 1
+    - unique_id: vevor_max_charge_current
+      name: VEVOR Max Charge Current
+      command_topic: "vevor_eml3500/set"
+      command_template: '{"max_charge_current": {{ value }} }'
+      min: 0
+      max: 100
+      step: 1
+  select:
+    - unique_id: vevor_output_mode
+      name: VEVOR Output Mode
+      command_topic: "vevor_eml3500/set"
+      command_template: '{"output_mode": "{{ value }}"}'
+      options:
+        - single machine
+        - parallel
+        - three-phase combination-P1
+        - three-phase combination-P2
+        - three-phase combination-P3
+    - unique_id: vevor_battery_type
+      name: VEVOR Battery Type
+      command_topic: "vevor_eml3500/set"
+      command_template: '{"battery_type": "{{ value }}"}'
+      options:
+        - AGM
+        - FLD
+        - USER
+        - Li1
+        - Li2
+        - Li3
+        - Li4
+    - unique_id: vevor_remote_switch
+      name: VEVOR Remote Switch
+      command_topic: "vevor_eml3500/set"
+      command_template: '{"remote_switch": "{{ value }}"}'
+      options:
+        - remote shutdown
+        - remote power-on
 ```
 
 ## Entities
@@ -136,18 +350,32 @@ When discovery is enabled, the following entities are created in Home Assistant:
 
 - `sensor.vevor_faults` – reports the most recent fault or `OK`.
 - `sensor.vevor_warnings` – reports the most recent warning or `OK`.
+- `sensor.vevor_working_mode` – current working mode.
 - `sensor.vevor_mains_voltage` – mains voltage.
 - `sensor.vevor_mains_frequency` – mains frequency.
 - `sensor.vevor_mains_power` – average mains power.
 - `sensor.vevor_inverter_voltage` – inverter output voltage.
 - `sensor.vevor_inverter_current` – inverter output current.
+- `sensor.vevor_inverter_frequency` – inverter output frequency.
+- `sensor.vevor_inverter_power` – inverter output power.
+- `sensor.vevor_inverter_charging_power` – inverter charging power.
+- `sensor.vevor_output_voltage` – output voltage.
+- `sensor.vevor_output_current` – output current.
+- `sensor.vevor_output_frequency` – output frequency.
+- `sensor.vevor_output_active_power` – output active power.
+- `sensor.vevor_output_apparent_power` – output apparent power.
 - `sensor.vevor_battery_voltage` – battery voltage.
 - `sensor.vevor_battery_current` – battery current.
 - `sensor.vevor_battery_power` – battery power.
+- `sensor.vevor_battery_current_filter_average` – battery current filter average.
 - `sensor.vevor_battery_soc` – battery state of charge.
 - `sensor.vevor_pv_voltage` – PV input voltage.
 - `sensor.vevor_pv_current` – PV input current.
 - `sensor.vevor_pv_power` – PV input power.
+- `sensor.vevor_pv_charging_power` – PV charging power.
+- `sensor.vevor_inverter_charging_current` – inverter charging current.
+- `sensor.vevor_pv_charging_current` – PV charging current.
+- `sensor.vevor_power_flow_status` – decoded power flow status.
 - `sensor.vevor_load_percent` – load percentage.
 - `sensor.vevor_dcdc_temperature` – DCDC temperature.
 - `sensor.vevor_inverter_temperature` – inverter temperature.
