@@ -1,0 +1,34 @@
+---
+name: Vevor EML3500 RS232 Wi-Fi bridge
+version: "0.1.0"
+slug: vevor_eml3500_rs232_wifi
+description: Polls Vevor EML3500 via RS232/WiFi bridge and publishes to MQTT.
+arch:
+  - amd64
+  - armv7
+  - armhf
+  - aarch64
+  - i386
+startup: application
+boot: auto
+init: false
+homeassistant: "2025.8.0"
+ports: {}
+options:
+  bridge_host: 192.168.1.50
+  bridge_port: 23
+  poll_interval: 60
+  mqtt:
+    host: 192.168.1.2
+    port: 1883
+    username: ""
+    password: ""
+schema:
+  bridge_host: str
+  bridge_port: int
+  poll_interval: int
+  mqtt:
+    host: str
+    port: int
+    username: str?
+    password: str?
