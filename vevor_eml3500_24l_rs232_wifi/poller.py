@@ -11,6 +11,7 @@ import paho.mqtt.client as mqtt
 
 from .modbus_client import ModbusRTUOverTCPClient
 from .fault_decoder import decode_faults, decode_warnings
+from .status_decoder import decode_working_mode, decode_power_flow
 
 
 REGISTER_MAP = {
@@ -24,6 +25,11 @@ REGISTER_MAP = {
         "name": "Warnings",
         "decoder": decode_warnings,
         "writable": True,
+    },
+    "working_mode": {
+        "register": "Working mode",
+        "name": "Working Mode",
+        "decoder": decode_working_mode,
     },
     "mains_voltage": {
         "register": "Mains voltage effective value",
@@ -50,6 +56,52 @@ REGISTER_MAP = {
         "name": "Inverter Current",
         "unit": "A",
     },
+    "inverter_frequency": {
+        "register": "Inverter frequency",
+        "name": "Inverter Frequency",
+        "unit": "Hz",
+    },
+    "inverter_power": {
+        "register": "Inverter power average",
+        "name": "Inverter Power",
+        "unit": "W",
+        "device_class": "power",
+    },
+    "inverter_charging_power": {
+        "register": "Inverter charging power",
+        "name": "Inverter Charging Power",
+        "unit": "W",
+        "device_class": "power",
+    },
+    "output_voltage": {
+        "register": "Effective value of output voltage",
+        "name": "Output Voltage",
+        "unit": "V",
+        "device_class": "voltage",
+    },
+    "output_current": {
+        "register": "Effective value of output current",
+        "name": "Output Current",
+        "unit": "A",
+        "device_class": "current",
+    },
+    "output_frequency": {
+        "register": "Output frequency",
+        "name": "Output Frequency",
+        "unit": "Hz",
+    },
+    "output_active_power": {
+        "register": "Output active power",
+        "name": "Output Active Power",
+        "unit": "W",
+        "device_class": "power",
+    },
+    "output_apparent_power": {
+        "register": "Output apparent power",
+        "name": "Output Apparent Power",
+        "unit": "VA",
+        "device_class": "power",
+    },
     "battery_voltage": {
         "register": "Average battery voltage",
         "name": "Battery Voltage",
@@ -67,6 +119,12 @@ REGISTER_MAP = {
         "name": "Battery Power",
         "unit": "W",
         "device_class": "power",
+    },
+    "battery_current_filter_average": {
+        "register": "Battery current filter average",
+        "name": "Battery Current Filter Average",
+        "unit": "A",
+        "device_class": "current",
     },
     "battery_soc": {
         "register": "Battery percentage",
@@ -91,6 +149,29 @@ REGISTER_MAP = {
         "name": "PV Power",
         "unit": "W",
         "device_class": "power",
+    },
+    "pv_charging_power": {
+        "register": "Average PV charging power",
+        "name": "PV Charging Power",
+        "unit": "W",
+        "device_class": "power",
+    },
+    "inverter_charging_current": {
+        "register": "Average value of inverter charging current",
+        "name": "Inverter Charging Current",
+        "unit": "A",
+        "device_class": "current",
+    },
+    "pv_charging_current": {
+        "register": "Average PV charging current",
+        "name": "PV Charging Current",
+        "unit": "A",
+        "device_class": "current",
+    },
+    "power_flow_status": {
+        "register": "Power flow status",
+        "name": "Power Flow Status",
+        "decoder": decode_power_flow,
     },
     "load_percent": {
         "register": "Percent of load",
@@ -133,7 +214,10 @@ async def poll_once(client: ModbusRTUOverTCPClient) -> Dict[str, Any]:
         decoder = info.get("decoder")
         if decoder:
             decoded = decoder(int(value))
-            value = ", ".join(decoded) if decoded else "OK"
+            if isinstance(decoded, list):
+                value = ", ".join(decoded) if decoded else "OK"
+            else:
+                value = decoded
         results[slug] = value
     return results
 
