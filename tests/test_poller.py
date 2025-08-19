@@ -1,7 +1,7 @@
 import sys
 import json
 from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, call
 
 import paho.mqtt.client as mqtt
 import pytest
@@ -141,16 +141,47 @@ async def test_handle_command_individual_topic():
 async def test_handle_command_publishes_state():
     modbus = AsyncMock()
     mqtt_client = MagicMock(spec=mqtt.Client)
-    modbus.read_register.return_value = 1
+
+    async def fake_read(register: str):
+        mapping = {
+            "Output mode": 1,
+            "Output priority": 2,
+            "Maximum charge voltage [B]": 57.0,
+        }
+        return mapping[register]
+
+    modbus.read_register.side_effect = fake_read
+
+    payload = json.dumps(
+        {
+            "output_mode": "parallel",
+            "output_priority": "PV-battery-mains (SBU)",
+            "max_charge_voltage": 57,
+        }
+    )
     await handle_command(
         modbus,
-        "parallel",
-        slug="output_mode",
+        payload,
         mqtt_client=mqtt_client,
         prefix="test",
     )
-    mqtt_client.publish.assert_called_once_with(
-        "test/output_mode", "parallel", retain=True
+    modbus.write_register.assert_has_awaits(
+        [
+            call("Output mode", 1.0),
+            call("Output priority", 2.0),
+            call("Maximum charge voltage [B]", 57.0),
+        ]
+    )
+    mqtt_client.publish.assert_has_calls(
+        [
+            call("test/output_mode", "parallel", retain=True),
+            call(
+                "test/output_priority",
+                "PV-battery-mains (SBU)",
+                retain=True,
+            ),
+            call("test/max_charge_voltage", "57.0", retain=True),
+        ]
     )
 
 
