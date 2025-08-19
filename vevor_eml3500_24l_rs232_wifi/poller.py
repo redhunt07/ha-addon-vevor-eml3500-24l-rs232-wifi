@@ -477,18 +477,50 @@ def publish_discovery(
         "name": "VEVOR EML3500-24L",
     }
     for slug, info in REGISTER_MAP.items():
-        topic = f"homeassistant/sensor/{prefix}_{slug}/config"
-        payload: Dict[str, Any] = {
+        writable = info.get("writable")
+        base: Dict[str, Any] = {
             "name": f"VEVOR {info['name']}",
             "state_topic": f"{prefix}/{slug}",
             "unique_id": f"{prefix}_{slug}",
             "device": device_info,
         }
-        if unit := info.get("unit"):
-            payload["unit_of_measurement"] = unit
-            payload["state_class"] = "measurement"
-        if device_class := info.get("device_class"):
-            payload["device_class"] = device_class
+        if writable:
+            command_topic = f"{prefix}/{slug}/set"
+            if info.get("encoder") and info.get("decoder"):
+                decoder = info["decoder"]
+                options: list[str] = []
+                if getattr(decoder, "__closure__", None):
+                    mapping = decoder.__closure__[0].cell_contents
+                    if isinstance(mapping, dict):
+                        options = list(mapping.values())
+                payload = {
+                    **base,
+                    "command_topic": command_topic,
+                    "options": options,
+                }
+                topic = f"homeassistant/select/{prefix}_{slug}/config"
+            else:
+                payload = {
+                    **base,
+                    "command_topic": command_topic,
+                    "min": info.get("min", 0),
+                    "max": info.get("max", 1000),
+                    "step": info.get("step", 1),
+                }
+                if unit := info.get("unit"):
+                    payload["unit_of_measurement"] = unit
+                    payload["state_class"] = "measurement"
+                if device_class := info.get("device_class"):
+                    payload["device_class"] = device_class
+                topic = f"homeassistant/number/{prefix}_{slug}/config"
+        else:
+            payload = base.copy()
+            if unit := info.get("unit"):
+                payload["unit_of_measurement"] = unit
+                payload["state_class"] = "measurement"
+            if device_class := info.get("device_class"):
+                payload["device_class"] = device_class
+            topic = f"homeassistant/sensor/{prefix}_{slug}/config"
         client.publish(topic, json.dumps(payload), retain=True)
 
 
@@ -503,26 +535,29 @@ def publish_telemetry(
 
 
 async def handle_command(
-    modbus: ModbusRTUOverTCPClient, payload: str
+    modbus: ModbusRTUOverTCPClient, payload: str, slug: str | None = None
 ) -> None:
     """Handle MQTT command payload to write registers."""
-    try:
-        data = json.loads(payload)
-    except json.JSONDecodeError:
-        return
-    if not isinstance(data, dict):
-        return
-    for slug, value in data.items():
-        if slug not in WRITABLE_REGISTERS:
+    if slug is not None:
+        data = {slug: payload}
+    else:
+        try:
+            data = json.loads(payload)
+        except json.JSONDecodeError:
+            return
+        if not isinstance(data, dict):
+            return
+    for key, value in data.items():
+        if key not in WRITABLE_REGISTERS:
             continue
-        info = REGISTER_MAP[slug]
+        info = REGISTER_MAP[key]
         encoder = info.get("encoder")
         if encoder:
             try:
                 value = encoder(value)
             except Exception:
                 continue
-        elif isinstance(value, str) and slug != "device_name":
+        elif isinstance(value, str) and key != "device_name":
             continue
         if not isinstance(value, (int, float, str)):
             continue
@@ -557,11 +592,19 @@ async def main(args: argparse.Namespace) -> None:
         else:
             publish_discovery(mqtt_client, prefix)
             mqtt_client.subscribe(f"{prefix}/set")
+            mqtt_client.subscribe(f"{prefix}/+/set")
 
             def on_message(
                 client: mqtt.Client, userdata: Any, msg: mqtt.MQTTMessage
             ) -> None:
-                asyncio.create_task(handle_command(modbus, msg.payload.decode()))
+                topic = msg.topic
+                if topic == f"{prefix}/set":
+                    asyncio.create_task(handle_command(modbus, msg.payload.decode()))
+                else:
+                    slug = topic.split("/")[-2]
+                    asyncio.create_task(
+                        handle_command(modbus, msg.payload.decode(), slug)
+                    )
 
             mqtt_client.on_message = on_message
 
@@ -593,9 +636,16 @@ async def main(args: argparse.Namespace) -> None:
                 else:
                     publish_discovery(mqtt_client, prefix)
                     mqtt_client.subscribe(f"{prefix}/set")
+                    mqtt_client.subscribe(f"{prefix}/+/set")
                     mqtt_client.on_message = (
                         lambda c, u, m: asyncio.create_task(
-                            handle_command(modbus, m.payload.decode())
+                            handle_command(
+                                modbus,
+                                m.payload.decode(),
+                                None
+                                if m.topic == f"{prefix}/set"
+                                else m.topic.split("/")[-2],
+                            )
                         )
                     )
             await asyncio.sleep(args.poll_interval)
