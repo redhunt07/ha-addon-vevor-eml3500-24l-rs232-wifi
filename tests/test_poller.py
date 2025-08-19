@@ -135,3 +135,20 @@ async def test_handle_command_individual_topic():
     modbus = AsyncMock()
     await handle_command(modbus, "parallel", slug="output_mode")
     modbus.write_register.assert_awaited_once_with("Output mode", 1.0)
+
+
+@pytest.mark.asyncio
+async def test_handle_command_publishes_state():
+    modbus = AsyncMock()
+    mqtt_client = MagicMock(spec=mqtt.Client)
+    modbus.read_register.return_value = 1
+    await handle_command(
+        modbus,
+        "parallel",
+        slug="output_mode",
+        mqtt_client=mqtt_client,
+        prefix="test",
+    )
+    mqtt_client.publish.assert_called_once_with(
+        "test/output_mode", "parallel", retain=True
+    )
