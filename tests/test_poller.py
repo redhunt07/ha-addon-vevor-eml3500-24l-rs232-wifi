@@ -2,14 +2,23 @@ import sys
 import json
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, call
+import importlib
 
 import paho.mqtt.client as mqtt
 import pytest
-import vevor_eml3500_24l_rs232_wifi.poller as poller
+
+# Ensure pymodbus provides FramerType during tests
+framer_module = importlib.import_module("pymodbus.framer")
+if not hasattr(framer_module, "FramerType"):
+    class FramerType:
+        RTU = framer_module.ModbusRtuFramer
+
+    framer_module.FramerType = FramerType
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from vevor_eml3500_24l_rs232_wifi.poller import (
+import vevor_eml3500_24l_rs232_wifi.poller as poller  # noqa: E402
+from vevor_eml3500_24l_rs232_wifi.poller import (  # noqa: E402
     poll_once,
     publish_discovery,
     publish_telemetry,
@@ -47,12 +56,15 @@ def test_publish_discovery_includes_energy_sensors():
     client = MagicMock(spec=mqtt.Client)
     publish_discovery(client, prefix="test")
     calls = {args[0]: json.loads(args[1]) for args, _ in client.publish.call_args_list}
-    energy_payload = calls[
-        "homeassistant/sensor/test_grid_import_energy/config"
-    ]
-    assert energy_payload["unit_of_measurement"] == "kWh"
-    assert energy_payload["device_class"] == "energy"
-    assert energy_payload["state_class"] == "total_increasing"
+    for slug in (
+        "grid_import_energy",
+        "pv_energy",
+        "battery_charge_energy",
+    ):
+        payload = calls[f"homeassistant/sensor/test_{slug}/config"]
+        assert payload["unit_of_measurement"] == "kWh"
+        assert payload["device_class"] == "energy"
+        assert payload["state_class"] == "total_increasing"
 
 
 def test_publish_telemetry_publishes_json():
@@ -269,3 +281,25 @@ def test_energy_state_persistence(tmp_path, monkeypatch):
     assert reloaded["grid_import_energy"] == pytest.approx(1 / 60, rel=1e-3)
     assert reloaded["pv_energy"] == pytest.approx(0.5 / 60, rel=1e-3)
     assert reloaded["battery_charge_energy"] == pytest.approx(0.2 / 60, rel=1e-3)
+
+
+def test_energy_state_multiple_poll_cycles(tmp_path, monkeypatch):
+    temp = tmp_path / "energy_state.json"
+    monkeypatch.setattr(poller, "ENERGY_STATE_FILE", temp)
+
+    # First polling cycle
+    state = load_energy_state()
+    data1 = {"mains_power": 1000.0, "pv_power": 500.0, "battery_power": -200.0}
+    update_energy_state(data1, state, 60)
+    save_energy_state(state)
+
+    # Second cycle loads previous state and accumulates more energy
+    state = load_energy_state()
+    data2 = {"mains_power": 500.0, "pv_power": 250.0, "battery_power": -100.0}
+    update_energy_state(data2, state, 60)
+    save_energy_state(state)
+
+    reloaded = load_energy_state()
+    assert reloaded["grid_import_energy"] == pytest.approx(1.5 / 60, rel=1e-3)
+    assert reloaded["pv_energy"] == pytest.approx(0.75 / 60, rel=1e-3)
+    assert reloaded["battery_charge_energy"] == pytest.approx(0.3 / 60, rel=1e-3)
