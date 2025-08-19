@@ -63,6 +63,9 @@ docker-compose.override.yml
 *.img
 *.squashfs
 
+# Runtime energy state
+energy_state.json
+
 # Home Assistant dev artifacts (se testi localmente)
 home-assistant_v2.db*
 .storage/

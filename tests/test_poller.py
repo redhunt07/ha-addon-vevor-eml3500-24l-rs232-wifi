@@ -5,6 +5,7 @@ from unittest.mock import AsyncMock, MagicMock, call
 
 import paho.mqtt.client as mqtt
 import pytest
+import vevor_eml3500_24l_rs232_wifi.poller as poller
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
@@ -13,6 +14,9 @@ from vevor_eml3500_24l_rs232_wifi.poller import (
     publish_discovery,
     publish_telemetry,
     handle_command,
+    load_energy_state,
+    save_energy_state,
+    update_energy_state,
 )
 
 
@@ -37,6 +41,18 @@ def test_publish_discovery_select_and_number():
     number_payload = calls["homeassistant/number/test_max_charge_voltage/config"]
     assert number_payload["command_topic"] == "test/max_charge_voltage/set"
     assert all(k in number_payload for k in ("min", "max", "step"))
+
+
+def test_publish_discovery_includes_energy_sensors():
+    client = MagicMock(spec=mqtt.Client)
+    publish_discovery(client, prefix="test")
+    calls = {args[0]: json.loads(args[1]) for args, _ in client.publish.call_args_list}
+    energy_payload = calls[
+        "homeassistant/sensor/test_grid_import_energy/config"
+    ]
+    assert energy_payload["unit_of_measurement"] == "kWh"
+    assert energy_payload["device_class"] == "energy"
+    assert energy_payload["state_class"] == "total_increasing"
 
 
 def test_publish_telemetry_publishes_json():
@@ -240,3 +256,16 @@ async def test_handle_command_writes_numeric_and_publishes():
     mqtt_client.publish.assert_called_once_with(
         "test/max_charge_voltage", "57.0", retain=True
     )
+
+
+def test_energy_state_persistence(tmp_path, monkeypatch):
+    temp = tmp_path / "energy_state.json"
+    monkeypatch.setattr(poller, "ENERGY_STATE_FILE", temp)
+    state = load_energy_state()
+    data = {"mains_power": 1000.0, "pv_power": 500.0, "battery_power": -200.0}
+    update_energy_state(data, state, 60)
+    save_energy_state(state)
+    reloaded = load_energy_state()
+    assert reloaded["grid_import_energy"] == pytest.approx(1 / 60, rel=1e-3)
+    assert reloaded["pv_energy"] == pytest.approx(0.5 / 60, rel=1e-3)
+    assert reloaded["battery_charge_energy"] == pytest.approx(0.2 / 60, rel=1e-3)

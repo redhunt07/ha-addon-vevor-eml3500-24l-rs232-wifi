@@ -5,7 +5,8 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
-from typing import Optional, Dict, Any
+from pathlib import Path
+from typing import Dict, Any, Optional
 
 import paho.mqtt.client as mqtt
 
@@ -448,6 +449,87 @@ WRITABLE_REGISTERS = {
     if info.get("writable")
 }
 
+ENERGY_SENSORS = {
+    "grid_import_energy": {
+        "name": "Grid Import Energy",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total_increasing",
+    },
+    "grid_export_energy": {
+        "name": "Grid Export Energy",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total_increasing",
+    },
+    "pv_energy": {
+        "name": "PV Energy",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total_increasing",
+    },
+    "battery_charge_energy": {
+        "name": "Battery Charge Energy",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total_increasing",
+    },
+    "battery_discharge_energy": {
+        "name": "Battery Discharge Energy",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total_increasing",
+    },
+}
+
+ALL_SENSORS = {**REGISTER_MAP, **ENERGY_SENSORS}
+
+ENERGY_STATE_FILE = Path("energy_state.json")
+
+
+def load_energy_state() -> Dict[str, float]:
+    """Load persistent energy values from disk."""
+    if ENERGY_STATE_FILE.exists():
+        try:
+            with ENERGY_STATE_FILE.open("r", encoding="utf-8") as fp:
+                data = json.load(fp)
+            return {slug: float(data.get(slug, 0.0)) for slug in ENERGY_SENSORS}
+        except (OSError, json.JSONDecodeError):
+            pass
+    return {slug: 0.0 for slug in ENERGY_SENSORS}
+
+
+def save_energy_state(state: Dict[str, float]) -> None:
+    """Persist energy values to disk."""
+    try:
+        with ENERGY_STATE_FILE.open("w", encoding="utf-8") as fp:
+            json.dump(state, fp)
+    except OSError:
+        pass
+
+
+def update_energy_state(
+    data: Dict[str, Any], state: Dict[str, float], interval: float
+) -> None:
+    """Integrate power readings over interval to update energies."""
+    hours = interval / 3600.0
+
+    mains_power = float(data.get("mains_power", 0.0))
+    if mains_power > 0:
+        state["grid_import_energy"] += mains_power / 1000.0 * hours
+    elif mains_power < 0:
+        state["grid_export_energy"] += -mains_power / 1000.0 * hours
+
+    pv_power = float(data.get("pv_power", 0.0))
+    if pv_power > 0:
+        state["pv_energy"] += pv_power / 1000.0 * hours
+
+    battery_power = float(data.get("battery_power", 0.0))
+    if battery_power > 0:
+        state["battery_discharge_energy"] += battery_power / 1000.0 * hours
+    elif battery_power < 0:
+        state["battery_charge_energy"] += -battery_power / 1000.0 * hours
+
 
 async def poll_once(client: ModbusRTUOverTCPClient) -> Dict[str, Any]:
     """Read all relevant registers and return slug-value mapping."""
@@ -476,7 +558,7 @@ def publish_discovery(
         "model": "EML3500-24L",
         "name": "VEVOR EML3500-24L",
     }
-    for slug, info in REGISTER_MAP.items():
+    for slug, info in ALL_SENSORS.items():
         writable = info.get("writable")
         base: Dict[str, Any] = {
             "name": f"VEVOR {info['name']}",
@@ -517,6 +599,10 @@ def publish_discovery(
             payload = base.copy()
             if unit := info.get("unit"):
                 payload["unit_of_measurement"] = unit
+            state_class = info.get("state_class")
+            if state_class:
+                payload["state_class"] = state_class
+            elif unit:
                 payload["state_class"] = "measurement"
             if device_class := info.get("device_class"):
                 payload["device_class"] = device_class
@@ -598,6 +684,7 @@ async def main(args: argparse.Namespace) -> None:
 
     mqtt_client: Optional[mqtt.Client] = None
     prefix = "vevor_eml3500"
+    energy_state = load_energy_state()
     if args.mqtt_host:
         mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
         if args.mqtt_username:
@@ -611,10 +698,11 @@ async def main(args: argparse.Namespace) -> None:
             mqtt_client = None
         else:
             data = await poll_once(modbus)
+            all_data = {**data, **energy_state}
             publish_discovery(mqtt_client, prefix)
-            for slug, value in data.items():
+            for slug, value in all_data.items():
                 mqtt_client.publish(f"{prefix}/{slug}", str(value), retain=True)
-            publish_telemetry(mqtt_client, prefix, data)
+            publish_telemetry(mqtt_client, prefix, all_data)
             mqtt_client.subscribe(f"{prefix}/set")
             mqtt_client.subscribe(f"{prefix}/+/set")
 
@@ -641,13 +729,15 @@ async def main(args: argparse.Namespace) -> None:
     try:
         while True:
             data = await poll_once(modbus)
+            update_energy_state(data, energy_state, args.poll_interval)
+            all_data = {**data, **energy_state}
             if mqtt_client:
                 try:
-                    for slug, value in data.items():
+                    for slug, value in all_data.items():
                         mqtt_client.publish(
                             f"{prefix}/{slug}", str(value), retain=True
                         )
-                    publish_telemetry(mqtt_client, prefix, data)
+                    publish_telemetry(mqtt_client, prefix, all_data)
                     mqtt_client.loop(0.1)
                 except OSError as err:  # pragma: no cover - network error
                     print(f"MQTT publish failed: {err}")
@@ -664,13 +754,12 @@ async def main(args: argparse.Namespace) -> None:
                     print(f"MQTT reconnect failed: {err}")
                     mqtt_client = None
                 else:
-                    data = await poll_once(modbus)
                     publish_discovery(mqtt_client, prefix)
-                    for slug, value in data.items():
+                    for slug, value in all_data.items():
                         mqtt_client.publish(
                             f"{prefix}/{slug}", str(value), retain=True
                         )
-                    publish_telemetry(mqtt_client, prefix, data)
+                    publish_telemetry(mqtt_client, prefix, all_data)
                     mqtt_client.subscribe(f"{prefix}/set")
                     mqtt_client.subscribe(f"{prefix}/+/set")
                     mqtt_client.on_message = (
@@ -687,6 +776,7 @@ async def main(args: argparse.Namespace) -> None:
                         )
                     )
                     mqtt_client.loop(0.1)
+            save_energy_state(energy_state)
             await asyncio.sleep(args.poll_interval)
     finally:
         await modbus.close()
