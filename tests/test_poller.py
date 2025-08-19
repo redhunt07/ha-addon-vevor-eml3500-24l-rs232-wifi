@@ -27,6 +27,18 @@ def test_publish_discovery_includes_device_metadata():
     assert data["device"]["identifiers"] == ["test"]
 
 
+def test_publish_discovery_select_and_number():
+    client = MagicMock(spec=mqtt.Client)
+    publish_discovery(client, prefix="test")
+    calls = {args[0]: json.loads(args[1]) for args, _ in client.publish.call_args_list}
+    select_payload = calls["homeassistant/select/test_output_priority/config"]
+    assert select_payload["command_topic"] == "test/output_priority/set"
+    assert "PV-mains-battery (SOL)" in select_payload["options"]
+    number_payload = calls["homeassistant/number/test_max_charge_voltage/config"]
+    assert number_payload["command_topic"] == "test/max_charge_voltage/set"
+    assert all(k in number_payload for k in ("min", "max", "step"))
+
+
 def test_publish_telemetry_publishes_json():
     client = MagicMock(spec=mqtt.Client)
     data = {"faults": "OK", "warnings": "WARN"}
@@ -116,3 +128,10 @@ async def test_handle_command_validates_input():
     modbus = AsyncMock()
     await handle_command(modbus, json.dumps({"unknown": 1, "warnings": "bad"}))
     modbus.write_register.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_handle_command_individual_topic():
+    modbus = AsyncMock()
+    await handle_command(modbus, "parallel", slug="output_mode")
+    modbus.write_register.assert_awaited_once_with("Output mode", 1.0)
