@@ -334,6 +334,53 @@ When discovery is enabled, the following entities are created in Home Assistant:
 - `sensor.vevor_dcdc_temperature` – DCDC temperature.
 - `sensor.vevor_inverter_temperature` – inverter temperature.
 
+## Energy dashboard
+
+The add-on exposes several power sensors that can feed Home Assistant's Energy dashboard:
+
+- `sensor.vevor_mains_power` – power imported from the grid
+- `sensor.vevor_pv_power` – photovoltaic (PV) production
+- `sensor.vevor_output_active_power` – load consumption
+- `sensor.vevor_battery_power` – battery charge (negative) / discharge (positive)
+
+Convert these to cumulative energy sensors using the Riemann sum integration platform:
+
+```yaml
+sensor:
+  - platform: integration
+    source: sensor.vevor_pv_power
+    name: vevor_pv_energy
+    unit_prefix: k
+    round: 2
+
+  - platform: integration
+    source: sensor.vevor_mains_power
+    name: vevor_grid_energy
+    unit_prefix: k
+    round: 2
+
+  - platform: integration
+    source: sensor.vevor_output_active_power
+    name: vevor_load_energy
+    unit_prefix: k
+    round: 2
+
+  - platform: integration
+    source: sensor.vevor_battery_power
+    name: vevor_battery_energy
+    unit_prefix: k
+    round: 2
+```
+
+To link these sensors in the Energy dashboard:
+
+1. In Home Assistant, open **Settings → Dashboards → Energy**.
+2. Under **Electricity grid**, select `sensor.vevor_grid_energy` for consumption (and return if applicable).
+3. Under **Solar production**, choose `sensor.vevor_pv_energy`.
+4. Under **Home batteries**, pick `sensor.vevor_battery_energy`.
+5. Under **Individual devices**, add `sensor.vevor_load_energy` to track load usage.
+6. Save the dashboard and allow data to accumulate.
+
 ## RS232-to-WiFi bridge troubleshooting
 
 - **Network reachability**: Verify the bridge responds on its IP and port using tools such as `telnet` or `nc`.
