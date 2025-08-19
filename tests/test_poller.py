@@ -152,3 +152,60 @@ async def test_handle_command_publishes_state():
     mqtt_client.publish.assert_called_once_with(
         "test/output_mode", "parallel", retain=True
     )
+
+
+@pytest.mark.asyncio
+async def test_poll_once_reads_numeric_and_enum_registers():
+    client = AsyncMock()
+
+    async def fake_read(name: str):
+        mapping = {
+            "Maximum charge voltage [B]": 56.0,
+            "Output priority": 1,
+        }
+        return mapping.get(name, 0)
+
+    client.read_register.side_effect = fake_read
+    data = await poll_once(client)
+
+    assert data["max_charge_voltage"] == 56.0
+    assert data["output_priority"] == "PV-mains-battery (SOL)"
+    client.read_register.assert_any_call("Maximum charge voltage [B]")
+    client.read_register.assert_any_call("Output priority")
+
+
+@pytest.mark.asyncio
+async def test_handle_command_writes_enum_and_publishes():
+    modbus = AsyncMock()
+    mqtt_client = MagicMock(spec=mqtt.Client)
+    modbus.read_register.return_value = 2
+    await handle_command(
+        modbus,
+        "PV-battery-mains (SBU)",
+        slug="output_priority",
+        mqtt_client=mqtt_client,
+        prefix="test",
+    )
+    modbus.write_register.assert_awaited_once_with("Output priority", 2.0)
+    mqtt_client.publish.assert_called_once_with(
+        "test/output_priority", "PV-battery-mains (SBU)", retain=True
+    )
+
+
+@pytest.mark.asyncio
+async def test_handle_command_writes_numeric_and_publishes():
+    modbus = AsyncMock()
+    mqtt_client = MagicMock(spec=mqtt.Client)
+    modbus.read_register.return_value = 57.0
+    await handle_command(
+        modbus,
+        json.dumps({"max_charge_voltage": 57}),
+        mqtt_client=mqtt_client,
+        prefix="test",
+    )
+    modbus.write_register.assert_awaited_once_with(
+        "Maximum charge voltage [B]", 57.0
+    )
+    mqtt_client.publish.assert_called_once_with(
+        "test/max_charge_voltage", "57.0", retain=True
+    )
