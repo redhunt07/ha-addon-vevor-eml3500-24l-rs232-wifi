@@ -1,11 +1,20 @@
 import sys
 from pathlib import Path
+import importlib
 
 import pytest
 
+# Provide missing FramerType for pymodbus when using newer versions
+framer_module = importlib.import_module("pymodbus.framer")
+if not hasattr(framer_module, "FramerType"):
+    class FramerType:
+        RTU = framer_module.ModbusRtuFramer
+
+    framer_module.FramerType = FramerType
+
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from vevor_eml3500_24l_rs232_wifi.modbus_client import (
+from vevor_eml3500_24l_rs232_wifi.modbus_client import (  # noqa: E402
     DEFAULT_REGISTER_CSV,
     RegisterDefinition,
     ModbusRTUOverTCPClient,
