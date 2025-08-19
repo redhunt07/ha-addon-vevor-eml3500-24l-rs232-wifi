@@ -296,70 +296,7 @@ views:
             name: Remote Switch
 ```
 
-To enable the control entities, add the following to your `configuration.yaml`:
-
-```yaml
-mqtt:
-  number:
-    - unique_id: vevor_warnings
-      name: VEVOR Warnings
-      command_topic: "vevor_eml3500/set"
-      command_template: '{"warnings": {{ value }} }'
-      min: 0
-      max: 0
-      step: 1
-    - unique_id: vevor_battery_discharge_soc_limit
-      name: VEVOR Battery SOC Limit
-      command_topic: "vevor_eml3500/set"
-      command_template: '{"battery_discharge_soc_limit": {{ value }} }'
-      min: 3
-      max: 30
-      step: 1
-    - unique_id: vevor_output_voltage_setting
-      name: VEVOR Output Voltage
-      command_topic: "vevor_eml3500/set"
-      command_template: '{"output_voltage_setting": {{ value }} }'
-      min: 200
-      max: 240
-      step: 1
-    - unique_id: vevor_max_charge_current
-      name: VEVOR Max Charge Current
-      command_topic: "vevor_eml3500/set"
-      command_template: '{"max_charge_current": {{ value }} }'
-      min: 0
-      max: 100
-      step: 1
-  select:
-    - unique_id: vevor_output_mode
-      name: VEVOR Output Mode
-      command_topic: "vevor_eml3500/set"
-      command_template: '{"output_mode": "{{ value }}"}'
-      options:
-        - single machine
-        - parallel
-        - three-phase combination-P1
-        - three-phase combination-P2
-        - three-phase combination-P3
-    - unique_id: vevor_battery_type
-      name: VEVOR Battery Type
-      command_topic: "vevor_eml3500/set"
-      command_template: '{"battery_type": "{{ value }}"}'
-      options:
-        - AGM
-        - FLD
-        - USER
-        - Li1
-        - Li2
-        - Li3
-        - Li4
-    - unique_id: vevor_remote_switch
-      name: VEVOR Remote Switch
-      command_topic: "vevor_eml3500/set"
-      command_template: '{"remote_switch": "{{ value }}"}'
-      options:
-        - remote shutdown
-        - remote power-on
-```
+When MQTT discovery is enabled, control entities such as `number` and `select` are created automatically; no manual configuration in `configuration.yaml` is required.
 
 ## Entities
 
