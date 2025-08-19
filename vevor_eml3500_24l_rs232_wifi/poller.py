@@ -535,9 +535,13 @@ def publish_telemetry(
 
 
 async def handle_command(
-    modbus: ModbusRTUOverTCPClient, payload: str, slug: str | None = None
+    modbus: ModbusRTUOverTCPClient,
+    payload: str,
+    slug: str | None = None,
+    mqtt_client: mqtt.Client | None = None,
+    prefix: str = "vevor_eml3500",
 ) -> None:
-    """Handle MQTT command payload to write registers."""
+    """Handle MQTT command payload to write registers and republish state."""
     if slug is not None:
         data = {slug: payload}
     else:
@@ -568,6 +572,22 @@ async def handle_command(
         except Exception:
             continue
 
+        if mqtt_client:
+            try:
+                new_value = await modbus.read_register(info["register"])
+            except Exception:
+                continue
+            decoder = info.get("decoder")
+            if decoder:
+                decoded = decoder(int(new_value))
+                if isinstance(decoded, list):
+                    new_value = ", ".join(decoded) if decoded else "OK"
+                else:
+                    new_value = decoded
+            mqtt_client.publish(
+                f"{prefix}/{key}", str(new_value), retain=True
+            )
+
 
 async def main(args: argparse.Namespace) -> None:
     modbus = ModbusRTUOverTCPClient(
@@ -590,7 +610,11 @@ async def main(args: argparse.Namespace) -> None:
             print(f"MQTT connect failed: {err}")
             mqtt_client = None
         else:
+            data = await poll_once(modbus)
             publish_discovery(mqtt_client, prefix)
+            for slug, value in data.items():
+                mqtt_client.publish(f"{prefix}/{slug}", str(value), retain=True)
+            publish_telemetry(mqtt_client, prefix, data)
             mqtt_client.subscribe(f"{prefix}/set")
             mqtt_client.subscribe(f"{prefix}/+/set")
 
@@ -598,15 +622,21 @@ async def main(args: argparse.Namespace) -> None:
                 client: mqtt.Client, userdata: Any, msg: mqtt.MQTTMessage
             ) -> None:
                 topic = msg.topic
+                payload = msg.payload.decode()
                 if topic == f"{prefix}/set":
-                    asyncio.create_task(handle_command(modbus, msg.payload.decode()))
+                    asyncio.create_task(
+                        handle_command(
+                            modbus, payload, mqtt_client=client, prefix=prefix
+                        )
+                    )
                 else:
                     slug = topic.split("/")[-2]
                     asyncio.create_task(
-                        handle_command(modbus, msg.payload.decode(), slug)
+                        handle_command(modbus, payload, slug, client, prefix)
                     )
 
             mqtt_client.on_message = on_message
+            mqtt_client.loop(0.1)
 
     try:
         while True:
@@ -634,7 +664,13 @@ async def main(args: argparse.Namespace) -> None:
                     print(f"MQTT reconnect failed: {err}")
                     mqtt_client = None
                 else:
+                    data = await poll_once(modbus)
                     publish_discovery(mqtt_client, prefix)
+                    for slug, value in data.items():
+                        mqtt_client.publish(
+                            f"{prefix}/{slug}", str(value), retain=True
+                        )
+                    publish_telemetry(mqtt_client, prefix, data)
                     mqtt_client.subscribe(f"{prefix}/set")
                     mqtt_client.subscribe(f"{prefix}/+/set")
                     mqtt_client.on_message = (
@@ -645,9 +681,12 @@ async def main(args: argparse.Namespace) -> None:
                                 None
                                 if m.topic == f"{prefix}/set"
                                 else m.topic.split("/")[-2],
+                                c,
+                                prefix,
                             )
                         )
                     )
+                    mqtt_client.loop(0.1)
             await asyncio.sleep(args.poll_interval)
     finally:
         await modbus.close()
