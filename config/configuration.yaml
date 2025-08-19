@@ -1,6 +1,0 @@
-mqtt:
-  broker: "mqtt.example.com"
-  username: "your_username"
-  password: "your_password"
-  discovery: true
-  discovery_prefix: homeassistant
