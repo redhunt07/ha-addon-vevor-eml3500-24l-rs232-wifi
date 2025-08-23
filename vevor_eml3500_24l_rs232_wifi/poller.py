@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import logging
 from pathlib import Path
 from typing import Dict, Any, Optional
 
@@ -32,6 +33,9 @@ from .status_decoder import (
     decode_remote_switch,
     encode_remote_switch,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 REGISTER_MAP = {
@@ -536,14 +540,23 @@ async def poll_once(client: ModbusRTUOverTCPClient) -> Dict[str, Any]:
 
     results: Dict[str, Any] = {}
     for slug, info in REGISTER_MAP.items():
-        value = await client.read_register(info["register"])
-        decoder = info.get("decoder")
-        if decoder:
-            decoded = decoder(int(value))
-            if isinstance(decoded, list):
-                value = ", ".join(decoded) if decoded else "OK"
+        register_name = info["register"]
+        try:
+            raw_value = await client.read_register(register_name)
+            decoder = info.get("decoder")
+            if decoder:
+                decoded = decoder(int(raw_value))
+                if isinstance(decoded, list):
+                    value = ", ".join(decoded) if decoded else "OK"
+                else:
+                    value = decoded
             else:
-                value = decoded
+                value = raw_value
+        except Exception as exc:  # noqa: BLE001
+            logger.warning(
+                "Failed to read register %s: %s; data is stale", register_name, exc
+            )
+            value = None
         results[slug] = value
     return results
 

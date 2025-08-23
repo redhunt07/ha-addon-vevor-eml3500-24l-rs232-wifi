@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, call
 import importlib
+import logging
 
 import paho.mqtt.client as mqtt
 import pytest
@@ -134,6 +135,26 @@ async def test_poll_once_reads_registers_and_decodes():
     client.read_register.assert_any_call(
         "Obtain the warning code after shield processing"
     )
+
+@pytest.mark.asyncio
+async def test_poll_once_logs_and_continues_on_error(caplog):
+    client = AsyncMock()
+
+    async def fake_read(register: str):
+        if register == "Working mode":
+            raise RuntimeError("boom")
+        return 1
+
+    client.read_register.side_effect = fake_read
+
+    with caplog.at_level(logging.WARNING):
+        data = await poll_once(client)
+
+    assert data["working_mode"] is None
+    assert data["mains_voltage"] == 1
+    assert "Working mode" in caplog.text
+    assert "stale" in caplog.text
+
 
 
 @pytest.mark.asyncio
