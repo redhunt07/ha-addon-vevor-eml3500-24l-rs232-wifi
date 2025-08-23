@@ -19,8 +19,11 @@ Home Assistant add-on to communicate with and monitor the VEVOR EML3500-24L inve
 | `poll_interval` | Time between Modbus polls in seconds | `60` |
 | `mqtt.host` | MQTT broker IP or hostname | `192.168.1.2` |
 | `mqtt.port` | MQTT broker port | `1883` |
+| `mqtt.keepalive` | MQTT keepalive interval in seconds | `60` |
 | `mqtt.username` | MQTT username (optional) | `""` |
 | `mqtt.password` | MQTT password (optional) | `""` |
+
+The `mqtt.keepalive` option controls how often the client pings the broker to keep the connection alive.
 
 ### Example add-on configuration
 
@@ -31,6 +34,7 @@ poll_interval: 60
 mqtt:
   host: 192.168.1.2
   port: 1883
+  keepalive: 60
   username: homeassistant
   password: secret
 ```
