@@ -1,6 +1,6 @@
 ---
 name: VEVOR EML3500-24L RS232 Wi-Fi bridge
-version: "0.1.1"
+version: "0.1.2"
 slug: vevor_eml3500_24l_rs232_wifi
 description: Polls VEVOR EML3500-24L via RS232/WiFi bridge and publishes to MQTT.
 arch:
@@ -12,7 +12,7 @@ arch:
 startup: application
 boot: auto
 init: false
-homeassistant: "2025.8.0"
+homeassistant: "2025.8.3"
 ports: {}
 options:
   bridge_host: 192.168.1.50
@@ -23,6 +23,7 @@ options:
     port: 1883
     username: ""
     password: ""
+    keepalive: 60  # MQTT keepalive interval in seconds
 schema:
   bridge_host: str
   bridge_port: int
@@ -32,3 +33,4 @@ schema:
     port: int
     username: str?
     password: str?
+    keepalive: int

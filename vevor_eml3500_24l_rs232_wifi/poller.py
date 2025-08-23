@@ -692,7 +692,10 @@ async def main(args: argparse.Namespace) -> None:
                 args.mqtt_username, args.mqtt_password or ""
             )
         try:
-            mqtt_client.connect(args.mqtt_host, args.mqtt_port)
+            mqtt_client.connect(
+                args.mqtt_host, args.mqtt_port, keepalive=args.mqtt_keepalive
+            )
+            mqtt_client.loop_start()
         except OSError as err:  # pragma: no cover - network error
             print(f"MQTT connect failed: {err}")
             mqtt_client = None
@@ -724,7 +727,6 @@ async def main(args: argparse.Namespace) -> None:
                     )
 
             mqtt_client.on_message = on_message
-            mqtt_client.loop(0.1)
 
     try:
         while True:
@@ -738,9 +740,9 @@ async def main(args: argparse.Namespace) -> None:
                             f"{prefix}/{slug}", str(value), retain=True
                         )
                     publish_telemetry(mqtt_client, prefix, all_data)
-                    mqtt_client.loop(0.1)
                 except OSError as err:  # pragma: no cover - network error
                     print(f"MQTT publish failed: {err}")
+                    mqtt_client.loop_stop()
                     mqtt_client = None
             elif args.mqtt_host:
                 try:
@@ -749,7 +751,10 @@ async def main(args: argparse.Namespace) -> None:
                         mqtt_client.username_pw_set(
                             args.mqtt_username, args.mqtt_password or ""
                         )
-                    mqtt_client.connect(args.mqtt_host, args.mqtt_port)
+                    mqtt_client.connect(
+                        args.mqtt_host, args.mqtt_port, keepalive=args.mqtt_keepalive
+                    )
+                    mqtt_client.loop_start()
                 except OSError as err:  # pragma: no cover - network error
                     print(f"MQTT reconnect failed: {err}")
                     mqtt_client = None
@@ -775,12 +780,12 @@ async def main(args: argparse.Namespace) -> None:
                             )
                         )
                     )
-                    mqtt_client.loop(0.1)
             save_energy_state(energy_state)
             await asyncio.sleep(args.poll_interval)
     finally:
         await modbus.close()
         if mqtt_client:
+            mqtt_client.loop_stop()
             mqtt_client.disconnect()
 
 
@@ -793,4 +798,5 @@ if __name__ == "__main__":
     parser.add_argument("--mqtt-port", type=int, default=1883)
     parser.add_argument("--mqtt-username", default="")
     parser.add_argument("--mqtt-password", default="")
+    parser.add_argument("--mqtt-keepalive", type=int, default=60)
     asyncio.run(main(parser.parse_args()))
