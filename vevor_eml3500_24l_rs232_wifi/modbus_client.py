@@ -12,11 +12,14 @@ import csv
 from dataclasses import dataclass
 from decimal import Decimal
 import inspect
+import logging
 from pathlib import Path
 from typing import Callable, Dict, Iterable, Optional
 
 from pymodbus.client import AsyncModbusTcpClient
 from pymodbus.framer import FramerType
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -110,12 +113,14 @@ class ModbusRTUOverTCPClient:
         port: int = 502,
         unit: int = 1,
         poll_interval: float = 5.0,
+        read_timeout: float = 5.0,
         registers: Optional[Dict[str, RegisterDefinition]] = None,
     ) -> None:
         self.host = host
         self.port = port
         self.unit = unit
         self.poll_interval = poll_interval
+        self.read_timeout = read_timeout
         self.client = AsyncModbusTcpClient(host, port=port, framer=FramerType.RTU)
         params = inspect.signature(
             self.client.read_holding_registers
@@ -143,31 +148,41 @@ class ModbusRTUOverTCPClient:
         if asyncio.iscoroutine(result):
             await result
 
-    async def read_register(self, name: str) -> float | str:
+    async def read_register(self, name: str, retries: int = 3) -> float | str:
         """Read a register by name and return the scaled value."""
         reg = self.registers[name]
-        await self.connect()
         kwargs = {self._slave_kwarg: self.unit} if self._slave_kwarg else {}
-        response = await self.client.read_holding_registers(
-            reg.address, count=reg.count, **kwargs
-        )
-        if response.isError():
-            raise RuntimeError(f"Read failed for {name}: {response}")
+        for attempt in range(retries):
+            try:
+                await self.connect()
+                response = await asyncio.wait_for(
+                    self.client.read_holding_registers(
+                        reg.address, count=reg.count, **kwargs
+                    ),
+                    timeout=self.read_timeout,
+                )
+                if response.isError():
+                    raise RuntimeError(f"Read failed for {name}: {response}")
 
-        if reg.data_format == "ULong":
-            value = (response.registers[0] << 16) + response.registers[1]
-        elif reg.data_format == "UInt":
-            value = response.registers[0]
-        elif reg.data_format == "Int":
-            raw = response.registers[0]
-            value = raw - 0x10000 if raw & 0x8000 else raw
-        elif reg.data_format in {"ASC", "ASCII"}:
-            data = b"".join(r.to_bytes(2, "big") for r in response.registers)
-            return data.decode(errors="ignore").rstrip("\x00")
-        else:
-            value = response.registers[0]
-        scaled = Decimal(value) * Decimal(str(reg.scale))
-        return float(scaled)
+                if reg.data_format == "ULong":
+                    value = (response.registers[0] << 16) + response.registers[1]
+                elif reg.data_format == "UInt":
+                    value = response.registers[0]
+                elif reg.data_format == "Int":
+                    raw = response.registers[0]
+                    value = raw - 0x10000 if raw & 0x8000 else raw
+                elif reg.data_format in {"ASC", "ASCII"}:
+                    data = b"".join(r.to_bytes(2, "big") for r in response.registers)
+                    return data.decode(errors="ignore").rstrip("\x00")
+                else:
+                    value = response.registers[0]
+                scaled = Decimal(value) * Decimal(str(reg.scale))
+                return float(scaled)
+            except asyncio.TimeoutError:
+                logger.warning("Timeout reading %s, retry %d", name, attempt + 1)
+                await self.close()
+                await asyncio.sleep(1)
+        raise RuntimeError(f"Failed to read register {name}")
 
     async def write_register(
         self, name: str, value: float | str, retries: int = 3
