@@ -652,6 +652,11 @@ async def handle_command(
             return
     for key, value in data.items():
         if key not in WRITABLE_REGISTERS:
+            logger.warning("Unknown writable register: %s", key)
+            if mqtt_client:
+                mqtt_client.publish(
+                    f"{prefix}/error", f"Unknown writable register: {key}"
+                )
             continue
         info = REGISTER_MAP[key]
         encoder = info.get("encoder")
@@ -668,7 +673,12 @@ async def handle_command(
             await modbus.write_register(
                 info["register"], value if isinstance(value, str) else float(value)
             )
-        except Exception:
+        except Exception as err:
+            logger.error("Write failed for %s: %s", key, err)
+            if mqtt_client:
+                mqtt_client.publish(
+                    f"{prefix}/error", f"Write failed for {key}: {err}"
+                )
             continue
 
         if mqtt_client:
