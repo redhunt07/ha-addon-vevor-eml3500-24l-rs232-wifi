@@ -694,6 +694,7 @@ async def main(args: argparse.Namespace) -> None:
         port=args.bridge_port,
         poll_interval=args.poll_interval,
     )
+    loop = asyncio.get_running_loop()
 
     mqtt_client: Optional[mqtt.Client] = None
     prefix = "vevor_eml3500"
@@ -728,15 +729,17 @@ async def main(args: argparse.Namespace) -> None:
                 topic = msg.topic
                 payload = msg.payload.decode()
                 if topic == f"{prefix}/set":
-                    asyncio.create_task(
+                    asyncio.run_coroutine_threadsafe(
                         handle_command(
                             modbus, payload, mqtt_client=client, prefix=prefix
-                        )
+                        ),
+                        loop,
                     )
                 else:
                     slug = topic.split("/")[-2]
-                    asyncio.create_task(
-                        handle_command(modbus, payload, slug, client, prefix)
+                    asyncio.run_coroutine_threadsafe(
+                        handle_command(modbus, payload, slug, client, prefix),
+                        loop,
                     )
 
             mqtt_client.on_message = on_message
@@ -781,7 +784,7 @@ async def main(args: argparse.Namespace) -> None:
                     mqtt_client.subscribe(f"{prefix}/set")
                     mqtt_client.subscribe(f"{prefix}/+/set")
                     mqtt_client.on_message = (
-                        lambda c, u, m: asyncio.create_task(
+                        lambda c, u, m: asyncio.run_coroutine_threadsafe(
                             handle_command(
                                 modbus,
                                 m.payload.decode(),
@@ -790,7 +793,8 @@ async def main(args: argparse.Namespace) -> None:
                                 else m.topic.split("/")[-2],
                                 c,
                                 prefix,
-                            )
+                            ),
+                            loop,
                         )
                     )
             save_energy_state(energy_state)
