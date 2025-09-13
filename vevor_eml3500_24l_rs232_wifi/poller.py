@@ -578,6 +578,9 @@ def publish_discovery(
             "state_topic": f"{prefix}/{slug}",
             "unique_id": f"{prefix}_{slug}",
             "device": device_info,
+            "availability_topic": f"{prefix}/availability",
+            "payload_available": "online",
+            "payload_not_available": "offline",
         }
         if writable:
             command_topic = f"{prefix}/{slug}/set"
@@ -720,6 +723,9 @@ async def main(args: argparse.Namespace) -> None:
                 args.mqtt_host, args.mqtt_port, keepalive=args.mqtt_keepalive
             )
             mqtt_client.loop_start()
+            mqtt_client.publish(
+                f"{prefix}/availability", "online", retain=True
+            )
         except OSError as err:  # pragma: no cover - network error
             print(f"MQTT connect failed: {err}")
             mqtt_client = None
@@ -781,6 +787,9 @@ async def main(args: argparse.Namespace) -> None:
                         args.mqtt_host, args.mqtt_port, keepalive=args.mqtt_keepalive
                     )
                     mqtt_client.loop_start()
+                    mqtt_client.publish(
+                        f"{prefix}/availability", "online", retain=True
+                    )
                 except OSError as err:  # pragma: no cover - network error
                     print(f"MQTT reconnect failed: {err}")
                     mqtt_client = None
@@ -812,6 +821,9 @@ async def main(args: argparse.Namespace) -> None:
     finally:
         await modbus.close()
         if mqtt_client:
+            mqtt_client.publish(
+                f"{prefix}/availability", "offline", retain=True
+            )
             mqtt_client.loop_stop()
             mqtt_client.disconnect()
 
