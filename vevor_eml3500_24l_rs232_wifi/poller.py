@@ -6,8 +6,9 @@ import argparse
 import asyncio
 import json
 import logging
+from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Tuple
 
 import paho.mqtt.client as mqtt
 
@@ -535,8 +536,8 @@ def update_energy_state(
         state["battery_charge_energy"] += -battery_power / 1000.0 * hours
 
 
-async def poll_once(client: ModbusRTUOverTCPClient) -> Dict[str, Any]:
-    """Read all relevant registers and return slug-value mapping."""
+async def poll_once(client: ModbusRTUOverTCPClient) -> Tuple[Dict[str, Any], str]:
+    """Read all relevant registers and return slug-value mapping with timestamp."""
 
     results: Dict[str, Any] = {}
     for slug, info in REGISTER_MAP.items():
@@ -558,7 +559,7 @@ async def poll_once(client: ModbusRTUOverTCPClient) -> Dict[str, Any]:
             )
             value = None
         results[slug] = value
-    return results
+    return results, datetime.utcnow().isoformat()
 
 
 def publish_discovery(
@@ -624,6 +625,18 @@ def publish_discovery(
                 payload["device_class"] = device_class
             topic = f"homeassistant/sensor/{prefix}_{slug}/config"
         client.publish(topic, json.dumps(payload), retain=True)
+    last_update_payload = {
+        "name": "VEVOR Last Update",
+        "state_topic": f"{prefix}/last_update",
+        "unique_id": f"{prefix}_last_update",
+        "device": device_info,
+        "device_class": "timestamp",
+    }
+    client.publish(
+        f"homeassistant/sensor/{prefix}_last_update/config",
+        json.dumps(last_update_payload),
+        retain=True,
+    )
 
 
 def publish_telemetry(
@@ -730,8 +743,8 @@ async def main(args: argparse.Namespace) -> None:
             print(f"MQTT connect failed: {err}")
             mqtt_client = None
         else:
-            data = await poll_once(modbus)
-            all_data = {**data, **energy_state}
+            data, last_update = await poll_once(modbus)
+            all_data = {**data, **energy_state, "last_update": last_update}
             publish_discovery(mqtt_client, prefix)
             for slug, value in all_data.items():
                 payload = "unknown" if value is None else str(value)
@@ -763,9 +776,9 @@ async def main(args: argparse.Namespace) -> None:
 
     try:
         while True:
-            data = await poll_once(modbus)
+            data, last_update = await poll_once(modbus)
             update_energy_state(data, energy_state, args.poll_interval)
-            all_data = {**data, **energy_state}
+            all_data = {**data, **energy_state, "last_update": last_update}
             if mqtt_client:
                 try:
                     for slug, value in all_data.items():

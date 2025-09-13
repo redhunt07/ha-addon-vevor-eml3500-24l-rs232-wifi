@@ -68,6 +68,14 @@ def test_publish_discovery_includes_energy_sensors():
         assert payload["state_class"] == "total_increasing"
 
 
+def test_publish_discovery_includes_last_update_sensor():
+    client = MagicMock(spec=mqtt.Client)
+    publish_discovery(client, prefix="test")
+    calls = {args[0]: json.loads(args[1]) for args, _ in client.publish.call_args_list}
+    payload = calls["homeassistant/sensor/test_last_update/config"]
+    assert payload["device_class"] == "timestamp"
+
+
 def test_publish_telemetry_publishes_json():
     client = MagicMock(spec=mqtt.Client)
     data = {"faults": "OK", "warnings": "WARN"}
@@ -109,8 +117,9 @@ async def test_poll_once_reads_registers_and_decodes():
         return mapping.get(name, 0)
 
     client.read_register.side_effect = fake_read
-    data = await poll_once(client)
+    data, last_update = await poll_once(client)
 
+    assert isinstance(last_update, str)
     assert "Battery overvoltage" in data["faults"]
     assert "Mains supply zero-crossing loss" in data["warnings"]
     assert data["working_mode"] == "Off-grid mode"
@@ -148,7 +157,7 @@ async def test_poll_once_logs_and_continues_on_error(caplog):
     client.read_register.side_effect = fake_read
 
     with caplog.at_level(logging.WARNING):
-        data = await poll_once(client)
+        data, _ = await poll_once(client)
 
     assert data["working_mode"] is None
     assert data["mains_voltage"] == 1
@@ -246,7 +255,7 @@ async def test_poll_once_reads_numeric_and_enum_registers():
         return mapping.get(name, 0)
 
     client.read_register.side_effect = fake_read
-    data = await poll_once(client)
+    data, _ = await poll_once(client)
 
     assert data["max_charge_voltage"] == 56.0
     assert data["output_priority"] == "PV-mains-battery (SOL)"
