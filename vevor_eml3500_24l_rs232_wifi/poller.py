@@ -553,7 +553,7 @@ async def poll_once(client: ModbusRTUOverTCPClient) -> Dict[str, Any]:
             else:
                 value = raw_value
         except Exception as exc:  # noqa: BLE001
-            logger.warning(
+            logger.error(
                 "Failed to read register %s: %s; data is stale", register_name, exc
             )
             value = None
@@ -728,7 +728,8 @@ async def main(args: argparse.Namespace) -> None:
             all_data = {**data, **energy_state}
             publish_discovery(mqtt_client, prefix)
             for slug, value in all_data.items():
-                mqtt_client.publish(f"{prefix}/{slug}", str(value), retain=True)
+                payload = "unknown" if value is None else str(value)
+                mqtt_client.publish(f"{prefix}/{slug}", payload, retain=True)
             publish_telemetry(mqtt_client, prefix, all_data)
             mqtt_client.subscribe(f"{prefix}/set")
             mqtt_client.subscribe(f"{prefix}/+/set")
@@ -762,8 +763,9 @@ async def main(args: argparse.Namespace) -> None:
             if mqtt_client:
                 try:
                     for slug, value in all_data.items():
+                        payload = "unknown" if value is None else str(value)
                         mqtt_client.publish(
-                            f"{prefix}/{slug}", str(value), retain=True
+                            f"{prefix}/{slug}", payload, retain=True
                         )
                     publish_telemetry(mqtt_client, prefix, all_data)
                 except OSError as err:  # pragma: no cover - network error
@@ -787,8 +789,9 @@ async def main(args: argparse.Namespace) -> None:
                 else:
                     publish_discovery(mqtt_client, prefix)
                     for slug, value in all_data.items():
+                        payload = "unknown" if value is None else str(value)
                         mqtt_client.publish(
-                            f"{prefix}/{slug}", str(value), retain=True
+                            f"{prefix}/{slug}", payload, retain=True
                         )
                     publish_telemetry(mqtt_client, prefix, all_data)
                     mqtt_client.subscribe(f"{prefix}/set")
