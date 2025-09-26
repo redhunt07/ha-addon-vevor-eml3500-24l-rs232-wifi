@@ -333,3 +333,14 @@ def test_energy_state_multiple_poll_cycles(tmp_path, monkeypatch):
     assert reloaded["grid_import_energy"] == pytest.approx(1.5 / 60, rel=1e-3)
     assert reloaded["pv_energy"] == pytest.approx(0.75 / 60, rel=1e-3)
     assert reloaded["battery_charge_energy"] == pytest.approx(0.3 / 60, rel=1e-3)
+
+
+def test_update_energy_state_handles_none_and_invalid_values():
+    state = {slug: 1.0 for slug in poller.ENERGY_SENSORS}
+    initial = state.copy()
+    data = {"mains_power": None, "pv_power": "invalid", "battery_power": None}
+
+    update_energy_state(data, state, 60)
+
+    for slug, value in state.items():
+        assert value == pytest.approx(initial[slug])
