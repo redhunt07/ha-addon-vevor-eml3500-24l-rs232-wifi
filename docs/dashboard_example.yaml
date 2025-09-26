@@ -29,6 +29,16 @@ views:
           - sensor.vevor_inverter_charging_current
           - sensor.vevor_pv_charging_current
           - sensor.vevor_power_flow_status
+          - sensor.vevor_grid_import_energy
+          - sensor.vevor_grid_export_energy
+          - sensor.vevor_pv_energy
+          - sensor.vevor_battery_charge_energy
+          - sensor.vevor_battery_discharge_energy
+          - sensor.vevor_grid_import_energy_today
+          - sensor.vevor_grid_export_energy_today
+          - sensor.vevor_pv_energy_today
+          - sensor.vevor_battery_charge_energy_today
+          - sensor.vevor_battery_discharge_energy_today
           - sensor.vevor_load_percent
           - sensor.vevor_dcdc_temperature
           - sensor.vevor_inverter_temperature
