@@ -461,11 +461,23 @@ ENERGY_SENSORS = {
         "device_class": "energy",
         "state_class": "total_increasing",
     },
+    "grid_import_energy_today": {
+        "name": "Grid Import Energy Today",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total",
+    },
     "grid_export_energy": {
         "name": "Grid Export Energy",
         "unit": "kWh",
         "device_class": "energy",
         "state_class": "total_increasing",
+    },
+    "grid_export_energy_today": {
+        "name": "Grid Export Energy Today",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total",
     },
     "pv_energy": {
         "name": "PV Energy",
@@ -473,11 +485,23 @@ ENERGY_SENSORS = {
         "device_class": "energy",
         "state_class": "total_increasing",
     },
+    "pv_energy_today": {
+        "name": "PV Energy Today",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total",
+    },
     "battery_charge_energy": {
         "name": "Battery Charge Energy",
         "unit": "kWh",
         "device_class": "energy",
         "state_class": "total_increasing",
+    },
+    "battery_charge_energy_today": {
+        "name": "Battery Charge Energy Today",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total",
     },
     "battery_discharge_energy": {
         "name": "Battery Discharge Energy",
@@ -485,6 +509,20 @@ ENERGY_SENSORS = {
         "device_class": "energy",
         "state_class": "total_increasing",
     },
+    "battery_discharge_energy_today": {
+        "name": "Battery Discharge Energy Today",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total",
+    },
+}
+
+ENERGY_SENSOR_DAILY_MAP = {
+    "grid_import_energy": "grid_import_energy_today",
+    "grid_export_energy": "grid_export_energy_today",
+    "pv_energy": "pv_energy_today",
+    "battery_charge_energy": "battery_charge_energy_today",
+    "battery_discharge_energy": "battery_discharge_energy_today",
 }
 
 ALL_SENSORS = {**REGISTER_MAP, **ENERGY_SENSORS}
@@ -503,48 +541,80 @@ def _safe_float(value: Any) -> float:
         return 0.0
 
 
-def load_energy_state() -> Dict[str, float]:
+def load_energy_state() -> Dict[str, Any]:
     """Load persistent energy values from disk."""
+    state: Dict[str, Any] = {slug: 0.0 for slug in ENERGY_SENSORS}
+    state["daily_date"] = datetime.now().date().isoformat()
     if ENERGY_STATE_FILE.exists():
         try:
             with ENERGY_STATE_FILE.open("r", encoding="utf-8") as fp:
                 data = json.load(fp)
-            return {slug: float(data.get(slug, 0.0)) for slug in ENERGY_SENSORS}
+            for slug in ENERGY_SENSORS:
+                state[slug] = _safe_float(data.get(slug, state[slug]))
+            if isinstance(data.get("daily_date"), str):
+                state["daily_date"] = data["daily_date"]
         except (OSError, json.JSONDecodeError):
             pass
-    return {slug: 0.0 for slug in ENERGY_SENSORS}
+    return state
 
 
-def save_energy_state(state: Dict[str, float]) -> None:
+def save_energy_state(state: Dict[str, Any]) -> None:
     """Persist energy values to disk."""
     try:
         with ENERGY_STATE_FILE.open("w", encoding="utf-8") as fp:
-            json.dump(state, fp)
+            payload = {
+                slug: _safe_float(state.get(slug, 0.0))
+                for slug in ENERGY_SENSORS
+            }
+            daily_date = state.get("daily_date")
+            if not isinstance(daily_date, str):
+                daily_date = datetime.now().date().isoformat()
+            payload["daily_date"] = daily_date
+            json.dump(payload, fp)
     except OSError:
         pass
 
 
 def update_energy_state(
-    data: Dict[str, Any], state: Dict[str, float], interval: float
+    data: Dict[str, Any], state: Dict[str, Any], interval: float
 ) -> None:
     """Integrate power readings over interval to update energies."""
     hours = interval / 3600.0
 
+    current_date = datetime.now().date().isoformat()
+    if state.get("daily_date") != current_date:
+        for daily_slug in ENERGY_SENSOR_DAILY_MAP.values():
+            state[daily_slug] = 0.0
+        state["daily_date"] = current_date
+
+    def _increment(slug: str, amount: float) -> None:
+        state[slug] = _safe_float(state.get(slug, 0.0)) + amount
+
     mains_power = _safe_float(data.get("mains_power", 0.0))
     if mains_power > 0:
-        state["grid_import_energy"] += mains_power / 1000.0 * hours
+        energy = mains_power / 1000.0 * hours
+        _increment("grid_import_energy", energy)
+        _increment(ENERGY_SENSOR_DAILY_MAP["grid_import_energy"], energy)
     elif mains_power < 0:
-        state["grid_export_energy"] += -mains_power / 1000.0 * hours
+        energy = -mains_power / 1000.0 * hours
+        _increment("grid_export_energy", energy)
+        _increment(ENERGY_SENSOR_DAILY_MAP["grid_export_energy"], energy)
 
     pv_power = _safe_float(data.get("pv_power", 0.0))
     if pv_power > 0:
-        state["pv_energy"] += pv_power / 1000.0 * hours
+        energy = pv_power / 1000.0 * hours
+        _increment("pv_energy", energy)
+        _increment(ENERGY_SENSOR_DAILY_MAP["pv_energy"], energy)
 
     battery_power = _safe_float(data.get("battery_power", 0.0))
     if battery_power > 0:
-        state["battery_discharge_energy"] += battery_power / 1000.0 * hours
+        energy = battery_power / 1000.0 * hours
+        _increment("battery_discharge_energy", energy)
+        _increment(ENERGY_SENSOR_DAILY_MAP["battery_discharge_energy"], energy)
     elif battery_power < 0:
-        state["battery_charge_energy"] += -battery_power / 1000.0 * hours
+        energy = -battery_power / 1000.0 * hours
+        _increment("battery_charge_energy", energy)
+        _increment(ENERGY_SENSOR_DAILY_MAP["battery_charge_energy"], energy)
 
 
 async def poll_once(client: ModbusRTUOverTCPClient) -> Tuple[Dict[str, Any], str]:

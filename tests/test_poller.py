@@ -1,5 +1,6 @@
 import sys
 import json
+from datetime import datetime
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, call
 import importlib
@@ -57,15 +58,19 @@ def test_publish_discovery_includes_energy_sensors():
     client = MagicMock(spec=mqtt.Client)
     publish_discovery(client, prefix="test")
     calls = {args[0]: json.loads(args[1]) for args, _ in client.publish.call_args_list}
-    for slug in (
-        "grid_import_energy",
-        "pv_energy",
-        "battery_charge_energy",
-    ):
+    energy_expectations = {
+        "grid_import_energy": "total_increasing",
+        "grid_import_energy_today": "total",
+        "pv_energy": "total_increasing",
+        "pv_energy_today": "total",
+        "battery_charge_energy": "total_increasing",
+        "battery_charge_energy_today": "total",
+    }
+    for slug, state_class in energy_expectations.items():
         payload = calls[f"homeassistant/sensor/test_{slug}/config"]
         assert payload["unit_of_measurement"] == "kWh"
         assert payload["device_class"] == "energy"
-        assert payload["state_class"] == "total_increasing"
+        assert payload["state_class"] == state_class
 
 
 def test_publish_discovery_includes_last_update_sensor():
@@ -311,6 +316,10 @@ def test_energy_state_persistence(tmp_path, monkeypatch):
     assert reloaded["grid_import_energy"] == pytest.approx(1 / 60, rel=1e-3)
     assert reloaded["pv_energy"] == pytest.approx(0.5 / 60, rel=1e-3)
     assert reloaded["battery_charge_energy"] == pytest.approx(0.2 / 60, rel=1e-3)
+    assert reloaded["grid_import_energy_today"] == pytest.approx(1 / 60, rel=1e-3)
+    assert reloaded["pv_energy_today"] == pytest.approx(0.5 / 60, rel=1e-3)
+    assert reloaded["battery_charge_energy_today"] == pytest.approx(0.2 / 60, rel=1e-3)
+    assert isinstance(reloaded["daily_date"], str)
 
 
 def test_energy_state_multiple_poll_cycles(tmp_path, monkeypatch):
@@ -333,14 +342,71 @@ def test_energy_state_multiple_poll_cycles(tmp_path, monkeypatch):
     assert reloaded["grid_import_energy"] == pytest.approx(1.5 / 60, rel=1e-3)
     assert reloaded["pv_energy"] == pytest.approx(0.75 / 60, rel=1e-3)
     assert reloaded["battery_charge_energy"] == pytest.approx(0.3 / 60, rel=1e-3)
+    assert reloaded["grid_import_energy_today"] == pytest.approx(1.5 / 60, rel=1e-3)
+    assert reloaded["pv_energy_today"] == pytest.approx(0.75 / 60, rel=1e-3)
+    assert reloaded["battery_charge_energy_today"] == pytest.approx(0.3 / 60, rel=1e-3)
 
 
 def test_update_energy_state_handles_none_and_invalid_values():
     state = {slug: 1.0 for slug in poller.ENERGY_SENSORS}
-    initial = state.copy()
+    state["daily_date"] = datetime.now().date().isoformat()
+    initial = {slug: state[slug] for slug in poller.ENERGY_SENSORS}
+    initial_date = state["daily_date"]
     data = {"mains_power": None, "pv_power": "invalid", "battery_power": None}
 
     update_energy_state(data, state, 60)
 
-    for slug, value in state.items():
-        assert value == pytest.approx(initial[slug])
+    for slug in poller.ENERGY_SENSORS:
+        assert state[slug] == pytest.approx(initial[slug])
+    assert state["daily_date"] == initial_date
+
+
+def test_update_energy_state_accumulates_daily_and_total(monkeypatch):
+    state = load_energy_state()
+    original_date = state["daily_date"]
+    data = {"mains_power": 1200.0, "pv_power": 300.0, "battery_power": -100.0}
+    update_energy_state(data, state, 120)
+    expected_grid = 1200.0 / 1000.0 * (120 / 3600.0)
+    expected_pv = 300.0 / 1000.0 * (120 / 3600.0)
+    expected_batt_charge = 100.0 / 1000.0 * (120 / 3600.0)
+    assert state["grid_import_energy"] == pytest.approx(expected_grid, rel=1e-3)
+    assert state["grid_import_energy_today"] == pytest.approx(expected_grid, rel=1e-3)
+    assert state["pv_energy"] == pytest.approx(expected_pv, rel=1e-3)
+    assert state["pv_energy_today"] == pytest.approx(expected_pv, rel=1e-3)
+    assert state["battery_charge_energy"] == pytest.approx(
+        expected_batt_charge, rel=1e-3
+    )
+    assert state["battery_charge_energy_today"] == pytest.approx(
+        expected_batt_charge, rel=1e-3
+    )
+    assert state["daily_date"] == original_date
+
+
+def test_update_energy_state_resets_daily_counters_when_date_changes(monkeypatch):
+    state = load_energy_state()
+    state.update(
+        {
+            "grid_import_energy_today": 5.0,
+            "pv_energy_today": 2.0,
+            "battery_charge_energy_today": 1.0,
+            "daily_date": "2024-01-01",
+        }
+    )
+
+    class FakeDateTime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            if tz is None:
+                return datetime(2024, 1, 2, 0, 0, 0)
+            return datetime(2024, 1, 2, 0, 0, 0, tzinfo=tz)
+
+    monkeypatch.setattr(poller, "datetime", FakeDateTime)
+
+    update_energy_state({"mains_power": 600.0}, state, 60)
+
+    expected_grid = 600.0 / 1000.0 * (60 / 3600.0)
+    assert state["grid_import_energy_today"] == pytest.approx(expected_grid, rel=1e-3)
+    assert state["grid_import_energy"] == pytest.approx(expected_grid, rel=1e-3)
+    assert state["pv_energy_today"] == 0.0
+    assert state["battery_charge_energy_today"] == 0.0
+    assert state["daily_date"] == "2024-01-02"
