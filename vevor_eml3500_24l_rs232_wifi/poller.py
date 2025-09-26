@@ -492,6 +492,17 @@ ALL_SENSORS = {**REGISTER_MAP, **ENERGY_SENSORS}
 ENERGY_STATE_FILE = Path("energy_state.json")
 
 
+def _safe_float(value: Any) -> float:
+    """Convert value to float, returning 0.0 if conversion fails."""
+
+    if value is None:
+        return 0.0
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return 0.0
+
+
 def load_energy_state() -> Dict[str, float]:
     """Load persistent energy values from disk."""
     if ENERGY_STATE_FILE.exists():
@@ -519,17 +530,17 @@ def update_energy_state(
     """Integrate power readings over interval to update energies."""
     hours = interval / 3600.0
 
-    mains_power = float(data.get("mains_power", 0.0))
+    mains_power = _safe_float(data.get("mains_power", 0.0))
     if mains_power > 0:
         state["grid_import_energy"] += mains_power / 1000.0 * hours
     elif mains_power < 0:
         state["grid_export_energy"] += -mains_power / 1000.0 * hours
 
-    pv_power = float(data.get("pv_power", 0.0))
+    pv_power = _safe_float(data.get("pv_power", 0.0))
     if pv_power > 0:
         state["pv_energy"] += pv_power / 1000.0 * hours
 
-    battery_power = float(data.get("battery_power", 0.0))
+    battery_power = _safe_float(data.get("battery_power", 0.0))
     if battery_power > 0:
         state["battery_discharge_energy"] += battery_power / 1000.0 * hours
     elif battery_power < 0:
