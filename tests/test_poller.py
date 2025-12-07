@@ -72,6 +72,18 @@ def test_publish_discovery_includes_energy_sensors():
         assert payload["device_class"] == "energy"
         assert payload["state_class"] == state_class
 
+    power_expectations = {
+        "grid_import_power": "power",
+        "grid_export_power": "power",
+        "battery_charge_power": "power",
+        "battery_discharge_power": "power",
+    }
+
+    for slug, device_class in power_expectations.items():
+        payload = calls[f"homeassistant/sensor/test_{slug}/config"]
+        assert payload["unit_of_measurement"] == "W"
+        assert payload["device_class"] == device_class
+
 
 def test_publish_discovery_includes_last_update_sensor():
     client = MagicMock(spec=mqtt.Client)
@@ -115,6 +127,7 @@ async def test_poll_once_reads_registers_and_decodes():
             "Equipment fault code": 1 << 2,  # Battery overvoltage
             "Obtain the warning code after shield processing": 1 << 0,
             "Working mode": 3,
+            "Average mains power": 500.0,
             "Inverter frequency": 50.0,
             "Inverter power average": 1200.0,
             "Inverter charging power": 500.0,
@@ -151,6 +164,10 @@ async def test_poll_once_reads_registers_and_decodes():
     assert data["output_frequency"] == 50.0
     assert data["output_active_power"] == 1000.0
     assert data["output_apparent_power"] == 1100.0
+    assert data["grid_import_power"] == 500.0
+    assert data["grid_export_power"] == 0.0
+    assert data["battery_charge_power"] == 0.0
+    assert data["battery_discharge_power"] == 200.0
     assert data["battery_current_filter_average"] == -2.0
     assert data["pv_charging_power"] == 400.0
     assert data["inverter_charging_current"] == 10.0
@@ -173,6 +190,17 @@ def test_format_decoded_list_truncates_long_states():
 
     assert len(text) <= 250
     assert text.endswith("...")
+
+
+def test_add_derived_power_values_handles_signs():
+    data = {"mains_power": -150.0, "battery_power": -50.0}
+
+    poller.add_derived_power_values(data)
+
+    assert data["grid_import_power"] == 0.0
+    assert data["grid_export_power"] == 150.0
+    assert data["battery_charge_power"] == 50.0
+    assert data["battery_discharge_power"] == 0.0
 
 
 @pytest.mark.asyncio

@@ -515,6 +515,29 @@ ENERGY_SENSORS = {
     },
 }
 
+DERIVED_SENSORS = {
+    "grid_import_power": {
+        "name": "Grid Import Power",
+        "unit": "W",
+        "device_class": "power",
+    },
+    "grid_export_power": {
+        "name": "Grid Export Power",
+        "unit": "W",
+        "device_class": "power",
+    },
+    "battery_charge_power": {
+        "name": "Battery Charge Power",
+        "unit": "W",
+        "device_class": "power",
+    },
+    "battery_discharge_power": {
+        "name": "Battery Discharge Power",
+        "unit": "W",
+        "device_class": "power",
+    },
+}
+
 ENERGY_SENSOR_DAILY_MAP = {
     "grid_import_energy": "grid_import_energy_today",
     "grid_export_energy": "grid_export_energy_today",
@@ -523,7 +546,7 @@ ENERGY_SENSOR_DAILY_MAP = {
     "battery_discharge_energy": "battery_discharge_energy_today",
 }
 
-ALL_SENSORS = {**REGISTER_MAP, **ENERGY_SENSORS}
+ALL_SENSORS = {**REGISTER_MAP, **ENERGY_SENSORS, **DERIVED_SENSORS}
 
 ENERGY_STATE_FILE = Path("energy_state.json")
 
@@ -548,6 +571,18 @@ def _format_decoded_list(decoded: list[str]) -> str:
     if len(text) > 250:
         return f"{text[:247]}..."
     return text
+
+
+def add_derived_power_values(data: Dict[str, Any]) -> None:
+    """Derive directional power sensors for energy dashboards."""
+
+    mains_power = _safe_float(data.get("mains_power", 0.0))
+    data["grid_import_power"] = mains_power if mains_power > 0 else 0.0
+    data["grid_export_power"] = -mains_power if mains_power < 0 else 0.0
+
+    battery_power = _safe_float(data.get("battery_power", 0.0))
+    data["battery_discharge_power"] = battery_power if battery_power > 0 else 0.0
+    data["battery_charge_power"] = -battery_power if battery_power < 0 else 0.0
 
 
 def load_energy_state() -> Dict[str, Any]:
@@ -649,6 +684,7 @@ async def poll_once(client: ModbusRTUOverTCPClient) -> Tuple[Dict[str, Any], str
             )
             value = None
         results[slug] = value
+    add_derived_power_values(results)
     return results, datetime.now(UTC).isoformat().replace("+00:00", "Z")
 
 
