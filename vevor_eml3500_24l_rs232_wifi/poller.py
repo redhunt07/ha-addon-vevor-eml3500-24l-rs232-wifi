@@ -49,7 +49,6 @@ REGISTER_MAP = {
         "register": "Obtain the warning code after shield processing",
         "name": "Warnings",
         "decoder": decode_warnings,
-        "writable": True,
     },
     "working_mode": {
         "register": "Working mode",
@@ -125,7 +124,7 @@ REGISTER_MAP = {
         "register": "Output apparent power",
         "name": "Output Apparent Power",
         "unit": "VA",
-        "device_class": "power",
+        "device_class": "apparent_power",
     },
     "battery_voltage": {
         "register": "Average battery voltage",
@@ -293,7 +292,6 @@ REGISTER_MAP = {
         "register": "Warning Mask [I]",
         "name": "Warning Mask",
         "decoder": decode_warnings,
-        "writable": True,
     },
     "dry_contact": {
         "register": "Dry contact",
@@ -541,6 +539,17 @@ def _safe_float(value: Any) -> float:
         return 0.0
 
 
+def _format_decoded_list(decoded: list[str]) -> str:
+    """Convert decoded register list to a state-safe string."""
+
+    if not decoded:
+        return "OK"
+    text = ", ".join(decoded)
+    if len(text) > 250:
+        return f"{text[:247]}..."
+    return text
+
+
 def load_energy_state() -> Dict[str, Any]:
     """Load persistent energy values from disk."""
     state: Dict[str, Any] = {slug: 0.0 for slug in ENERGY_SENSORS}
@@ -629,7 +638,7 @@ async def poll_once(client: ModbusRTUOverTCPClient) -> Tuple[Dict[str, Any], str
             if decoder:
                 decoded = decoder(int(raw_value))
                 if isinstance(decoded, list):
-                    value = ", ".join(decoded) if decoded else "OK"
+                    value = _format_decoded_list(decoded)
                 else:
                     value = decoded
             else:
@@ -640,7 +649,7 @@ async def poll_once(client: ModbusRTUOverTCPClient) -> Tuple[Dict[str, Any], str
             )
             value = None
         results[slug] = value
-    return results, datetime.now(UTC).isoformat()
+    return results, datetime.now(UTC).isoformat().replace("+00:00", "Z")
 
 
 def publish_discovery(
@@ -787,7 +796,7 @@ async def handle_command(
             if decoder:
                 decoded = decoder(int(new_value))
                 if isinstance(decoded, list):
-                    new_value = ", ".join(decoded) if decoded else "OK"
+                    new_value = _format_decoded_list(decoded)
                 else:
                     new_value = decoded
             mqtt_client.publish(
