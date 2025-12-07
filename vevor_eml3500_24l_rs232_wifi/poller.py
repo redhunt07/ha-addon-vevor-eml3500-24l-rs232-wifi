@@ -49,7 +49,6 @@ REGISTER_MAP = {
         "register": "Obtain the warning code after shield processing",
         "name": "Warnings",
         "decoder": decode_warnings,
-        "writable": True,
     },
     "working_mode": {
         "register": "Working mode",
@@ -125,7 +124,7 @@ REGISTER_MAP = {
         "register": "Output apparent power",
         "name": "Output Apparent Power",
         "unit": "VA",
-        "device_class": "power",
+        "device_class": "apparent_power",
     },
     "battery_voltage": {
         "register": "Average battery voltage",
@@ -293,7 +292,6 @@ REGISTER_MAP = {
         "register": "Warning Mask [I]",
         "name": "Warning Mask",
         "decoder": decode_warnings,
-        "writable": True,
     },
     "dry_contact": {
         "register": "Dry contact",
@@ -517,6 +515,29 @@ ENERGY_SENSORS = {
     },
 }
 
+DERIVED_SENSORS = {
+    "grid_import_power": {
+        "name": "Grid Import Power",
+        "unit": "W",
+        "device_class": "power",
+    },
+    "grid_export_power": {
+        "name": "Grid Export Power",
+        "unit": "W",
+        "device_class": "power",
+    },
+    "battery_charge_power": {
+        "name": "Battery Charge Power",
+        "unit": "W",
+        "device_class": "power",
+    },
+    "battery_discharge_power": {
+        "name": "Battery Discharge Power",
+        "unit": "W",
+        "device_class": "power",
+    },
+}
+
 ENERGY_SENSOR_DAILY_MAP = {
     "grid_import_energy": "grid_import_energy_today",
     "grid_export_energy": "grid_export_energy_today",
@@ -525,7 +546,7 @@ ENERGY_SENSOR_DAILY_MAP = {
     "battery_discharge_energy": "battery_discharge_energy_today",
 }
 
-ALL_SENSORS = {**REGISTER_MAP, **ENERGY_SENSORS}
+ALL_SENSORS = {**REGISTER_MAP, **ENERGY_SENSORS, **DERIVED_SENSORS}
 
 ENERGY_STATE_FILE = Path("energy_state.json")
 
@@ -539,6 +560,29 @@ def _safe_float(value: Any) -> float:
         return float(value)
     except (TypeError, ValueError):
         return 0.0
+
+
+def _format_decoded_list(decoded: list[str]) -> str:
+    """Convert decoded register list to a state-safe string."""
+
+    if not decoded:
+        return "OK"
+    text = ", ".join(decoded)
+    if len(text) > 250:
+        return f"{text[:247]}..."
+    return text
+
+
+def add_derived_power_values(data: Dict[str, Any]) -> None:
+    """Derive directional power sensors for energy dashboards."""
+
+    mains_power = _safe_float(data.get("mains_power", 0.0))
+    data["grid_import_power"] = mains_power if mains_power > 0 else 0.0
+    data["grid_export_power"] = -mains_power if mains_power < 0 else 0.0
+
+    battery_power = _safe_float(data.get("battery_power", 0.0))
+    data["battery_discharge_power"] = battery_power if battery_power > 0 else 0.0
+    data["battery_charge_power"] = -battery_power if battery_power < 0 else 0.0
 
 
 def load_energy_state() -> Dict[str, Any]:
@@ -629,7 +673,7 @@ async def poll_once(client: ModbusRTUOverTCPClient) -> Tuple[Dict[str, Any], str
             if decoder:
                 decoded = decoder(int(raw_value))
                 if isinstance(decoded, list):
-                    value = ", ".join(decoded) if decoded else "OK"
+                    value = _format_decoded_list(decoded)
                 else:
                     value = decoded
             else:
@@ -640,7 +684,8 @@ async def poll_once(client: ModbusRTUOverTCPClient) -> Tuple[Dict[str, Any], str
             )
             value = None
         results[slug] = value
-    return results, datetime.now(UTC).isoformat()
+    add_derived_power_values(results)
+    return results, datetime.now(UTC).isoformat().replace("+00:00", "Z")
 
 
 def publish_discovery(
@@ -787,7 +832,7 @@ async def handle_command(
             if decoder:
                 decoded = decoder(int(new_value))
                 if isinstance(decoded, list):
-                    new_value = ", ".join(decoded) if decoded else "OK"
+                    new_value = _format_decoded_list(decoded)
                 else:
                     new_value = decoded
             mqtt_client.publish(

@@ -72,6 +72,18 @@ def test_publish_discovery_includes_energy_sensors():
         assert payload["device_class"] == "energy"
         assert payload["state_class"] == state_class
 
+    power_expectations = {
+        "grid_import_power": "power",
+        "grid_export_power": "power",
+        "battery_charge_power": "power",
+        "battery_discharge_power": "power",
+    }
+
+    for slug, device_class in power_expectations.items():
+        payload = calls[f"homeassistant/sensor/test_{slug}/config"]
+        assert payload["unit_of_measurement"] == "W"
+        assert payload["device_class"] == device_class
+
 
 def test_publish_discovery_includes_last_update_sensor():
     client = MagicMock(spec=mqtt.Client)
@@ -79,6 +91,20 @@ def test_publish_discovery_includes_last_update_sensor():
     calls = {args[0]: json.loads(args[1]) for args, _ in client.publish.call_args_list}
     payload = calls["homeassistant/sensor/test_last_update/config"]
     assert payload["device_class"] == "timestamp"
+
+
+def test_publish_discovery_uses_sensor_for_warning_states():
+    client = MagicMock(spec=mqtt.Client)
+    publish_discovery(client, prefix="test")
+    calls = {args[0]: json.loads(args[1]) for args, _ in client.publish.call_args_list}
+
+    warnings_payload = calls["homeassistant/sensor/test_warnings/config"]
+    warning_mask_payload = calls["homeassistant/sensor/test_warning_mask/config"]
+
+    assert "command_topic" not in warnings_payload
+    assert warnings_payload["state_topic"] == "test/warnings"
+    assert "command_topic" not in warning_mask_payload
+    assert warning_mask_payload["state_topic"] == "test/warning_mask"
 
 
 def test_publish_telemetry_publishes_json():
@@ -101,6 +127,7 @@ async def test_poll_once_reads_registers_and_decodes():
             "Equipment fault code": 1 << 2,  # Battery overvoltage
             "Obtain the warning code after shield processing": 1 << 0,
             "Working mode": 3,
+            "Average mains power": 500.0,
             "Inverter frequency": 50.0,
             "Inverter power average": 1200.0,
             "Inverter charging power": 500.0,
@@ -125,6 +152,7 @@ async def test_poll_once_reads_registers_and_decodes():
     data, last_update = await poll_once(client)
 
     assert isinstance(last_update, str)
+    assert last_update.endswith("Z")
     assert "Battery overvoltage" in data["faults"]
     assert "Mains supply zero-crossing loss" in data["warnings"]
     assert data["working_mode"] == "Off-grid mode"
@@ -136,6 +164,10 @@ async def test_poll_once_reads_registers_and_decodes():
     assert data["output_frequency"] == 50.0
     assert data["output_active_power"] == 1000.0
     assert data["output_apparent_power"] == 1100.0
+    assert data["grid_import_power"] == 500.0
+    assert data["grid_export_power"] == 0.0
+    assert data["battery_charge_power"] == 0.0
+    assert data["battery_discharge_power"] == 200.0
     assert data["battery_current_filter_average"] == -2.0
     assert data["pv_charging_power"] == 400.0
     assert data["inverter_charging_current"] == 10.0
@@ -149,6 +181,27 @@ async def test_poll_once_reads_registers_and_decodes():
     client.read_register.assert_any_call(
         "Obtain the warning code after shield processing"
     )
+
+
+def test_format_decoded_list_truncates_long_states():
+    decoded = [f"warning {i}" for i in range(40)]
+
+    text = poller._format_decoded_list(decoded)
+
+    assert len(text) <= 250
+    assert text.endswith("...")
+
+
+def test_add_derived_power_values_handles_signs():
+    data = {"mains_power": -150.0, "battery_power": -50.0}
+
+    poller.add_derived_power_values(data)
+
+    assert data["grid_import_power"] == 0.0
+    assert data["grid_export_power"] == 150.0
+    assert data["battery_charge_power"] == 50.0
+    assert data["battery_discharge_power"] == 0.0
+
 
 @pytest.mark.asyncio
 async def test_poll_once_logs_and_continues_on_error(caplog):
@@ -175,7 +228,6 @@ async def test_poll_once_logs_and_continues_on_error(caplog):
 @pytest.mark.parametrize(
     "payload,register,expected",
     [
-        ({"warnings": 0}, "Obtain the warning code after shield processing", 0.0),
         ({"output_mode": "parallel"}, "Output mode", 1.0),
         ({"device_name": "MyDevice"}, "Device name", "MyDevice"),
     ],
