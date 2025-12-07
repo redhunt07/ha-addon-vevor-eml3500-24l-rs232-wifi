@@ -6,7 +6,7 @@ import argparse
 import asyncio
 import json
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Dict, Any, Optional, Tuple
 
@@ -640,7 +640,7 @@ async def poll_once(client: ModbusRTUOverTCPClient) -> Tuple[Dict[str, Any], str
             )
             value = None
         results[slug] = value
-    return results, datetime.utcnow().isoformat()
+    return results, datetime.now(UTC).isoformat()
 
 
 def publish_discovery(
