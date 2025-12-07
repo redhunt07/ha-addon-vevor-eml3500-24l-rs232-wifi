@@ -1,0 +1,79 @@
+type: custom:energy-flow-card-plus
+title: Sinòttico Fotovoltaico
+use_new_flow_rate_model: true
+energy_date_selection: false
+clickable_entities: true
+display_zero_lines: false
+wh_kwh_threshold: 1000
+wh_decimals: 2
+kwh_decimals: 2
+min_flow_rate: 1
+max_flow_rate: 6
+min_expected_energy: 0
+max_expected_energy: 420
+# Replace the `sensor.vevor_...` prefix with your configured MQTT prefix if different.
+entities:
+  solar:
+    name: Fotovoltaico
+    icon: mdi:white-balance-sunny
+    color: "#FDD835"
+    color_icon: true
+    color_value: true
+    display_zero_state: true
+    secondary_info:
+      unit_of_measurement: W
+      icon: mdi:flash
+      entity: sensor.vevor_pv_power
+    entity: sensor.vevor_pv_energy_today
+  home:
+    name: Carichi
+    icon: mdi:home-lightning-bolt
+    color_icon: true
+    color_value: true
+    secondary_info:
+      unit_of_measurement: W
+      icon: mdi:flash
+      entity: sensor.vevor_output_active_power
+  grid:
+    name: Rete
+    icon: mdi:transmission-tower
+    color:
+      consumption: "#42A5F5"
+      production: "#66BB6A"
+    color_circle: consumption
+    color_icon: true
+    entity:
+      consumption: sensor.vevor_grid_import_energy_today
+      production: sensor.vevor_grid_export_energy_today
+    secondary_info:
+      entity: sensor.vevor_grid_import_power
+      unit_of_measurement: W
+      icon: mdi:flash
+  battery:
+    name: Batteria
+    state_of_charge: sensor.vevor_battery_soc
+    state_of_charge_decimals: 0
+    color:
+      production: "#26C6DA"  # discharge
+      consumption: "#FFB300"  # charge
+    color_icon: true
+    color_state_of_charge_value: true
+    entity:
+      production: sensor.vevor_battery_discharge_energy_today
+      consumption: sensor.vevor_battery_charge_energy_today
+    secondary_info:
+      entity: sensor.vevor_battery_current
+      unit_of_measurement: A
+      icon: mdi:current-dc
+    use_metadata: false
+  fossil_fuel_percentage:
+    show: false
+card_mod:
+  style: |
+    ha-card{
+      --ha-card-border-radius:18px;
+      backdrop-filter:blur(14px) saturate(1.1);
+      background:rgba(30,32,39,.55);
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow:0 10px 32px rgba(0,0,0,.45);
+    }

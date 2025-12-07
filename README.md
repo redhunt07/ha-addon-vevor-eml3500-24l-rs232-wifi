@@ -171,6 +171,10 @@ mqtt:
 
 The complete register table is available in [docs/registers.md](docs/registers.md).
 
+## Lovelace energy flow card example
+
+If you use [`custom:energy-flow-card-plus`](https://github.com/flixlix/energy-flow-card-plus), you can start from the example in [docs/energy_flow_card_plus.yaml](docs/energy_flow_card_plus.yaml). It references the directional grid/battery sensors (import/export and charge/discharge) added in version 0.1.12 so the card and the Home Assistant energy dashboard both display positive-only values.
+
 ## Writable entities
 
 For each register, the poller publishes the latest value to `{prefix}/{slug}`. The default prefix is `vevor_eml3500`, so the mains voltage is exposed on `vevor_eml3500/mains_voltage`.
