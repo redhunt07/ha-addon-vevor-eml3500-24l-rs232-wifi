@@ -9,6 +9,10 @@ Home Assistant add-on to communicate with and monitor the VEVOR EML3500-24L inve
 - Descrizioni e attributi in italiano visibili da Home Assistant per tutti i sensori/controlli.
 - Contatori energetici estesi per distinguere quanta energia proviene da rete, FV o batteria e dove viene indirizzata (utenze o batteria), con versioni giornaliere che si azzerano a mezzanotte.
 
+## Novità 0.1.16
+
+- La mappa registri ora carica automaticamente il file CSV completo (`vevor_eml3500_24l_registers_fully_expanded.csv`), generando sensori e controlli MQTT per l'intera tabella Modbus (al netto degli indirizzi riservati). Questo permette di visualizzare in Home Assistant tutti i setpoint documentati dall'inverter senza doverli dichiarare manualmente.
+
 ## Installation
 
 1. In Home Assistant, open **Settings → Add-ons → Add-on Store**.
