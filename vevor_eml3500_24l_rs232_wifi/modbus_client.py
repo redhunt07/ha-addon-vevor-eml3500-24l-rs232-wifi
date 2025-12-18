@@ -70,7 +70,10 @@ def _parse_int(row: Dict[str, str], *keys: str, default: int = 0) -> int:
         try:
             return int(raw)
         except ValueError:
-            continue
+            try:
+                return int(float(raw))
+            except ValueError:
+                continue
     return default
 
 
@@ -107,6 +110,15 @@ def load_register_definitions(csv_path: Path) -> Dict[str, RegisterDefinition]:
             access = (row.get("Read/Write") or "").strip()
             remark = (row.get("Remark") or "").replace("\n", " ").strip()
             scale = _parse_scale(unit)
+            register_index = _parse_int(row, "RegisterIndex", default=0)
+
+            # The fully expanded CSV repeats each multi-register entry with a
+            # ``RegisterIndex`` column. We only want to keep the first (index 0)
+            # so we don't overwrite the base start address with the second word
+            # of a ULong or similar multi-register field.
+            if name in registers and register_index > 0:
+                continue
+
             registers[name] = RegisterDefinition(
                 name=name,
                 unit=unit,
@@ -186,6 +198,16 @@ class ModbusRTUOverTCPClient:
                 )
                 if response.isError():
                     raise RuntimeError(f"Read failed for {name}: {response}")
+
+                if not getattr(response, "registers", None):
+                    raise RuntimeError(
+                        f"No data returned for {name} at {reg.address}"
+                    )
+                if len(response.registers) < reg.count:
+                    raise RuntimeError(
+                        f"Expected {reg.count} registers for {name} but received"
+                        f" {len(response.registers)}"
+                    )
 
                 if reg.data_format == "ULong":
                     value = (response.registers[0] << 16) + response.registers[1]
