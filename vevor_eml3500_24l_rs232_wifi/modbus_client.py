@@ -166,17 +166,24 @@ class ModbusRTUOverTCPClient:
 
                 if reg.data_format == "ULong":
                     value = (response.registers[0] << 16) + response.registers[1]
-                elif reg.data_format == "UInt":
+                    scaled = Decimal(value) * Decimal(str(reg.scale))
+                    return float(scaled)
+                if reg.data_format == "UInt":
                     value = response.registers[0]
-                elif reg.data_format == "Int":
+                    scaled = Decimal(value) * Decimal(str(reg.scale))
+                    return float(scaled)
+                if reg.data_format == "Int":
                     raw = response.registers[0]
                     value = raw - 0x10000 if raw & 0x8000 else raw
-                elif reg.data_format in {"ASC", "ASCII"}:
+                    scaled = Decimal(value) * Decimal(str(reg.scale))
+                    return float(scaled)
+                if reg.data_format in {"ASC", "ASCII"}:
                     data = b"".join(r.to_bytes(2, "big") for r in response.registers)
                     return data.decode(errors="ignore").rstrip("\x00")
-                else:
-                    value = response.registers[0]
-                scaled = Decimal(value) * Decimal(str(reg.scale))
+                if reg.count > 1:
+                    scale = Decimal(str(reg.scale))
+                    return [float(Decimal(val) * scale) for val in response.registers]
+                scaled = Decimal(response.registers[0]) * Decimal(str(reg.scale))
                 return float(scaled)
             except asyncio.TimeoutError:
                 logger.warning("Timeout reading %s, retry %d", name, attempt + 1)
