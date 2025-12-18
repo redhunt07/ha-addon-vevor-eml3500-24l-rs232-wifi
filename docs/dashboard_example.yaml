@@ -1,1425 +1,1410 @@
-views:
-  - title: Home
-    type: sections
-    badges: []
-    sections:
-      - type: grid
-        columns: 2
-        cards:
-          - type: vertical-stack
-            cards:
-              - type: heading
-                heading: Meteo
-                heading_style: title
-              - type: custom:mushroom-chips-card
-                chips:
-                  - type: template
-                    entity: sensor.gw1100a_outdoor_temperature
-                    icon: mdi:thermometer
-                    content: >-
-                      {{ states('sensor.gw1100a_outdoor_temperature')|round(1)
-                      }}°C
-                    icon_color: >-
-                      {% set t =
-                      states('sensor.gw1100a_outdoor_temperature')|float(0) %}
-                      {% if t >= 30 %}red{% elif t >= 22 %}amber{% elif t >= 15
-                      %}green{% elif t >= 7 %}teal{% else %}blue{% endif %}
-                    tap_action:
-                      action: more-info
-                  - type: template
-                    entity: sensor.gw1100a_humidity
-                    icon: mdi:water-percent
-                    content: '{{ states(''sensor.gw1100a_humidity'')|int(0) }}%'
-                    icon_color: >-
-                      {% set h = states('sensor.gw1100a_humidity')|int(0) %} {%
-                      if h >= 80 %}blue{% elif h >= 60 %}teal{% elif h >= 40
-                      %}green{% else %}amber{% endif %}
-                    tap_action:
-                      action: more-info
-                  - type: template
-                    entity: sensor.gw1100a_absolute_pressure
-                    icon: mdi:gauge
-                    content: >-
-                      {{ states('sensor.gw1100a_absolute_pressure')|round(1) }}
-                      hPa
-                    icon_color: grey
-                    tap_action:
-                      action: more-info
-                  - type: template
-                    entity: sensor.gw1100a_wind_speed
-                    icon: mdi:weather-windy
-                    content: >-
-                      {% set spd = states('sensor.gw1100a_wind_speed')|float(0)
-                      %} {% set deg =
-                      states('sensor.gw1100a_wind_direction')|float(0) %} {% set
-                      dirs =
-                      ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW']
-                      %} {% set idx = ((deg/22.5) + 0.5)|int % 16 %} {{
-                      spd|round(0) }} km/h {{ dirs[idx] }}
-                    icon_color: >-
-                      {% set spd = states('sensor.gw1100a_wind_speed')|float(0)
-                      %} {% if spd >= 40 %}purple{% elif spd >= 25 %}amber{%
-                      elif spd > 0 %}blue{% else %}grey{% endif %}
-                    tap_action:
-                      action: more-info
-                  - type: template
-                    entity: sensor.gw1100a_wind_gust
-                    icon: mdi:weather-windy
-                    content: >-
-                      Gust: {{ states('sensor.gw1100a_wind_gust')|round(0) }}
-                      km/h
-                    icon_color: >-
-                      {% set g = states('sensor.gw1100a_wind_gust')|float(0) %}
-                      {% if g >= 50 %}purple{% elif g >= 30 %}amber{% elif g > 0
-                      %}blue{% else %}grey{% endif %}
-                    tap_action:
-                      action: more-info
-                  - type: template
-                    entity: sensor.gw1100a_rain_rate
-                    icon: mdi:weather-rainy
-                    content: '{{ states(''sensor.gw1100a_rain_rate'')|round(1) }} mm/h'
-                    icon_color: >-
-                      {% set r = states('sensor.gw1100a_rain_rate')|float(0) %}
-                      {% if r >= 10 %}blue{% elif r >= 2 %}teal{% elif r > 0
-                      %}green{% else %}grey{% endif %}
-                    tap_action:
-                      action: more-info
-                  - type: template
-                    entity: sensor.gw1100a_daily_rain_rate
-                    icon: mdi:weather-pouring
-                    content: >-
-                      {{ states('sensor.gw1100a_daily_rain_rate')|round(1) }} mm
-                      oggi
-                    icon_color: >-
-                      {% set d =
-                      states('sensor.gw1100a_daily_rain_rate')|float(0) %} {% if
-                      d >= 20 %}blue{% elif d >= 5 %}teal{% elif d > 0 %}green{%
-                      else %}grey{% endif %}
-                    tap_action:
-                      action: more-info
-                  - type: template
-                    entity: sensor.gw1100a_uv_index
-                    icon: mdi:weather-sunny-alert
-                    content: UV {{ states('sensor.gw1100a_uv_index')|int(0) }}
-                    icon_color: >-
-                      {% set uv = states('sensor.gw1100a_uv_index')|int(0) %} {%
-                      if uv >= 8 %}red{% elif uv >= 6 %}amber{% elif uv >= 3
-                      %}yellow{% else %}green{% endif %}
-                    tap_action:
-                      action: more-info
-                card_mod:
-                  style: |
-                    ha-card{
-                      --ha-card-border-radius:18px;
-                      backdrop-filter:blur(14px) saturate(1.1);
-                      background:rgba(30,32,39,.55);
-                      border:1px solid rgba(255,255,255,.08);
-                      box-shadow:0 10px 32px rgba(0,0,0,.45);
-                    }
-          - type: weather-forecast
-            entity: weather.forecast_casa
-            show_current: true
-            show_forecast: true
-            forecast_type: daily
-            card_mod:
-              style: |
-                ha-card{
-                  --ha-card-border-radius:18px;
-                  backdrop-filter:blur(14px) saturate(1.1);
-                  background:rgba(30,32,39,.55);
-                  border:1px solid rgba(255,255,255,.08);
-                  box-shadow:0 10px 32px rgba(0,0,0,.45);
-                }
-      - type: grid
-        columns: 2
-        cards:
-          - type: vertical-stack
-            cards:
-              - type: markdown
-                content: '## Luci Casa'
-                card_mod:
-                  style: |
-                    ha-card {
-                      background: rgba(0,0,0,0);
-                      box-shadow: none;
-                      padding-bottom: 0;
-                    }
-              - type: grid
-                columns: 3
-                square: false
-                cards:
-                  - type: custom:mushroom-template-card
-                    entity: switch.0x70ac08fffebd3138
-                    primary: Luce Salotto
-                    secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
-                    icon: >-
-                      {{ 'mdi:lightbulb-on' if is_state(entity,'on') else
-                      'mdi:lightbulb-off' }}
-                    icon_color: '{{ ''amber'' if is_state(entity,''on'') else ''grey'' }}'
-                    layout: vertical
-                    tap_action:
-                      action: toggle
-                    hold_action:
-                      action: more-info
-                    double_tap_action:
-                      action: call-service
-                      service: homeassistant.turn_off
-                      data:
-                        entity_id: group.luci_da_spegnere
-                    badge_icon: >-
-                      {{ 'mdi:weather-night' if
-                      is_state('input_boolean.modalita_notte','on') else null }}
-                    badge_color: indigo
-                    card_mod:
-                      style: |
-                        ha-card{
-                          --ha-card-border-radius:18px;
-                          backdrop-filter:blur(14px) saturate(1.1);
-                          background:rgba(30,32,39,.55);
-                          border:1px solid rgba(255,255,255,.08);
-                          box-shadow:0 10px 32px rgba(0,0,0,.45);
-                        }
-                        mushroom-shape-icon{
-                          filter:
-                            [[[
-                              return (states['switch.0x70ac08fffebd3138'].state === 'on')
-                                ? 'drop-shadow(0 0 8px rgba(255,193,7,.6))'
-                                : 'none';
-                            ]]];
-                        }
-                  - type: custom:mushroom-template-card
-                    entity: switch.0x70ac08fffebfa4d6
-                    primary: Luce Bagno
-                    secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
-                    icon: >-
-                      {{ 'mdi:lightbulb-on' if is_state(entity,'on') else
-                      'mdi:lightbulb-off' }}
-                    icon_color: '{{ ''amber'' if is_state(entity,''on'') else ''grey'' }}'
-                    layout: vertical
-                    tap_action:
-                      action: toggle
-                    hold_action:
-                      action: more-info
-                    double_tap_action:
-                      action: call-service
-                      service: homeassistant.turn_off
-                      data:
-                        entity_id: group.luci_da_spegnere
-                    badge_icon: >-
-                      {{ 'mdi:weather-night' if
-                      is_state('input_boolean.modalita_notte','on') else null }}
-                    badge_color: indigo
-                    card_mod:
-                      style: |
-                        ha-card{
-                          --ha-card-border-radius:18px;
-                          backdrop-filter:blur(14px) saturate(1.1);
-                          background:rgba(30,32,39,.55);
-                          border:1px solid rgba(255,255,255,.08);
-                          box-shadow:0 10px 32px rgba(0,0,0,.45);
-                        }
-                        mushroom-shape-icon{
-                          filter:
-                            [[[
-                              return (states['switch.0x70ac08fffebfa4d6'].state === 'on')
-                                ? 'drop-shadow(0 0 8px rgba(255,193,7,.6))'
-                                : 'none';
-                            ]]];
-                        }
-                  - type: custom:mushroom-template-card
-                    entity: switch.luce_studio
-                    primary: Luce Studio
-                    secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
-                    icon: >-
-                      {{ 'mdi:lightbulb-on' if is_state(entity,'on') else
-                      'mdi:lightbulb-off' }}
-                    icon_color: '{{ ''amber'' if is_state(entity,''on'') else ''grey'' }}'
-                    layout: vertical
-                    tap_action:
-                      action: toggle
-                    hold_action:
-                      action: more-info
-                    double_tap_action:
-                      action: call-service
-                      service: homeassistant.turn_off
-                      data:
-                        entity_id: group.luci_da_spegnere
-                    badge_icon: >-
-                      {{ 'mdi:weather-night' if
-                      is_state('input_boolean.modalita_notte','on') else null }}
-                    badge_color: indigo
-                    card_mod:
-                      style: |
-                        ha-card{
-                          --ha-card-border-radius:18px;
-                          backdrop-filter:blur(14px) saturate(1.1);
-                          background:rgba(30,32,39,.55);
-                          border:1px solid rgba(255,255,255,.08);
-                          box-shadow:0 10px 32px rgba(0,0,0,.45);
-                        }
-                        mushroom-shape-icon{
-                          filter:
-                            [[[
-                              return (states['switch.luce_studio'].state === 'on')
-                                ? 'drop-shadow(0 0 8px rgba(255,193,7,.6))'
-                                : 'none';
-                            ]]];
-                        }
-                  - type: custom:mushroom-template-card
-                    entity: switch.luce_camera
-                    primary: Luce Camera
-                    secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
-                    icon: >-
-                      {{ 'mdi:lightbulb-on' if is_state(entity,'on') else
-                      'mdi:lightbulb-off' }}
-                    icon_color: '{{ ''amber'' if is_state(entity,''on'') else ''grey'' }}'
-                    layout: vertical
-                    tap_action:
-                      action: toggle
-                    hold_action:
-                      action: more-info
-                    double_tap_action:
-                      action: call-service
-                      service: homeassistant.turn_off
-                      data:
-                        entity_id: group.luci_da_spegnere
-                    badge_icon: >-
-                      {{ 'mdi:weather-night' if
-                      is_state('input_boolean.modalita_notte','on') else null }}
-                    badge_color: indigo
-                    card_mod:
-                      style: |
-                        ha-card{
-                          --ha-card-border-radius:18px;
-                          backdrop-filter:blur(14px) saturate(1.1);
-                          background:rgba(30,32,39,.55);
-                          border:1px solid rgba(255,255,255,.08);
-                          box-shadow:0 10px 32px rgba(0,0,0,.45);
-                        }
-                        mushroom-shape-icon{
-                          filter:
-                            [[[
-                              return (states['switch.luce_camera'].state === 'on')
-                                ? 'drop-shadow(0 0 8px rgba(255,193,7,.6))'
-                                : 'none';
-                            ]]];
-                        }
-                  - type: custom:mushroom-template-card
-                    entity: switch.0xf4b3b1fffe45505c
-                    primary: Comodino SX
-                    secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
-                    icon: >-
-                      {{ 'mdi:lamp' if is_state(entity,'on') else
-                      'mdi:lamp-outline' }}
-                    icon_color: '{{ ''amber'' if is_state(entity,''on'') else ''grey'' }}'
-                    badge_icon: mdi:alpha-l-box
-                    badge_color: '{{ ''amber'' if is_state(entity,''on'') else ''grey'' }}'
-                    layout: vertical
-                    tap_action:
-                      action: toggle
-                    hold_action:
-                      action: more-info
-                    double_tap_action:
-                      action: call-service
-                      service: homeassistant.turn_off
-                      data:
-                        entity_id:
-                          - switch.0xf4b3b1fffe45505c
-                          - switch.0x70ac08fffebfde33
-                    card_mod:
-                      style: |
-                        ha-card{
-                          --ha-card-border-radius:18px;
-                          backdrop-filter:blur(14px) saturate(1.1);
-                          background:rgba(30,32,39,.55);
-                          border:1px solid rgba(255,255,255,.08);
-                          box-shadow:0 10px 32px rgba(0,0,0,.45);
-                        }
-                        mushroom-shape-icon{
-                          filter:
-                            [[[
-                              return (states['switch.0xf4b3b1fffe45505c'].state === 'on')
-                                ? 'drop-shadow(0 0 8px rgba(255,193,7,.6))'
-                                : 'none';
-                            ]]];
-                        }
-                  - type: custom:mushroom-template-card
-                    entity: switch.0x70ac08fffebfde33
-                    primary: Comodino DX
-                    secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
-                    icon: >-
-                      {{ 'mdi:lamp' if is_state(entity,'on') else
-                      'mdi:lamp-outline' }}
-                    icon_color: '{{ ''amber'' if is_state(entity,''on'') else ''grey'' }}'
-                    badge_icon: mdi:alpha-r-box
-                    badge_color: '{{ ''amber'' if is_state(entity,''on'') else ''grey'' }}'
-                    layout: vertical
-                    tap_action:
-                      action: toggle
-                    hold_action:
-                      action: more-info
-                    double_tap_action:
-                      action: call-service
-                      service: homeassistant.turn_off
-                      data:
-                        entity_id:
-                          - switch.0xf4b3b1fffe45505c
-                          - switch.0x70ac08fffebfde33
-                    card_mod:
-                      style: |
-                        ha-card{
-                          --ha-card-border-radius:18px;
-                          backdrop-filter:blur(14px) saturate(1.1);
-                          background:rgba(30,32,39,.55);
-                          border:1px solid rgba(255,255,255,.08);
-                          box-shadow:0 10px 32px rgba(0,0,0,.45);
-                        }
-                        mushroom-shape-icon{
-                          filter:
-                            [[[
-                              return (states['switch.0x70ac08fffebfde33'].state === 'on')
-                                ? 'drop-shadow(0 0 8px rgba(255,193,7,.6))'
-                                : 'none';
-                            ]]];
-                        }
-          - type: vertical-stack
-            cards:
-              - type: markdown
-                content: '## Luci Esterne'
-                card_mod:
-                  style: |
-                    ha-card {
-                      background: rgba(0,0,0,0);
-                      box-shadow: none;
-                      padding-bottom: 0;
-                    }
-              - type: grid
-                columns: 2
-                square: false
-                cards:
-                  - type: custom:mushroom-template-card
-                    entity: switch.0x70ac08fffe4938d5
-                    primary: Luce Soggiorno
-                    secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
-                    icon: mdi:coach-lamp
-                    icon_color: '{{ ''amber'' if is_state(entity,''on'') else ''grey'' }}'
-                    layout: vertical
-                    tap_action:
-                      action: toggle
-                    hold_action:
-                      action: more-info
-                    double_tap_action:
-                      action: call-service
-                      service: homeassistant.turn_off
-                      data:
-                        entity_id: group.luci_da_spegnere
-                    badge_icon: >
-                      {{ 'mdi:white-balance-sunny' if
-                      is_state('sun.sun','above_horizon')
-                         else 'mdi:weather-night' }}
-                    badge_color: >
-                      {{ 'amber' if is_state('sun.sun','above_horizon') else
-                      'indigo' }}
-                    card_mod:
-                      style: |
-                        ha-card{
-                          --ha-card-border-radius:18px;
-                          backdrop-filter:blur(14px) saturate(1.1);
-                          background:rgba(30,32,39,.55);
-                          border:1px solid rgba(255,255,255,.08);
-                          box-shadow:0 10px 32px rgba(0,0,0,.45);
-                        }
-                        mushroom-shape-icon{
-                          filter:
-                            [[[
-                              return (states['switch.0x70ac08fffe4938d5'].state === 'on')
-                                ? 'drop-shadow(0 0 8px rgba(255,193,7,.6))'
-                                : 'none';
-                            ]]];
-                        }
-                  - type: custom:mushroom-template-card
-                    entity: >-
-                      switch.smart_switch_2208019547616951200148e1e99bbbd9_outlet
-                    primary: Luce Parcheggio
-                    secondary: >
-                      {{ 'Segnale: ' ~
-                      states('sensor.smart_switch_2208019547616951200148e1e99bbbd9_signal_strength')
-                      ~ '%' }}
-                    icon: mdi:coach-lamp
-                    icon_color: '{{ ''amber'' if is_state(entity,''on'') else ''grey'' }}'
-                    layout: vertical
-                    tap_action:
-                      action: toggle
-                    hold_action:
-                      action: more-info
-                    double_tap_action:
-                      action: call-service
-                      service: homeassistant.turn_off
-                      data:
-                        entity_id: group.luci_da_spegnere
-                    badge_icon: mdi:wifi
-                    badge_color: >-
-                      {% set s =
-                      states('sensor.smart_switch_2208019547616951200148e1e99bbbd9_signal_strength')|int(0)
-                      %} {% if s >= 70 %}green{% elif s >= 40 %}amber{% else
-                      %}red{% endif %}
-                    card_mod:
-                      style: |
-                        ha-card{
-                          --ha-card-border-radius:18px;
-                          backdrop-filter:blur(14px) saturate(1.1);
-                          background:rgba(30,32,39,.55);
-                          border:1px solid rgba(255,255,255,.08);
-                          box-shadow:0 10px 32px rgba(0,0,0,.45);
-                        }
-                        mushroom-shape-icon{
-                          filter:
-                            [[[
-                              return (states['switch.smart_switch_2208019547616951200148e1e99bbbd9_outlet'].state === 'on')
-                                ? 'drop-shadow(0 0 8px rgba(255,193,7,.6))'
-                                : 'none';
-                            ]]];
-                        }
-      - type: grid
-        columns: 1
-        cards:
-          - type: vertical-stack
-            cards:
-              - type: custom:mushroom-alarm-control-panel-card
-                entity: alarm_control_panel.allarme_casa
-                states:
-                  - armed_home
-                  - armed_away
-                layout: horizontal
-                card_mod:
-                  style: >
-                    ha-card{--ha-card-border-radius:18px;backdrop-filter:blur(14px)
-                    saturate(1.1);background:rgba(30,32,39,.55);border:1px solid
-                    rgba(255,255,255,.08);box-shadow:0 10px 32px
-                    rgba(0,0,0,.45);}
-              - type: custom:mushroom-template-card
-                primary: >-
-                  {% set cs = expand([
-                    'binary_sensor.0x00158d00096dfdb9_contact',
-                    'binary_sensor.finestra_salotto_contact',
-                    'binary_sensor.0x00158d0009ea2cba_contact',
-                    'binary_sensor.finestra_camera_contact',
-                    'binary_sensor.finestra_studio_contact'
-                  ]) %} {% set open = cs | selectattr('state','eq','on') | list
-                  %} {% if open|count == 0 %}Tutto chiuso{% else %}{{ open|count
-                  }} contatto/i aperti{% endif %}
-                secondary: >-
-                  {% set cs = expand([
-                    'binary_sensor.0x00158d00096dfdb9_contact',
-                    'binary_sensor.finestra_salotto_contact',
-                    'binary_sensor.0x00158d0009ea2cba_contact',
-                    'binary_sensor.finestra_camera_contact',
-                    'binary_sensor.finestra_studio_contact'
-                  ]) %} {% set open = cs | selectattr('state','eq','on') | list
-                  %} {% if open|count > 0 %}
-                    {{ open | map(attribute='name') | join(', ') }}
-                  {% else %}
-                    Nessuna apertura rilevata
-                  {% endif %}
-                icon: >-
-                  {% set cs = expand([
-                    'binary_sensor.0x00158d00096dfdb9_contact',
-                    'binary_sensor.finestra_salotto_contact',
-                    'binary_sensor.0x00158d0009ea2cba_contact',
-                    'binary_sensor.finestra_camera_contact',
-                    'binary_sensor.finestra_studio_contact'
-                  ]) %} {% set open = cs | selectattr('state','eq','on') | list
-                  | count %} {{ 'mdi:check-circle' if open == 0 else
-                  'mdi:alert-outline' }}
-                icon_color: >-
-                  {% set cs = expand([
-                    'binary_sensor.0x00158d00096dfdb9_contact',
-                    'binary_sensor.finestra_salotto_contact',
-                    'binary_sensor.0x00158d0009ea2cba_contact',
-                    'binary_sensor.finestra_camera_contact',
-                    'binary_sensor.finestra_studio_contact'
-                  ]) %} {% set open = cs | selectattr('state','eq','on') | list
-                  | count %} {{ 'green' if open == 0 else 'red' }}
-                tap_action:
-                  action: more-info
-                  entity: alarm_control_panel.allarme_casa
-                card_mod:
-                  style: |
-                    ha-card{
-                      --ha-card-border-radius:18px;
-                      backdrop-filter:blur(14px) saturate(1.1);
-                      background:rgba(30,32,39,.55);
-                      border:1px solid rgba(255,255,255,.08);
-                      box-shadow:0 10px 32px rgba(0,0,0,.45);
-                    }
-              - type: grid
-                columns: 4
-                square: false
-                cards:
-                  - type: custom:mushroom-template-card
-                    entity: binary_sensor.mov_camera_occupancy
-                    primary: Camera
-                    secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
-                    icon: mdi:motion-sensor
-                    icon_color: '{{ ''blue'' if is_state(entity,''on'') else ''grey'' }}'
-                    layout: vertical
-                    tap_action:
-                      action: more-info
-                    card_mod:
-                      style: >-
-                        ha-card{--ha-card-border-radius:18px;backdrop-filter:blur(14px)
-                        saturate(1.1);background:rgba(30,32,39,.55);border:1px
-                        solid rgba(255,255,255,.08);box-shadow:0 10px 32px
-                        rgba(0,0,0,.45);}
-                  - type: custom:mushroom-template-card
-                    entity: binary_sensor.mov_studio_occupancy
-                    primary: Studio
-                    secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
-                    icon: mdi:motion-sensor
-                    icon_color: '{{ ''blue'' if is_state(entity,''on'') else ''grey'' }}'
-                    layout: vertical
-                    tap_action:
-                      action: more-info
-                    card_mod:
-                      style: >-
-                        ha-card{--ha-card-border-radius:18px;backdrop-filter:blur(14px)
-                        saturate(1.1);background:rgba(30,32,39,.55);border:1px
-                        solid rgba(255,255,255,.08);box-shadow:0 10px 32px
-                        rgba(0,0,0,.45);}
-                  - type: custom:mushroom-template-card
-                    entity: binary_sensor.0x54ef4410006bbd7e_occupancy
-                    primary: Salotto
-                    secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
-                    icon: mdi:motion-sensor
-                    icon_color: '{{ ''blue'' if is_state(entity,''on'') else ''grey'' }}'
-                    layout: vertical
-                    tap_action:
-                      action: more-info
-                    card_mod:
-                      style: >-
-                        ha-card{--ha-card-border-radius:18px;backdrop-filter:blur(14px)
-                        saturate(1.1);background:rgba(30,32,39,.55);border:1px
-                        solid rgba(255,255,255,.08);box-shadow:0 10px 32px
-                        rgba(0,0,0,.45);}
-                  - type: custom:mushroom-template-card
-                    entity: binary_sensor.0x54ef44100082d27c_occupancy
-                    primary: Bagno
-                    secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
-                    icon: mdi:motion-sensor
-                    icon_color: '{{ ''blue'' if is_state(entity,''on'') else ''grey'' }}'
-                    layout: vertical
-                    tap_action:
-                      action: more-info
-                    card_mod:
-                      style: >-
-                        ha-card{--ha-card-border-radius:18px;backdrop-filter:blur(14px)
-                        saturate(1.1);background:rgba(30,32,39,.55);border:1px
-                        solid rgba(255,255,255,.08);box-shadow:0 10px 32px
-                        rgba(0,0,0,.45);}
-              - type: grid
-                columns: 3
-                square: false
-                cards:
-                  - type: custom:mushroom-template-card
-                    entity: binary_sensor.0x00158d00096dfdb9_contact
-                    primary: Porta Ingresso
-                    secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
-                    icon: >-
-                      {{ 'mdi:door-open' if is_state(entity,'on') else
-                      'mdi:door-closed' }}
-                    icon_color: '{{ ''red'' if is_state(entity,''on'') else ''green'' }}'
-                    layout: vertical
-                    tap_action:
-                      action: more-info
-                    card_mod:
-                      style: >
-                        ha-card{--ha-card-border-radius:18px;backdrop-filter:blur(14px)
+- title: Home
+  type: sections
+  badges: []
+  sections:
+    - type: grid
+      columns: 2
+      cards:
+        - type: vertical-stack
+          cards:
+            - type: heading
+              heading: Meteo
+              heading_style: title
+            - type: custom:mushroom-chips-card
+              chips:
+                - type: template
+                  entity: sensor.gw1100a_outdoor_temperature
+                  icon: mdi:thermometer
+                  content: >-
+                    {{ states('sensor.gw1100a_outdoor_temperature')|round(1)
+                    }}°C
+                  icon_color: >-
+                    {% set t =
+                    states('sensor.gw1100a_outdoor_temperature')|float(0) %}
+                    {% if t >= 30 %}red{% elif t >= 22 %}amber{% elif t >= 15
+                    %}green{% elif t >= 7 %}teal{% else %}blue{% endif %}
+                  tap_action:
+                    action: more-info
+                - type: template
+                  entity: sensor.gw1100a_humidity
+                  icon: mdi:water-percent
+                  content: '{{ states(''sensor.gw1100a_humidity'')|int(0) }}%'
+                  icon_color: >-
+                    {% set h = states('sensor.gw1100a_humidity')|int(0) %} {%
+                    if h >= 80 %}blue{% elif h >= 60 %}teal{% elif h >= 40
+                    %}green{% else %}amber{% endif %}
+                  tap_action:
+                    action: more-info
+                - type: template
+                  entity: sensor.gw1100a_absolute_pressure
+                  icon: mdi:gauge
+                  content: >-
+                    {{ states('sensor.gw1100a_absolute_pressure')|round(1) }}
+                    hPa
+                  icon_color: grey
+                  tap_action:
+                    action: more-info
+                - type: template
+                  entity: sensor.gw1100a_wind_speed
+                  icon: mdi:weather-windy
+                  content: >-
+                    {% set spd = states('sensor.gw1100a_wind_speed')|float(0)
+                    %} {% set deg =
+                    states('sensor.gw1100a_wind_direction')|float(0) %} {% set
+                    dirs =
+                    ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW']
+                    %} {% set idx = ((deg/22.5) + 0.5)|int % 16 %} {{
+                    spd|round(0) }} km/h {{ dirs[idx] }}
+                  icon_color: >-
+                    {% set spd = states('sensor.gw1100a_wind_speed')|float(0)
+                    %} {% if spd >= 40 %}purple{% elif spd >= 25 %}amber{%
+                    elif spd > 0 %}blue{% else %}grey{% endif %}
+                  tap_action:
+                    action: more-info
+                - type: template
+                  entity: sensor.gw1100a_wind_gust
+                  icon: mdi:weather-windy
+                  content: >-
+                    Gust: {{ states('sensor.gw1100a_wind_gust')|round(0) }}
+                    km/h
+                  icon_color: >-
+                    {% set g = states('sensor.gw1100a_wind_gust')|float(0) %}
+                    {% if g >= 50 %}purple{% elif g >= 30 %}amber{% elif g > 0
+                    %}blue{% else %}grey{% endif %}
+                  tap_action:
+                    action: more-info
+                - type: template
+                  entity: sensor.gw1100a_rain_rate
+                  icon: mdi:weather-rainy
+                  content: '{{ states(''sensor.gw1100a_rain_rate'')|round(1) }} mm/h'
+                  icon_color: >-
+                    {% set r = states('sensor.gw1100a_rain_rate')|float(0) %}
+                    {% if r >= 10 %}blue{% elif r >= 2 %}teal{% elif r > 0
+                    %}green{% else %}grey{% endif %}
+                  tap_action:
+                    action: more-info
+                - type: template
+                  entity: sensor.gw1100a_daily_rain_rate
+                  icon: mdi:weather-pouring
+                  content: >-
+                    {{ states('sensor.gw1100a_daily_rain_rate')|round(1) }} mm
+                    oggi
+                  icon_color: >-
+                    {% set d =
+                    states('sensor.gw1100a_daily_rain_rate')|float(0) %} {% if
+                    d >= 20 %}blue{% elif d >= 5 %}teal{% elif d > 0 %}green{% 
+                    else %}grey{% endif %}
+                  tap_action:
+                    action: more-info
+                - type: template
+                  entity: sensor.gw1100a_uv_index
+                  icon: mdi:weather-sunny-alert
+                  content: UV {{ states('sensor.gw1100a_uv_index')|int(0) }}
+                  icon_color: >-
+                    {% set uv = states('sensor.gw1100a_uv_index')|int(0) %} {%
+                    if uv >= 8 %}red{% elif uv >= 6 %}amber{% elif uv >= 3
+                    %}yellow{% else %}green{% endif %}
+                  tap_action:
+                    action: more-info
+              card_mod:
+                style: |
+                  ha-card{
+                    --ha-card-border-radius:18px;
+                    backdrop-filter:blur(14px) saturate(1.1);
+                    background:rgba(30,32,39,.55);
+                    border:1px solid rgba(255,255,255,.08);
+                    box-shadow:0 10px 32px rgba(0,0,0,.45);
+                  }
+        - type: weather-forecast
+          entity: weather.forecast_casa
+          show_current: true
+          show_forecast: true
+          forecast_type: daily
+          card_mod:
+            style: |
+              ha-card{
+                --ha-card-border-radius:18px;
+                backdrop-filter:blur(14px) saturate(1.1);
+                background:rgba(30,32,39,.55);
+                border:1px solid rgba(255,255,255,.08);
+                box-shadow:0 10px 32px rgba(0,0,0,.45);
+              }
+             - type: grid
+               columns: 3
+               square: false
+               cards:
+                 - type: custom:mushroom-template-card
+                   entity: switch.0x70ac08fffebd3138
+                   primary: Luce Salotto
+                   secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
+                   icon: >-
+                     {{ 'mdi:lightbulb-on' if is_state(entity,'on') else
+                     'mdi:lightbulb-off' }}
+                   icon_color: '{{ ''amber'' if is_state(entity,''on'') else ''grey'' }}'
+                   layout: vertical
+                   tap_action:
+                     action: toggle
+                   hold_action:
+                     action: more-info
+                   double_tap_action:
+                     action: call-service
+                     service: homeassistant.turn_off
+                     data:
+                       entity_id: group.luci_da_spegnere
+                   badge_icon: >-
+                     {{ 'mdi:weather-night' if
+                     is_state('input_boolean.modalita_notte','on') else null }}
+                   badge_color: indigo
+                   card_mod:
+                     style: |
+                       ha-card{
+                         --ha-card-border-radius:18px;
+                         backdrop-filter:blur(14px) saturate(1.1);
+                         background:rgba(30,32,39,.55);
+                         border:1px solid rgba(255,255,255,.08);
+                         box-shadow:0 10px 32px rgba(0,0,0,.45);
+                       }
+                       mushroom-shape-icon{
+                         filter:
+                           [[[
+                             return (states['switch.0x70ac08fffebd3138'].state === 'on')
+                               ? 'drop-shadow(0 0 8px rgba(255,193,7,.6))'
+                               : 'none';
+                           ]]];
+                       }
+                 - type: custom:mushroom-template-card
+                   entity: switch.0x70ac08fffebfa4d6
+                   primary: Luce Bagno
+                   secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
+                   icon: >-
+                     {{ 'mdi:lightbulb-on' if is_state(entity,'on') else
+                     'mdi:lightbulb-off' }}
+                   icon_color: '{{ ''amber'' if is_state(entity,''on'') else ''grey'' }}'
+                   layout: vertical
+                   tap_action:
+                     action: toggle
+                   hold_action:
+                     action: more-info
+                   double_tap_action:
+                     action: call-service
+                     service: homeassistant.turn_off
+                     data:
+                       entity_id: group.luci_da_spegnere
+                   badge_icon: >-
+                     {{ 'mdi:weather-night' if
+                     is_state('input_boolean.modalita_notte','on') else null }}
+                   badge_color: indigo
+                   card_mod:
+                     style: |
+                       ha-card{
+                         --ha-card-border-radius:18px;
+                         backdrop-filter:blur(14px) saturate(1.1);
+                         background:rgba(30,32,39,.55);
+                         border:1px solid rgba(255,255,255,.08);
+                         box-shadow:0 10px 32px rgba(0,0,0,.45);
+                       }
+                       mushroom-shape-icon{
+                         filter:
+                           [[[
+                             return (states['switch.0x70ac08fffebfa4d6'].state === 'on')
+                               ? 'drop-shadow(0 0 8px rgba(255,193,7,.6))'
+                               : 'none';
+                           ]]];
+                       }
+                 - type: custom:mushroom-template-card
+                   entity: switch.luce_studio
+                   primary: Luce Studio
+                   secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
+                   icon: >-
+                     {{ 'mdi:lightbulb-on' if is_state(entity,'on') else
+                     'mdi:lightbulb-off' }}
+                   icon_color: '{{ ''amber'' if is_state(entity,''on'') else ''grey'' }}'
+                   layout: vertical
+                   tap_action:
+                     action: toggle
+                   hold_action:
+                     action: more-info
+                   double_tap_action:
+                     action: call-service
+                     service: homeassistant.turn_off
+                     data:
+                       entity_id: group.luci_da_spegnere
+                   badge_icon: >-
+                     {{ 'mdi:weather-night' if
+                     is_state('input_boolean.modalita_notte','on') else null }}
+                   badge_color: indigo
+                   card_mod:
+                     style: |
+                       ha-card{
+                         --ha-card-border-radius:18px;
+                         backdrop-filter:blur(14px) saturate(1.1);
+                         background:rgba(30,32,39,.55);
+                         border:1px solid rgba(255,255,255,.08);
+                         box-shadow:0 10px 32px rgba(0,0,0,.45);
+                       }
+                       mushroom-shape-icon{
+                         filter:
+                           [[[
+                             return (states['switch.luce_studio'].state === 'on')
+                               ? 'drop-shadow(0 0 8px rgba(255,193,7,.6))'
+                               : 'none';
+                           ]]];
+                       }
+                 - type: custom:mushroom-template-card
+                   entity: switch.luce_camera
+                   primary: Luce Camera
+                   secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
+                   icon: >-
+                     {{ 'mdi:lightbulb-on' if is_state(entity,'on') else
+                     'mdi:lightbulb-off' }}
+                   icon_color: '{{ ''amber'' if is_state(entity,''on'') else ''grey'' }}'
+                   layout: vertical
+                   tap_action:
+                     action: toggle
+                   hold_action:
+                     action: more-info
+                   double_tap_action:
+                     action: call-service
+                     service: homeassistant.turn_off
+                     data:
+                       entity_id: group.luci_da_spegnere
+                   badge_icon: >-
+                     {{ 'mdi:weather-night' if
+                     is_state('input_boolean.modalita_notte','on') else null }}
+                   badge_color: indigo
+                   card_mod:
+                     style: |
+                       ha-card{
+                         --ha-card-border-radius:18px;
+                         backdrop-filter:blur(14px) saturate(1.1);
+                         background:rgba(30,32,39,.55);
+                         border:1px solid rgba(255,255,255,.08);
+                         box-shadow:0 10px 32px rgba(0,0,0,.45);
+                       }
+                       mushroom-shape-icon{
+                         filter:
+                           [[[
+                             return (states['switch.luce_camera'].state === 'on')
+                               ? 'drop-shadow(0 0 8px rgba(255,193,7,.6))'
+                               : 'none';
+                           ]]];
+                       }
+                 - type: custom:mushroom-template-card
+                   entity: switch.0xf4b3b1fffe45505c
+                   primary: Comodino SX
+                   secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
+                   icon: >-
+                     {{ 'mdi:lamp' if is_state(entity,'on') else
+                     'mdi:lamp-outline' }}
+                   icon_color: '{{ ''amber'' if is_state(entity,''on'') else ''grey'' }}'
+                   badge_icon: mdi:alpha-l-box
+                   badge_color: '{{ ''amber'' if is_state(entity,''on'') else ''grey'' }}'
+                   layout: vertical
+                   tap_action:
+                     action: toggle
+                   hold_action:
+                     action: more-info
+                   double_tap_action:
+                     action: call-service
+                     service: homeassistant.turn_off
+                     data:
+                       entity_id:
+                         - switch.0xf4b3b1fffe45505c
+                         - switch.0x70ac08fffebfde33
+                   card_mod:
+                     style: |
+                       ha-card{
+                         --ha-card-border-radius:18px;
+                         backdrop-filter:blur(14px) saturate(1.1);
+                         background:rgba(30,32,39,.55);
+                         border:1px solid rgba(255,255,255,.08);
+                         box-shadow:0 10px 32px rgba(0,0,0,.45);
+                       }
+                       mushroom-shape-icon{
+                         filter:
+                           [[[
+                             return (states['switch.0xf4b3b1fffe45505c'].state === 'on')
+                               ? 'drop-shadow(0 0 8px rgba(255,193,7,.6))'
+                               : 'none';
+                           ]]];
+                       }
+                 - type: custom:mushroom-template-card
+                   entity: switch.0x70ac08fffebfde33
+                   primary: Comodino DX
+                   secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
+                   icon: >-
+                     {{ 'mdi:lamp' if is_state(entity,'on') else
+                     'mdi:lamp-outline' }}
+                   icon_color: '{{ ''amber'' if is_state(entity,''on'') else ''grey'' }}'
+                   badge_icon: mdi:alpha-r-box
+                   badge_color: '{{ ''amber'' if is_state(entity,''on'') else ''grey'' }}'
+                   layout: vertical
+                   tap_action:
+                     action: toggle
+                   hold_action:
+                     action: more-info
+                   double_tap_action:
+                     action: call-service
+                     service: homeassistant.turn_off
+                     data:
+                       entity_id:
+                         - switch.0xf4b3b1fffe45505c
+                         - switch.0x70ac08fffebfde33
+                   card_mod:
+                     style: |
+                       ha-card{
+                         --ha-card-border-radius:18px;
+                         backdrop-filter:blur(14px) saturate(1.1);
+                         background:rgba(30,32,39,.55);
+                         border:1px solid rgba(255,255,255,.08);
+                         box-shadow:0 10px 32px rgba(0,0,0,.45);
+                       }
+                       mushroom-shape-icon{
+                         filter:
+                           [[[
+                             return (states['switch.0x70ac08fffebfde33'].state === 'on')
+                               ? 'drop-shadow(0 0 8px rgba(255,193,7,.6))'
+                               : 'none';
+                           ]]];
+                       }
+         - type: vertical-stack
+           cards:
+             - type: markdown
+               content: '## Luci Esterne'
+               card_mod:
+                 style: |
+                   ha-card {
+                     background: rgba(0,0,0,0);
+                     box-shadow: none;
+                     padding-bottom: 0;
+                   }
+             - type: grid
+               columns: 2
+               square: false
+               cards:
+                 - type: custom:mushroom-template-card
+                   entity: switch.0x70ac08fffe4938d5
+                   primary: Luce Soggiorno
+                   secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
+                   icon: mdi:coach-lamp
+                   icon_color: '{{ ''amber'' if is_state(entity,''on'') else ''grey'' }}'
+                   layout: vertical
+                   tap_action:
+                     action: toggle
+                   hold_action:
+                     action: more-info
+                   double_tap_action:
+                     action: call-service
+                     service: homeassistant.turn_off
+                     data:
+                       entity_id: group.luci_da_spegnere
+                   badge_icon: >
+                     {{ 'mdi:white-balance-sunny' if
+                     is_state('sun.sun','above_horizon')
+                        else 'mdi:weather-night' }}
+                   badge_color: >
+                     {{ 'amber' if is_state('sun.sun','above_horizon') else
+                     'indigo' }}
+                   card_mod:
+                     style: |
+                       ha-card{
+                         --ha-card-border-radius:18px;
+                         backdrop-filter:blur(14px) saturate(1.1);
+                         background:rgba(30,32,39,.55);
+                         border:1px solid rgba(255,255,255,.08);
+                         box-shadow:0 10px 32px rgba(0,0,0,.45);
+                       }
+                       mushroom-shape-icon{
+                         filter:
+                           [[[
+                             return (states['switch.0x70ac08fffe4938d5'].state === 'on')
+                               ? 'drop-shadow(0 0 8px rgba(255,193,7,.6))'
+                               : 'none';
+                           ]]];
+                       }
+                 - type: custom:mushroom-template-card
+                   entity: >-
+                     switch.smart_switch_2208019547616951200148e1e99bbbd9_outlet
+                   primary: Luce Parcheggio
+                   secondary: >
+                     {{ 'Segnale: ' ~
+                     states('sensor.smart_switch_2208019547616951200148e1e99bbbd9_signal_strength')
+                     ~ '%' }}
+                   icon: mdi:coach-lamp
+                   icon_color: '{{ ''amber'' if is_state(entity,''on'') else ''grey'' }}'
+                   layout: vertical
+                   tap_action:
+                     action: toggle
+                   hold_action:
+                     action: more-info
+                   double_tap_action:
+                     action: call-service
+                     service: homeassistant.turn_off
+                     data:
+                       entity_id: group.luci_da_spegnere
+                   badge_icon: mdi:wifi
+                   badge_color: >-
+                     {% set s =
+                     states('sensor.smart_switch_2208019547616951200148e1e99bbbd9_signal_strength')|int(0)
+                     %} {% if s >= 70 %}green{% elif s >= 40 %}amber{% else
+                     %}red{% endif %}
+                   card_mod:
+                     style: |
+                       ha-card{
+                         --ha-card-border-radius:18px;
+                         backdrop-filter:blur(14px) saturate(1.1);
+                         background:rgba(30,32,39,.55);
+                         border:1px solid rgba(255,255,255,.08);
+                         box-shadow:0 10px 32px rgba(0,0,0,.45);
+                       }
+                       mushroom-shape-icon{
+                         filter:
+                           [[[
+                             return (states['switch.smart_switch_2208019547616951200148e1e99bbbd9_outlet'].state === 'on')
+                               ? 'drop-shadow(0 0 8px rgba(255,193,7,.6))'
+                               : 'none';
+                           ]]];
+                       }
+     - type: grid
+       columns: 1
+       cards:
+         - type: vertical-stack
+           cards:
+             - type: custom:mushroom-alarm-control-panel-card
+               entity: alarm_control_panel.allarme_casa
+               states:
+                 - armed_home
+                 - armed_away
+               layout: horizontal
+               card_mod:
+                 style: >
+                   ha-card{--ha-card-border-radius:18px;backdrop-filter:blur(14px)
+                   saturate(1.1);background:rgba(30,32,39,.55);border:1px solid
+                   rgba(255,255,255,.08);box-shadow:0 10px 32px
+                   rgba(0,0,0,.45);}
+             - type: custom:mushroom-template-card
+               primary: >-
+                 {% set cs = expand([
+                   'binary_sensor.0x00158d00096dfdb9_contact',
+                   'binary_sensor.finestra_salotto_contact',
+                   'binary_sensor.0x00158d0009ea2cba_contact',
+                   'binary_sensor.finestra_camera_contact',
+                   'binary_sensor.finestra_studio_contact'
+                 ]) %} {% set open = cs | selectattr('state','eq','on') | list
+                 %} {% if open|count == 0 %}Tutto chiuso{% else %}{{ open|count
+                 }} contatto/i aperti{% endif %}
+               secondary: >-
+                 {% set cs = expand([
+                   'binary_sensor.0x00158d00096dfdb9_contact',
+                   'binary_sensor.finestra_salotto_contact',
+                   'binary_sensor.0x00158d0009ea2cba_contact',
+                   'binary_sensor.finestra_camera_contact',
+                   'binary_sensor.finestra_studio_contact'
+                 ]) %} {% set open = cs | selectattr('state','eq','on') | list
+                 %} {% if open|count > 0 %}
+                   {{ open | map(attribute='name') | join(', ') }}
+                 {% else %}
+                   Nessuna apertura rilevata
+                 {% endif %}
+               icon: >-
+                 {% set cs = expand([
+                   'binary_sensor.0x00158d00096dfdb9_contact',
+                   'binary_sensor.finestra_salotto_contact',
+                   'binary_sensor.0x00158d0009ea2cba_contact',
+                   'binary_sensor.finestra_camera_contact',
+                   'binary_sensor.finestra_studio_contact'
+                 ]) %} {% set open = cs | selectattr('state','eq','on') | list
+                 | count %} {{ 'mdi:check-circle' if open == 0 else
+                 'mdi:alert-outline' }}
+               icon_color: >-
+                 {% set cs = expand([
+                   'binary_sensor.0x00158d00096dfdb9_contact',
+                   'binary_sensor.finestra_salotto_contact',
+                   'binary_sensor.0x00158d0009ea2cba_contact',
+                   'binary_sensor.finestra_camera_contact',
+                   'binary_sensor.finestra_studio_contact'
+                 ]) %} {% set open = cs | selectattr('state','eq','on') | list
+                 | count %} {{ 'green' if open == 0 else 'red' }}
+               tap_action:
+                 action: more-info
+                 entity: alarm_control_panel.allarme_casa
+               card_mod:
+                 style: |
+                   ha-card{
+                     --ha-card-border-radius:18px;
+                     backdrop-filter:blur(14px) saturate(1.1);
+                     background:rgba(30,32,39,.55);
+                     border:1px solid rgba(255,255,255,.08);
+                     box-shadow:0 10px 32px rgba(0,0,0,.45);
+                   }
+             - type: grid
+               columns: 4
+               square: false
+               cards:
+                 - type: custom:mushroom-template-card
+                   entity: binary_sensor.mov_camera_occupancy
+                   primary: Camera
+                   secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
+                   icon: mdi:motion-sensor
+                   icon_color: '{{ ''blue'' if is_state(entity,''on'') else ''grey'' }}'
+                   layout: vertical
+                   tap_action:
+                     action: more-info
+                   card_mod:
+                     style: >-
+                       ha-card{--ha-card-border-radius:18px;backdrop-filter:blur(14px)
+                       saturate(1.1);background:rgba(30,32,39,.55);border:1px
+                       solid rgba(255,255,255,.08);box-shadow:0 10px 32px
+                       rgba(0,0,0,.45);}
+                 - type: custom:mushroom-template-card
+                   entity: binary_sensor.mov_studio_occupancy
+                   primary: Studio
+                   secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
+                   icon: mdi:motion-sensor
+                   icon_color: '{{ ''blue'' if is_state(entity,''on'') else ''grey'' }}'
+                   layout: vertical
+                   tap_action:
+                     action: more-info
+                   card_mod:
+                     style: >-
+                       ha-card{--ha-card-border-radius:18px;backdrop-filter:blur(14px)
+                       saturate(1.1);background:rgba(30,32,39,.55);border:1px
+                       solid rgba(255,255,255,.08);box-shadow:0 10px 32px
+                       rgba(0,0,0,.45);}
+                 - type: custom:mushroom-template-card
+                   entity: binary_sensor.0x54ef4410006bbd7e_occupancy
+                   primary: Salotto
+                   secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
+                   icon: mdi:motion-sensor
+                   icon_color: '{{ ''blue'' if is_state(entity,''on'') else ''grey'' }}'
+                   layout: vertical
+                   tap_action:
+                     action: more-info
+                   card_mod:
+                     style: >-
+                       ha-card{--ha-card-border-radius:18px;backdrop-filter:blur(14px)
+                       saturate(1.1);background:rgba(30,32,39,.55);border:1px
+                       solid rgba(255,255,255,.08);box-shadow:0 10px 32px
+                       rgba(0,0,0,.45);}
+                 - type: custom:mushroom-template-card
+                   entity: binary_sensor.0x54ef44100082d27c_occupancy
+                   primary: Bagno
+                   secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
+                   icon: mdi:motion-sensor
+                   icon_color: '{{ ''blue'' if is_state(entity,''on'') else ''grey'' }}'
+                   layout: vertical
+                   tap_action:
+                     action: more-info
+                   card_mod:
+                     style: >-
+                       ha-card{--ha-card-border-radius:18px;backdrop-filter:blur(14px)
+                       saturate(1.1);background:rgba(30,32,39,.55);border:1px
+                       solid rgba(255,255,255,.08);box-shadow:0 10px 32px
+                       rgba(0,0,0,.45);}
+             - type: grid
+               columns: 3
+               square: false
+               cards:
+                 - type: custom:mushroom-template-card
+                   entity: binary_sensor.0x00158d00096dfdb9_contact
+                   primary: Porta Ingresso
+                   secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
+                   icon: >-
+                     {{ 'mdi:door-open' if is_state(entity,'on') else
+                     'mdi:door-closed' }}
+                   icon_color: '{{ ''red'' if is_state(entity,''on'') else ''green'' }}'
+                   layout: vertical
+                   tap_action:
+                     action: more-info
+                   card_mod:
+                     style: >
+                       ha-card{--ha-card-border-radius:18px;backdrop-filter:blur(14px)
 
-                        saturate(1.1);background:rgba(30,32,39,.55);border:1px
-                        solid
+                       saturate(1.1);background:rgba(30,32,39,.55);border:1px
+                       solid
 
-                        rgba(255,255,255,.08);box-shadow:0 10px 32px
-                        rgba(0,0,0,.45);}
+                       rgba(255,255,255,.08);box-shadow:0 10px 32px
+                       rgba(0,0,0,.45);}
 
-                        mushroom-shape-icon{
-                          filter:
-                            [[[
-                              return (states['binary_sensor.0x00158d00096dfdb9_contact'].state === 'on')
-                                ? 'drop-shadow(0 0 8px rgba(244,67,54,.6))'
-                                : 'none';
-                            ]]];
-                        }
-                  - type: custom:mushroom-template-card
-                    entity: binary_sensor.finestra_salotto_contact
-                    primary: Finestra Salotto
-                    secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
-                    icon: >-
-                      {{ 'mdi:window-open-variant' if is_state(entity,'on') else
-                      'mdi:window-closed-variant' }}
-                    icon_color: '{{ ''red'' if is_state(entity,''on'') else ''green'' }}'
-                    layout: vertical
-                    tap_action:
-                      action: more-info
-                    card_mod:
-                      style: >-
-                        ha-card{--ha-card-border-radius:18px;backdrop-filter:blur(14px)
-                        saturate(1.1);background:rgba(30,32,39,.55);border:1px
-                        solid rgba(255,255,255,.08);box-shadow:0 10px 32px
-                        rgba(0,0,0,.45);}
-                  - type: custom:mushroom-template-card
-                    entity: binary_sensor.0x00158d0009ea2cba_contact
-                    primary: Finestra Bagno
-                    secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
-                    icon: >-
-                      {{ 'mdi:window-open-variant' if is_state(entity,'on') else
-                      'mdi:window-closed-variant' }}
-                    icon_color: '{{ ''red'' if is_state(entity,''on'') else ''green'' }}'
-                    layout: vertical
-                    tap_action:
-                      action: more-info
-                    card_mod:
-                      style: >-
-                        ha-card{--ha-card-border-radius:18px;backdrop-filter:blur(14px)
-                        saturate(1.1);background:rgba(30,32,39,.55);border:1px
-                        solid rgba(255,255,255,.08);box-shadow:0 10px 32px
-                        rgba(0,0,0,.45);}
-                  - type: custom:mushroom-template-card
-                    entity: binary_sensor.finestra_camera_contact
-                    primary: Finestra Camera
-                    secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
-                    icon: >-
-                      {{ 'mdi:window-open-variant' if is_state(entity,'on') else
-                      'mdi:window-closed-variant' }}
-                    icon_color: '{{ ''red'' if is_state(entity,''on'') else ''green'' }}'
-                    layout: vertical
-                    tap_action:
-                      action: more-info
-                    card_mod:
-                      style: >-
-                        ha-card{--ha-card-border-radius:18px;backdrop-filter:blur(14px)
-                        saturate(1.1);background:rgba(30,32,39,.55);border:1px
-                        solid rgba(255,255,255,.08);box-shadow:0 10px 32px
-                        rgba(0,0,0,.45);}
-                  - type: custom:mushroom-template-card
-                    entity: binary_sensor.finestra_studio_contact
-                    primary: Finestra Studio
-                    secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
-                    icon: >-
-                      {{ 'mdi:window-open-variant' if is_state(entity,'on') else
-                      'mdi:window-closed-variant' }}
-                    icon_color: '{{ ''red'' if is_state(entity,''on'') else ''green'' }}'
-                    layout: vertical
-                    tap_action:
-                      action: more-info
-                    card_mod:
-                      style: >-
-                        ha-card{--ha-card-border-radius:18px;backdrop-filter:blur(14px)
-                        saturate(1.1);background:rgba(30,32,39,.55);border:1px
-                        solid rgba(255,255,255,.08);box-shadow:0 10px 32px
-                        rgba(0,0,0,.45);}
-      - type: grid
-        columns: 3
-        cards:
-          - type: vertical-stack
-            cards:
-              - type: heading
-                heading: Inverter VEVOR — Plancia
-                heading_style: title
-              - type: custom:mushroom-chips-card
-                chips:
-                  - type: template
-                    entity: sensor.vevor_eml3500_24l_vevor_working_mode
-                    icon: mdi:state-machine
-                    content: >-
-                      {{ states('sensor.vevor_eml3500_24l_vevor_working_mode')
-                      }}
-                    icon_color: >
-                      {% set m =
-                      states('sensor.vevor_eml3500_24l_vevor_working_mode') %}
-                      {% set map = {'Main mode':'blue','Standby
-                      mode':'grey','Off-grid mode':'green'} %} {{
-                      map.get(m,'grey') }}
-                    tap_action:
-                      action: more-info
-                card_mod:
-                  style: |
-                    ha-card{
-                      --ha-card-border-radius:18px;
-                      backdrop-filter:blur(14px) saturate(1.1);
-                      background:rgba(30,32,39,.55);
-                      border:1px solid rgba(255,255,255,.08);
-                      box-shadow:0 10px 32px rgba(0,0,0,.45);
-                    }
-          - type: custom:energy-flow-card-plus
-            title: Sinòttico Fotovoltaico
-            use_new_flow_rate_model: true
-            energy_date_selection: false
-            clickable_entities: true
-            display_zero_lines: false
-            wh_kwh_threshold: 1000
-            wh_decimals: 2
-            kwh_decimals: 2
-            min_flow_rate: 1
-            max_flow_rate: 6
-            min_expected_energy: 0
-            max_expected_energy: 420
-            entities:
-              solar:
-                name: Fotovoltaico
-                icon: mdi:white-balance-sunny
-                color: '#FDD835'
-                color_icon: true
-                color_value: true
-                display_zero_state: true
-                secondary_info:
-                  unit_of_measurement: W
-                  icon: mdi:flash
-                  entity: sensor.vevor_eml3500_24l_vevor_pv_power
-                entity: sensor.vevor_eml3500_24l_vevor_pv_energy_today
-              home:
-                name: Carichi
-                icon: mdi:home-lightning-bolt
-                color_icon: true
-                color_value: true
-                secondary_info:
-                  unit_of_measurement: W
-                  icon: mdi:flash
-                  entity: sensor.vevor_eml3500_24l_vevor_output_active_power
-              grid:
-                name: Rete
-                icon: mdi:transmission-tower
-                color:
-                  consumption: '#42A5F5'
-                  production: '#66BB6A'
-                color_circle: consumption
-                color_icon: true
-                entity:
-                  consumption: sensor.vevor_eml3500_24l_vevor_grid_import_energy_today
-                  production: sensor.vevor_eml3500_24l_vevor_grid_export_energy_today
-                secondary_info:
-                  entity: sensor.vevor_eml3500_24l_vevor_grid_import_power
-                  unit_of_measurement: W
-                  icon: mdi:flash
-                power_outage:
-                  entity: sensor.vevor_eml3500_24l_vevor_grid_export_power
-              battery:
-                name: Batteria
-                state_of_charge: sensor.vevor_eml3500_24l_vevor_battery_soc
-                state_of_charge_decimals: 0
-                color:
-                  production: '#26C6DA'
-                  consumption: '#FFB300'
-                color_icon: true
-                color_state_of_charge_value: true
-                entity:
-                  production: >-
-                    sensor.vevor_eml3500_24l_vevor_battery_discharge_energy_today
-                  consumption: sensor.vevor_eml3500_24l_vevor_battery_charge_energy_today
-                secondary_info:
-                  entity: sensor.vevor_battery_current
-                  unit_of_measurement: A
-                  icon: mdi:current-dc
-                use_metadata: false
-              fossil_fuel_percentage:
-                show: false
-            card_mod:
-              style: |
-                ha-card{
-                  --ha-card-border-radius:18px;
-                  backdrop-filter:blur(14px) saturate(1.1);
-                  background:rgba(30,32,39,.55);
-                  border:1px solid rgba(255,255,255,.08);
-                  box-shadow:0 10px 32px rgba(0,0,0,.45);
-                }
-          - type: vertical-stack
-            cards:
-              - type: custom:mushroom-template-card
-                primary: >-
-                  {{
-                  (states('sensor.vevor_eml3500_24l_vevor_pv_power')|float(0))|round(0)
-                  }} W
-                secondary: Fotovoltaico ora
-                icon: mdi:white-balance-sunny
-                icon_color: amber
-                fill_container: true
-                card_mod:
-                  style: |
-                    ha-card{
-                      --ha-card-border-radius:18px;
-                      backdrop-filter:blur(14px) saturate(1.1);
-                      background:rgba(30,32,39,.55);
-                      border:1px solid rgba(255,255,255,.08);
-                      box-shadow:0 10px 32px rgba(0,0,0,.45);
-                    }
-              - type: custom:mushroom-template-card
-                primary: >
-                  {% set p =
-                  states('sensor.vevor_eml3500_24l_vevor_mains_power')|float(0)
-                  %} {{ ('↓ ' ~ (p|round(0)) ~ ' W') if p>0 else ('↑ ' ~
-                  ((-p)|round(0)) ~ ' W') }}
-                secondary: Rete (↓ import / ↑ export)
-                icon: mdi:transmission-tower
-                icon_color: >
-                  {{ 'blue' if
-                  (states('sensor.vevor_eml3500_24l_vevor_mains_power')|float(0))>0
-                  else 'green' }}
-                fill_container: true
-                card_mod:
-                  style: |
-                    ha-card{
-                      --ha-card-border-radius:18px;
-                      backdrop-filter:blur(14px) saturate(1.1);
-                      background:rgba(30,32,39,.55);
-                      border:1px solid rgba(255,255,255,.08);
-                      box-shadow:0 10px 32px rgba(0,0,0,.45);
-                    }
-              - type: custom:mushroom-template-card
-                primary: >-
-                  {{
-                  (states('sensor.vevor_eml3500_24l_vevor_output_active_power')|float(0))|round(0)
-                  }} W
-                secondary: Carichi istantanei
-                icon: mdi:home-lightning-bolt
-                icon_color: purple
-                fill_container: true
-                card_mod:
-                  style: |
-                    ha-card{
-                      --ha-card-border-radius:18px;
-                      backdrop-filter:blur(14px) saturate(1.1);
-                      background:rgba(30,32,39,.55);
-                      border:1px solid rgba(255,255,255,.08);
-                      box-shadow:0 10px 32px rgba(0,0,0,.45);
-                    }
-              - type: custom:mushroom-template-card
-                primary: >-
-                  {{ states('sensor.vevor_eml3500_24l_vevor_battery_soc')|int(0)
-                  }}%
-                secondary: Stato batteria
-                icon: >
-                  {% set s =
-                  states('sensor.vevor_eml3500_24l_vevor_battery_soc')|int(0) %}
-                  {% if s >= 90 %}mdi:battery{% elif s >= 60 %}mdi:battery-80{%
-                  elif s >= 40 %}mdi:battery-60{% elif s >= 20
-                  %}mdi:battery-40{% elif s > 0 %}mdi:battery-20{% else
-                  %}mdi:battery-outline{% endif %}
-                icon_color: >
-                  {% set s =
-                  states('sensor.vevor_eml3500_24l_vevor_battery_soc')|int(0) %}
-                  {% if s >= 80 %}green{% elif s >= 50 %}teal{% elif s >= 30
-                  %}amber{% else %}red{% endif %}
-                fill_container: true
-                card_mod:
-                  style: |
-                    ha-card{
-                      --ha-card-border-radius:18px;
-                      backdrop-filter:blur(14px) saturate(1.1);
-                      background:rgba(30,32,39,.55);
-                      border:1px solid rgba(255,255,255,.08);
-                      box-shadow:0 10px 32px rgba(0,0,0,.45);
-                    }
-    header:
-      layout: center
-      badges_position: top
-      badges_wrap: scroll
-      card:
-        type: markdown
-        text_only: true
-        content: |-
-          # Ciao Danilo
-          Benvenuto nella dashboard della tua domotica ✨
-    background:
-      opacity: 90
-      alignment: center
-      size: cover
-      repeat: repeat
-      attachment: fixed
-      image: /api/image/serve/dd887696c41ff32df6dfe22cfed43c5c/original
-    cards: []
-  - title: Inverter
-    type: sections
-    badges: []
-    sections:
-      - type: grid
-        columns: 3
-        cards:
-          - type: vertical-stack
-            cards:
-              - type: heading
-                heading: Inverter VEVOR — Plancia
-                heading_style: title
-              - type: custom:mushroom-chips-card
-                chips:
-                  - type: template
-                    entity: sensor.vevor_eml3500_24l_vevor_working_mode
-                    icon: mdi:state-machine
-                    content: >-
-                      {{ states('sensor.vevor_eml3500_24l_vevor_working_mode')
-                      }}
-                    icon_color: >
-                      {% set m =
-                      states('sensor.vevor_eml3500_24l_vevor_working_mode') %}
-                      {% set map = {'Main mode':'blue','Standby
-                      mode':'grey','Off-grid mode':'green'} %} {{
-                      map.get(m,'grey') }}
-                    tap_action:
-                      action: more-info
-                card_mod:
-                  style: |
-                    ha-card{
-                      --ha-card-border-radius:18px;
-                      backdrop-filter:blur(14px) saturate(1.1);
-                      background:rgba(30,32,39,.55);
-                      border:1px solid rgba(255,255,255,.08);
-                      box-shadow:0 10px 32px rgba(0,0,0,.45);
-                    }
-          - type: custom:energy-flow-card-plus
-            title: Sinòttico Fotovoltaico
-            use_new_flow_rate_model: true
-            energy_date_selection: false
-            clickable_entities: true
-            display_zero_lines: false
-            wh_kwh_threshold: 1000
-            wh_decimals: 2
-            kwh_decimals: 2
-            min_flow_rate: 1
-            max_flow_rate: 6
-            min_expected_energy: 0
-            max_expected_energy: 420
-            entities:
-              solar:
-                name: Fotovoltaico
-                icon: mdi:white-balance-sunny
-                color: '#FDD835'
-                color_icon: true
-                color_value: true
-                display_zero_state: true
-                secondary_info:
-                  unit_of_measurement: W
-                  icon: mdi:flash
-                  entity: sensor.vevor_eml3500_24l_vevor_pv_power
-                entity: sensor.vevor_eml3500_24l_vevor_pv_energy_today
-              home:
-                name: Carichi
-                icon: mdi:home-lightning-bolt
-                color_icon: true
-                color_value: true
-                secondary_info:
-                  unit_of_measurement: W
-                  icon: mdi:flash
-                  entity: sensor.vevor_eml3500_24l_vevor_output_active_power
-              grid:
-                name: Rete
-                icon: mdi:transmission-tower
-                color:
-                  consumption: '#42A5F5'
-                  production: '#66BB6A'
-                color_circle: consumption
-                color_icon: true
-                entity:
-                  consumption: sensor.vevor_eml3500_24l_vevor_grid_import_energy_today
-                  production: sensor.vevor_eml3500_24l_vevor_grid_export_energy_today
-                secondary_info:
-                  entity: sensor.vevor_eml3500_24l_vevor_grid_import_power
-                  unit_of_measurement: W
-                  icon: mdi:flash
-                power_outage:
-                  entity: sensor.vevor_eml3500_24l_vevor_grid_export_power
-              battery:
-                name: Batteria
-                state_of_charge: sensor.vevor_eml3500_24l_vevor_battery_soc
-                state_of_charge_decimals: 0
-                color:
-                  production: '#26C6DA'
-                  consumption: '#FFB300'
-                color_icon: true
-                color_state_of_charge_value: true
-                entity:
-                  production: >-
-                    sensor.vevor_eml3500_24l_vevor_battery_discharge_energy_today
-                  consumption: sensor.vevor_eml3500_24l_vevor_battery_charge_energy_today
-                secondary_info:
-                  entity: sensor.vevor_battery_current
-                  unit_of_measurement: A
-                  icon: mdi:current-dc
-                use_metadata: false
-              fossil_fuel_percentage:
-                show: false
-            card_mod:
-              style: |
-                ha-card{
-                  --ha-card-border-radius:18px;
-                  backdrop-filter:blur(14px) saturate(1.1);
-                  background:rgba(30,32,39,.55);
-                  border:1px solid rgba(255,255,255,.08);
-                  box-shadow:0 10px 32px rgba(0,0,0,.45);
-                }
-          - type: vertical-stack
-            cards:
-              - type: custom:mushroom-template-card
-                primary: >-
-                  {{
-                  (states('sensor.vevor_eml3500_24l_vevor_pv_power')|float(0))|round(0)
-                  }} W
-                secondary: Fotovoltaico ora
-                icon: mdi:white-balance-sunny
-                icon_color: amber
-                fill_container: true
-                card_mod:
-                  style: |
-                    ha-card{
-                      --ha-card-border-radius:18px;
-                      backdrop-filter:blur(14px) saturate(1.1);
-                      background:rgba(30,32,39,.55);
-                      border:1px solid rgba(255,255,255,.08);
-                      box-shadow:0 10px 32px rgba(0,0,0,.45);
-                    }
-              - type: custom:mushroom-template-card
-                primary: >
-                  {% set p =
-                  states('sensor.vevor_eml3500_24l_vevor_mains_power')|float(0)
-                  %} {{ ('↓ ' ~ (p|round(0)) ~ ' W') if p>0 else ('↑ ' ~
-                  ((-p)|round(0)) ~ ' W') }}
-                secondary: Rete (↓ import / ↑ export)
-                icon: mdi:transmission-tower
-                icon_color: >
-                  {{ 'blue' if
-                  (states('sensor.vevor_eml3500_24l_vevor_mains_power')|float(0))>0
-                  else 'green' }}
-                fill_container: true
-                card_mod:
-                  style: |
-                    ha-card{
-                      --ha-card-border-radius:18px;
-                      backdrop-filter:blur(14px) saturate(1.1);
-                      background:rgba(30,32,39,.55);
-                      border:1px solid rgba(255,255,255,.08);
-                      box-shadow:0 10px 32px rgba(0,0,0,.45);
-                    }
-              - type: custom:mushroom-template-card
-                primary: >-
-                  {{
-                  (states('sensor.vevor_eml3500_24l_vevor_output_active_power')|float(0))|round(0)
-                  }} W
-                secondary: Carichi istantanei
-                icon: mdi:home-lightning-bolt
-                icon_color: purple
-                fill_container: true
-                card_mod:
-                  style: |
-                    ha-card{
-                      --ha-card-border-radius:18px;
-                      backdrop-filter:blur(14px) saturate(1.1);
-                      background:rgba(30,32,39,.55);
-                      border:1px solid rgba(255,255,255,.08);
-                      box-shadow:0 10px 32px rgba(0,0,0,.45);
-                    }
-              - type: custom:mushroom-template-card
-                primary: >-
-                  {{ states('sensor.vevor_eml3500_24l_vevor_battery_soc')|int(0)
-                  }}%
-                secondary: Stato batteria
-                icon: >
-                  {% set s =
-                  states('sensor.vevor_eml3500_24l_vevor_battery_soc')|int(0) %}
-                  {% if s >= 90 %}mdi:battery{% elif s >= 60 %}mdi:battery-80{%
-                  elif s >= 40 %}mdi:battery-60{% elif s >= 20
-                  %}mdi:battery-40{% elif s > 0 %}mdi:battery-20{% else
-                  %}mdi:battery-outline{% endif %}
-                icon_color: >
-                  {% set s =
-                  states('sensor.vevor_eml3500_24l_vevor_battery_soc')|int(0) %}
-                  {% if s >= 80 %}green{% elif s >= 50 %}teal{% elif s >= 30
-                  %}amber{% else %}red{% endif %}
-                fill_container: true
-                card_mod:
-                  style: |
-                    ha-card{
-                      --ha-card-border-radius:18px;
-                      backdrop-filter:blur(14px) saturate(1.1);
-                      background:rgba(30,32,39,.55);
-                      border:1px solid rgba(255,255,255,.08);
-                      box-shadow:0 10px 32px rgba(0,0,0,.45);
-                    }
-      - type: grid
-        columns: 2
-        cards:
-          - type: vertical-stack
-            cards:
-              - type: markdown
-                content: '## Controlli & Setpoint'
-                card_mod:
-                  style: >
-                    ha-card { background: rgba(0,0,0,0); box-shadow: none;
-                    padding-bottom: 0; }
-              - type: entities
-                entities:
-                  - entity: select.vevor_eml3500_24l_vevor_battery_type
-                    name: Tipo batteria
-                  - entity: sensor.vevor_eml3500_24l_vevor_dcdc_temperature
-                    name: Temperatura batterie (comp.)
-                  - entity: number.vevor_eml3500_24l_vevor_maximum_charge_voltage
-                    name: Reg 323 – OVP (V)
-                  - entity: number.vevor_eml3500_24l_vevor_eq_charging_voltage
-                    name: Reg 324 – Absorb (V)
-                  - entity: number.vevor_eml3500_24l_vevor_floating_charge_voltage
-                    name: Reg 325 – Float (V)
-                  - entity: number.vevor_eml3500_24l_vevor_maximum_charge_current
-                    name: Max charge totale (A)
-                  - entity: >-
-                      number.vevor_eml3500_24l_vevor_maximum_mains_charging_current
-                    name: Max charge da rete (A)
-                  - type: divider
-                  - entity: number.vevor_eml3500_24l_vevor_output_voltage_setting
-                    name: Uscita 230 V (reg 320)
-                  - entity: number.vevor_eml3500_24l_vevor_output_frequency_setting
-                    name: Uscita 50 Hz (reg 321)
-                card_mod:
-                  style: |
-                    ha-card{
-                      --ha-card-border-radius:18px;
-                      backdrop-filter:blur(14px) saturate(1.1);
-                      background:rgba(30,32,39,.55);
-                      border:1px solid rgba(255,255,255,.08);
-                      box-shadow:0 10px 32px rgba(0,0,0,.45);
-                    }
-              - type: horizontal-stack
-                cards:
-                  - type: custom:mushroom-template-card
-                    primary: Power ON
-                    icon: mdi:power
-                    icon_color: green
-                    tap_action:
-                      action: call-service
-                      service: script.turn_on
-                      target:
-                        entity_id: script.inv_remote_power_on
-                  - type: custom:mushroom-template-card
-                    primary: Power OFF
-                    icon: mdi:power
-                    icon_color: red
-                    tap_action:
-                      action: call-service
-                      service: script.turn_on
-                      target:
-                        entity_id: script.inv_remote_power_off
-                  - type: custom:mushroom-template-card
-                    primary: 230 V / 50 Hz
-                    icon: mdi:flash
-                    icon_color: amber
-                    tap_action:
-                      action: call-service
-                      service: script.turn_on
-                      target:
-                        entity_id: script.inv_set_230v_50hz
-              - type: horizontal-stack
-                cards:
-                  - type: custom:mushroom-template-card
-                    primary: Applica setpoint FIAMM
-                    icon: mdi:battery-sync
-                    icon_color: teal
-                    tap_action:
-                      action: call-service
-                      service: script.turn_on
-                      target:
-                        entity_id: script.inv_apply_fiamm_setpoints
-                  - type: custom:mushroom-template-card
-                    primary: Forza EQ
-                    icon: mdi:battery-plus-variant
-                    icon_color: purple
-                    tap_action:
-                      action: call-service
-                      service: script.turn_on
-                      target:
-                        entity_id: script.inv_force_eq_once
-                  - type: custom:mushroom-template-card
-                    primary: Exit Fault
-                    icon: mdi:alert-circle-check
-                    icon_color: blue
-                    tap_action:
-                      action: call-service
-                      service: script.turn_on
-                      target:
-                        entity_id: script.inv_exit_fault_lock
-      - type: grid
-        columns: 2
-        cards:
-          - type: vertical-stack
-            cards:
-              - type: heading
-                heading: Allarmi & Avvisi
-                heading_style: title
-              - type: custom:mushroom-chips-card
-                chips:
-                  - type: template
-                    entity: sensor.vevor_eml3500_24l_vevor_faults
-                    icon: >
-                      {% set s = states('sensor.vevor_eml3500_24l_vevor_faults')
-                      %} {{ 'mdi:shield-alert' if s!='OK' else
-                      'mdi:shield-check' }}
-                    content: >-
-                      {{ 'Stato: ' ~
-                      states('sensor.vevor_eml3500_24l_vevor_faults') }}
-                    icon_color: >
-                      {% set s = states('sensor.vevor_eml3500_24l_vevor_faults')
-                      %} {% if s=='ERROR' %}red{% elif s=='WARN' %}amber{% else
-                      %}green{% endif %}
-                    tap_action:
-                      action: more-info
-                  - type: template
-                    entity: sensor.vevor_eml3500_24l_vevor_faults
-                    icon: mdi:alert-octagon
-                    content: '{{ states(''sensor.vevor_eml3500_24l_vevor_faults'') }}'
-                    icon_color: >-
-                      {{ 'red' if
-                      states('sensor.vevor_eml3500_24l_vevor_faults')!='OK' else
-                      'grey' }}
-                    tap_action:
-                      action: more-info
-                  - type: template
-                    entity: sensor.vevor_eml3500_24l_vevor_warnings
-                    icon: mdi:alert
-                    content: '{{ states(''sensor.vevor_eml3500_24l_vevor_warnings'') }}'
-                    icon_color: >-
-                      {{ 'amber' if
-                      states('sensor.vevor_eml3500_24l_vevor_warnings')!='OK'
-                      else 'grey' }}
-                    tap_action:
-                      action: more-info
-                card_mod:
-                  style: |
-                    ha-card{
-                      --ha-card-border-radius:18px;
-                      backdrop-filter:blur(14px) saturate(1.1);
-                      background:rgba(30,32,39,.55);
-                      border:1px solid rgba(255,255,255,.08);
-                      box-shadow:0 10px 32px rgba(0,0,0,.45);
-                    }
-              - type: custom:mushroom-template-card
-                primary: Guasti
-                secondary: '{{ states(''sensor.vevor_eml3500_24l_vevor_faults'') }}'
-                icon: mdi:alert-octagon
-                icon_color: >-
-                  {{ 'red' if
-                  states('sensor.vevor_eml3500_24l_vevor_faults')!='OK' else
-                  'grey' }}
-                fill_container: true
-                tap_action:
-                  action: more-info
-                card_mod:
-                  style: |
-                    ha-card{
-                      --ha-card-border-radius:18px;
-                      backdrop-filter:blur(14px) saturate(1.1);
-                      background:rgba(30,32,39,.55);
-                      border:1px solid rgba(255,255,255,.08);
-                      box-shadow:0 10px 32px rgba(0,0,0,.45);
-                    }
-              - type: custom:mushroom-template-card
-                primary: Avvisi
-                secondary: '{{ states(''sensor.vevor_eml3500_24l_vevor_warnings'') }}'
-                icon: mdi:alert
-                icon_color: >-
-                  {{ 'amber' if
-                  states('sensor.vevor_eml3500_24l_vevor_warnings')!='OK' else
-                  'grey' }}
-                fill_container: true
-                tap_action:
-                  action: more-info
-                card_mod:
-                  style: |
-                    ha-card{
-                      --ha-card-border-radius:18px;
-                      backdrop-filter:blur(14px) saturate(1.1);
-                      background:rgba(30,32,39,.55);
-                      border:1px solid rgba(255,255,255,.08);
-                      box-shadow:0 10px 32px rgba(0,0,0,.45);
-                    }
-          - type: vertical-stack
-            cards:
-              - type: entities
-                entities:
-                  - entity: sensor.vevor_eml3500_24l_vevor_faults
-                    name: Guasti presenti
-                  - entity: sensor.vevor_eml3500_24l_vevor_warnings
-                    name: Avvisi presenti
-                card_mod:
-                  style: |
-                    ha-card{
-                      --ha-card-border-radius:18px;
-                      backdrop-filter:blur(14px) saturate(1.1);
-                      background:rgba(30,32,39,.55);
-                      border:1px solid rgba(255,255,255,.08);
-                      box-shadow:0 10px 32px rgba(0,0,0,.45);
-                    }
-      - type: grid
-        cards:
-          - type: vertical-stack
-            cards:
-              - type: markdown
-                content: '## Telemetria & Stato'
-                card_mod:
-                  style: >
-                    ha-card { background: rgba(0,0,0,0); box-shadow: none;
-                    padding-bottom: 0; }
-              - type: entities
-                entities:
-                  - entity: sensor.vevor_eml3500_24l_vevor_power_flow_status
-                    name: Flussi (stato)
-                  - entity: sensor.vevor_eml3500_24l_vevor_pv_voltage
-                    name: PV Voltage
-                  - entity: sensor.vevor_eml3500_24l_vevor_pv_current
-                    name: PV Current
-                  - entity: sensor.vevor_eml3500_24l_vevor_inverter_voltage
-                    name: Tensione inverter
-                  - entity: sensor.vevor_eml3500_24l_vevor_mains_voltage
-                    name: Tensione rete
-                  - entity: sensor.vevor_eml3500_24l_vevor_battery_voltage
-                    name: Tensione batteria
-                  - entity: sensor.vevor_eml3500_24l_vevor_inverter_temperature
-                    name: Temperatura inverter
-                  - entity: sensor.vevor_eml3500_24l_vevor_dcdc_temperature
-                    name: Temperatura DC/DC
-                card_mod:
-                  style: |
-                    ha-card{
-                      --ha-card-border-radius:18px;
-                      backdrop-filter:blur(14px) saturate(1.1);
-                      background:rgba(30,32,39,.55);
-                      border:1px solid rgba(255,255,255,.08);
-                      box-shadow:0 10px 32px rgba(0,0,0,.45);
-                    }
-              - type: history-graph
-                hours_to_show: 24
-                entities:
-                  - sensor.vevor_eml3500_24l_vevor_pv_power
-                  - sensor.vevor_eml3500_24l_vevor_output_active_power
-                  - sensor.vevor_eml3500_24l_vevor_battery_power
-                  - sensor.vevor_eml3500_24l_vevor_battery_voltage
-                card_mod:
-                  style: |
-                    ha-card{
-                      --ha-card-border-radius:18px;
-                      backdrop-filter:blur(14px) saturate(1.1);
-                      background:rgba(30,32,39,.55);
-                      border:1px solid rgba(255,255,255,.08);
-                      box-shadow:0 10px 32px rgba(0,0,0,.45);
-                    }
-    header:
-      layout: center
-      badges_position: top
-      badges_wrap: scroll
-      card:
-        type: markdown
-        text_only: true
-        content: |-
-          # Inverter
-          Controllo e flussi del tuo impianto ⚡
-    background:
-      opacity: 90
-      alignment: center
-      size: cover
-      repeat: repeat
-      attachment: fixed
-      image: /api/image/serve/dd887696c41ff32df6dfe22cfed43c5c/original
-    cards: []
+                       mushroom-shape-icon{
+                         filter:
+                           [[[
+                             return (states['binary_sensor.0x00158d00096dfdb9_contact'].state === 'on')
+                               ? 'drop-shadow(0 0 8px rgba(244,67,54,.6))'
+                               : 'none';
+                           ]]];
+                       }
+                 - type: custom:mushroom-template-card
+                   entity: binary_sensor.finestra_salotto_contact
+                   primary: Finestra Salotto
+                   secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
+                   icon: >-
+                     {{ 'mdi:window-open-variant' if is_state(entity,'on') else
+                     'mdi:window-closed-variant' }}
+                   icon_color: '{{ ''red'' if is_state(entity,''on'') else ''green'' }}'
+                   layout: vertical
+                   tap_action:
+                     action: more-info
+                   card_mod:
+                     style: >-
+                       ha-card{--ha-card-border-radius:18px;backdrop-filter:blur(14px)
+                       saturate(1.1);background:rgba(30,32,39,.55);border:1px
+                       solid rgba(255,255,255,.08);box-shadow:0 10px 32px
+                       rgba(0,0,0,.45);}
+                 - type: custom:mushroom-template-card
+                   entity: binary_sensor.0x00158d0009ea2cba_contact
+                   primary: Finestra Bagno
+                   secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
+                   icon: >-
+                     {{ 'mdi:window-open-variant' if is_state(entity,'on') else
+                     'mdi:window-closed-variant' }}
+                   icon_color: '{{ ''red'' if is_state(entity,''on'') else ''green'' }}'
+                   layout: vertical
+                   tap_action:
+                     action: more-info
+                   card_mod:
+                     style: >-
+                       ha-card{--ha-card-border-radius:18px;backdrop-filter:blur(14px)
+                       saturate(1.1);background:rgba(30,32,39,.55);border:1px
+                       solid rgba(255,255,255,.08);box-shadow:0 10px 32px
+                       rgba(0,0,0,.45);}
+                 - type: custom:mushroom-template-card
+                   entity: binary_sensor.finestra_camera_contact
+                   primary: Finestra Camera
+                   secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
+                   icon: >-
+                     {{ 'mdi:window-open-variant' if is_state(entity,'on') else
+                     'mdi:window-closed-variant' }}
+                   icon_color: '{{ ''red'' if is_state(entity,''on'') else ''green'' }}'
+                   layout: vertical
+                   tap_action:
+                     action: more-info
+                   card_mod:
+                     style: >-
+                       ha-card{--ha-card-border-radius:18px;backdrop-filter:blur(14px)
+                       saturate(1.1);background:rgba(30,32,39,.55);border:1px
+                       solid rgba(255,255,255,.08);box-shadow:0 10px 32px
+                       rgba(0,0,0,.45);}
+                 - type: custom:mushroom-template-card
+                   entity: binary_sensor.finestra_studio_contact
+                   primary: Finestra Studio
+                   secondary: '{{ ''Da '' ~ relative_time(states[entity].last_changed) }}'
+                   icon: >-
+                     {{ 'mdi:window-open-variant' if is_state(entity,'on') else
+                     'mdi:window-closed-variant' }}
+                   icon_color: '{{ ''red'' if is_state(entity,''on'') else ''green'' }}'
+                   layout: vertical
+                   tap_action:
+                     action: more-info
+                   card_mod:
+                     style: >-
+                       ha-card{--ha-card-border-radius:18px;backdrop-filter:blur(14px)
+                       saturate(1.1);background:rgba(30,32,39,.55);border:1px
+                       solid rgba(255,255,255,.08);box-shadow:0 10px 32px
+                       rgba(0,0,0,.45);}
+     - type: grid
+       columns: 3
+       cards:
+         - type: vertical-stack
+           cards:
+             - type: heading
+               heading: Inverter VEVOR — Plancia
+               heading_style: title
+             - type: custom:mushroom-chips-card
+               chips:
+                 - type: template
+                   entity: sensor.vevor_eml3500_24l_vevor_working_mode
+                   icon: mdi:state-machine
+                   content: >-
+                     {{ states('sensor.vevor_eml3500_24l_vevor_working_mode')
+                     }}
+                   icon_color: >
+                     {% set m =
+                     states('sensor.vevor_eml3500_24l_vevor_working_mode') %}
+                     {% set map = {'Main mode':'blue','Standby
+                     mode':'grey','Off-grid mode':'green'} %} {{
+                     map.get(m,'grey') }}
+                   tap_action:
+                     action: more-info
+               card_mod:
+                 style: |
+                   ha-card{
+                     --ha-card-border-radius:18px;
+                     backdrop-filter:blur(14px) saturate(1.1);
+                     background:rgba(30,32,39,.55);
+                     border:1px solid rgba(255,255,255,.08);
+                     box-shadow:0 10px 32px rgba(0,0,0,.45);
+                   }
+         - type: custom:energy-flow-card-plus
+           title: Sinòttico Fotovoltaico
+           use_new_flow_rate_model: true
+           energy_date_selection: false
+           clickable_entities: true
+           display_zero_lines: false
+           wh_kwh_threshold: 1000
+           wh_decimals: 2
+           kwh_decimals: 2
+           min_flow_rate: 1
+           max_flow_rate: 6
+           min_expected_energy: 0
+           max_expected_energy: 420
+           entities:
+             solar:
+               name: Fotovoltaico
+               icon: mdi:white-balance-sunny
+               color: '#FDD835'
+               color_icon: true
+               color_value: true
+               display_zero_state: true
+               secondary_info:
+                 unit_of_measurement: W
+                 icon: mdi:flash
+                 entity: sensor.vevor_eml3500_24l_vevor_pv_power
+               entity: sensor.vevor_eml3500_24l_vevor_pv_energy_today
+             home:
+               name: Carichi
+               icon: mdi:home-lightning-bolt
+               color_icon: true
+               color_value: true
+               secondary_info:
+                 unit_of_measurement: W
+                 icon: mdi:flash
+                 entity: sensor.vevor_eml3500_24l_vevor_output_active_power
+             grid:
+               name: Rete
+               icon: mdi:transmission-tower
+               color:
+                 consumption: '#42A5F5'
+                 production: '#66BB6A'
+               color_circle: consumption
+               color_icon: true
+               entity:
+                 consumption: sensor.vevor_eml3500_24l_vevor_grid_import_energy_today
+                 production: sensor.vevor_eml3500_24l_vevor_grid_export_energy_today
+               secondary_info:
+                 entity: sensor.vevor_eml3500_24l_vevor_grid_import_power
+                 unit_of_measurement: W
+                 icon: mdi:flash
+               power_outage:
+                 entity: sensor.vevor_eml3500_24l_vevor_grid_export_power
+             battery:
+               name: Batteria
+               state_of_charge: sensor.vevor_eml3500_24l_vevor_battery_soc
+               state_of_charge_decimals: 0
+               color:
+                 production: '#26C6DA'
+                 consumption: '#FFB300'
+               color_icon: true
+               color_state_of_charge_value: true
+               entity:
+                 production: >-
+                   sensor.vevor_eml3500_24l_vevor_battery_discharge_energy_today
+                 consumption: sensor.vevor_eml3500_24l_vevor_battery_charge_energy_today
+               secondary_info:
+                 entity: sensor.vevor_battery_current
+                 unit_of_measurement: A
+                 icon: mdi:current-dc
+               use_metadata: false
+             fossil_fuel_percentage:
+               show: false
+           card_mod:
+             style: |
+               ha-card{
+                 --ha-card-border-radius:18px;
+                 backdrop-filter:blur(14px) saturate(1.1);
+                 background:rgba(30,32,39,.55);
+                 border:1px solid rgba(255,255,255,.08);
+                 box-shadow:0 10px 32px rgba(0,0,0,.45);
+               }
+         - type: vertical-stack
+           cards:
+             - type: custom:mushroom-template-card
+               primary: >-
+                 {{
+                 (states('sensor.vevor_eml3500_24l_vevor_pv_power')|float(0))|round(0)
+                 }} W
+               secondary: Fotovoltaico ora
+               icon: mdi:white-balance-sunny
+               icon_color: amber
+               fill_container: true
+               card_mod:
+                 style: |
+                   ha-card{
+                     --ha-card-border-radius:18px;
+                     backdrop-filter:blur(14px) saturate(1.1);
+                     background:rgba(30,32,39,.55);
+                     border:1px solid rgba(255,255,255,.08);
+                     box-shadow:0 10px 32px rgba(0,0,0,.45);
+                   }
+             - type: custom:mushroom-template-card
+               primary: >
+                 {% set p =
+                 states('sensor.vevor_eml3500_24l_vevor_mains_power')|float(0)
+                 %} {{ ('↓ ' ~ (p|round(0)) ~ ' W') if p>0 else ('↑ ' ~
+                 ((-p)|round(0)) ~ ' W') }}
+               secondary: Rete (↓ import / ↑ export)
+               icon: mdi:transmission-tower
+               icon_color: >
+                 {{ 'blue' if
+                 (states('sensor.vevor_eml3500_24l_vevor_mains_power')|float(0))>0
+                 else 'green' }}
+               fill_container: true
+               card_mod:
+                 style: |
+                   ha-card{
+                     --ha-card-border-radius:18px;
+                     backdrop-filter:blur(14px) saturate(1.1);
+                     background:rgba(30,32,39,.55);
+                     border:1px solid rgba(255,255,255,.08);
+                     box-shadow:0 10px 32px rgba(0,0,0,.45);
+                   }
+             - type: custom:mushroom-template-card
+               primary: >-
+                 {{
+                 (states('sensor.vevor_eml3500_24l_vevor_output_active_power')|float(0))|round(0)
+                 }} W
+               secondary: Carichi istantanei
+               icon: mdi:home-lightning-bolt
+               icon_color: purple
+               fill_container: true
+               card_mod:
+                 style: |
+                   ha-card{
+                     --ha-card-border-radius:18px;
+                     backdrop-filter:blur(14px) saturate(1.1);
+                     background:rgba(30,32,39,.55);
+                     border:1px solid rgba(255,255,255,.08);
+                     box-shadow:0 10px 32px rgba(0,0,0,.45);
+                   }
+             - type: custom:mushroom-template-card
+               primary: >-
+                 {{ states('sensor.vevor_eml3500_24l_vevor_battery_soc')|int(0)
+                 }}%
+               secondary: Stato batteria
+               icon: >
+                 {% set s =
+                 states('sensor.vevor_eml3500_24l_vevor_battery_soc')|int(0) %}
+                 {% if s >= 90 %}mdi:battery{% elif s >= 60 %}mdi:battery-80{%
+                 elif s >= 40 %}mdi:battery-60{% elif s >= 20
+                 %}mdi:battery-40{% elif s > 0 %}mdi:battery-20{% else
+                 %}mdi:battery-outline{% endif %}
+               icon_color: >
+                 {% set s =
+                 states('sensor.vevor_eml3500_24l_vevor_battery_soc')|int(0) %}
+                 {% if s >= 80 %}green{% elif s >= 50 %}teal{% elif s >= 30
+                 %}amber{% else %}red{% endif %}
+               fill_container: true
+               card_mod:
+                 style: |
+                   ha-card{
+                     --ha-card-border-radius:18px;
+                     backdrop-filter:blur(14px) saturate(1.1);
+                     background:rgba(30,32,39,.55);
+                     border:1px solid rgba(255,255,255,.08);
+                     box-shadow:0 10px 32px rgba(0,0,0,.45);
+                   }
+   header:
+     layout: center
+     badges_position: top
+     badges_wrap: scroll
+     card:
+       type: markdown
+       text_only: true
+       content: |-
+         # Ciao Danilo
+         Benvenuto nella dashboard della tua domotica ✨
+   background:
+     opacity: 90
+     alignment: center
+     size: cover
+     repeat: repeat
+     attachment: fixed
+     image: /api/image/serve/dd887696c41ff32df6dfe22cfed43c5c/original
+   cards: []
+ - title: Inverter
+   type: sections
+   badges: []
+   sections:
+     - type: grid
+       columns: 3
+       cards:
+         - type: vertical-stack
+           cards:
+             - type: heading
+               heading: Inverter VEVOR — Plancia
+               heading_style: title
+             - type: custom:mushroom-chips-card
+               chips:
+                 - type: template
+                   entity: sensor.vevor_eml3500_24l_vevor_working_mode
+                   icon: mdi:state-machine
+                   content: >-
+                     {{ states('sensor.vevor_eml3500_24l_vevor_working_mode')
+                     }}
+                   icon_color: >
+                     {% set m =
+                     states('sensor.vevor_eml3500_24l_vevor_working_mode') %}
+                     {% set map = {'Main mode':'blue','Standby
+                     mode':'grey','Off-grid mode':'green'} %} {{
+                     map.get(m,'grey') }}
+                   tap_action:
+                     action: more-info
+               card_mod:
+                 style: |
+                   ha-card{
+                     --ha-card-border-radius:18px;
+                     backdrop-filter:blur(14px) saturate(1.1);
+                     background:rgba(30,32,39,.55);
+                     border:1px solid rgba(255,255,255,.08);
+                     box-shadow:0 10px 32px rgba(0,0,0,.45);
+                   }
+         - type: custom:energy-flow-card-plus
+           title: Sinòttico Fotovoltaico
+           use_new_flow_rate_model: true
+           energy_date_selection: false
+           clickable_entities: true
+           display_zero_lines: false
+           wh_kwh_threshold: 1000
+           wh_decimals: 2
+           kwh_decimals: 2
+           min_flow_rate: 1
+           max_flow_rate: 6
+           min_expected_energy: 0
+           max_expected_energy: 420
+           entities:
+             solar:
+               name: Fotovoltaico
+               icon: mdi:white-balance-sunny
+               color: '#FDD835'
+               color_icon: true
+               color_value: true
+               display_zero_state: true
+               secondary_info:
+                 unit_of_measurement: W
+                 icon: mdi:flash
+                 entity: sensor.vevor_eml3500_24l_vevor_pv_power
+               entity: sensor.vevor_eml3500_24l_vevor_pv_energy_today
+             home:
+               name: Carichi
+               icon: mdi:home-lightning-bolt
+               color_icon: true
+               color_value: true
+               secondary_info:
+                 unit_of_measurement: W
+                 icon: mdi:flash
+                 entity: sensor.vevor_eml3500_24l_vevor_output_active_power
+             grid:
+               name: Rete
+               icon: mdi:transmission-tower
+               color:
+                 consumption: '#42A5F5'
+                 production: '#66BB6A'
+               color_circle: consumption
+               color_icon: true
+               entity:
+                 consumption: sensor.vevor_eml3500_24l_vevor_grid_import_energy_today
+                 production: sensor.vevor_eml3500_24l_vevor_grid_export_energy_today
+               secondary_info:
+                 entity: sensor.vevor_eml3500_24l_vevor_grid_import_power
+                 unit_of_measurement: W
+                 icon: mdi:flash
+               power_outage:
+                 entity: sensor.vevor_eml3500_24l_vevor_grid_export_power
+             battery:
+               name: Batteria
+               state_of_charge: sensor.vevor_eml3500_24l_vevor_battery_soc
+               state_of_charge_decimals: 0
+               color:
+                 production: '#26C6DA'
+                 consumption: '#FFB300'
+               color_icon: true
+               color_state_of_charge_value: true
+               entity:
+                 production: >-
+                   sensor.vevor_eml3500_24l_vevor_battery_discharge_energy_today
+                 consumption: sensor.vevor_eml3500_24l_vevor_battery_charge_energy_today
+               secondary_info:
+                 entity: sensor.vevor_battery_current
+                 unit_of_measurement: A
+                 icon: mdi:current-dc
+               use_metadata: false
+             fossil_fuel_percentage:
+               show: false
+           card_mod:
+             style: |
+               ha-card{
+                 --ha-card-border-radius:18px;
+                 backdrop-filter:blur(14px) saturate(1.1);
+                 background:rgba(30,32,39,.55);
+                 border:1px solid rgba(255,255,255,.08);
+                 box-shadow:0 10px 32px rgba(0,0,0,.45);
+               }
+         - type: vertical-stack
+           cards:
+             - type: custom:mushroom-template-card
+               primary: >-
+                 {{
+                 (states('sensor.vevor_eml3500_24l_vevor_pv_power')|float(0))|round(0)
+                 }} W
+               secondary: Fotovoltaico ora
+               icon: mdi:white-balance-sunny
+               icon_color: amber
+               fill_container: true
+               card_mod:
+                 style: |
+                   ha-card{
+                     --ha-card-border-radius:18px;
+                     backdrop-filter:blur(14px) saturate(1.1);
+                     background:rgba(30,32,39,.55);
+                     border:1px solid rgba(255,255,255,.08);
+                     box-shadow:0 10px 32px rgba(0,0,0,.45);
+                   }
+             - type: custom:mushroom-template-card
+               primary: >
+                 {% set p =
+                 states('sensor.vevor_eml3500_24l_vevor_mains_power')|float(0)
+                 %} {{ ('↓ ' ~ (p|round(0)) ~ ' W') if p>0 else ('↑ ' ~
+                 ((-p)|round(0)) ~ ' W') }}
+               secondary: Rete (↓ import / ↑ export)
+               icon: mdi:transmission-tower
+               icon_color: >
+                 {{ 'blue' if
+                 (states('sensor.vevor_eml3500_24l_vevor_mains_power')|float(0))>0
+                 else 'green' }}
+               fill_container: true
+               card_mod:
+                 style: |
+                   ha-card{
+                     --ha-card-border-radius:18px;
+                     backdrop-filter:blur(14px) saturate(1.1);
+                     background:rgba(30,32,39,.55);
+                     border:1px solid rgba(255,255,255,.08);
+                     box-shadow:0 10px 32px rgba(0,0,0,.45);
+                   }
+             - type: custom:mushroom-template-card
+               primary: >-
+                 {{
+                 (states('sensor.vevor_eml3500_24l_vevor_output_active_power')|float(0))|round(0)
+                 }} W
+               secondary: Carichi istantanei
+               icon: mdi:home-lightning-bolt
+               icon_color: purple
+               fill_container: true
+               card_mod:
+                 style: |
+                   ha-card{
+                     --ha-card-border-radius:18px;
+                     backdrop-filter:blur(14px) saturate(1.1);
+                     background:rgba(30,32,39,.55);
+                     border:1px solid rgba(255,255,255,.08);
+                     box-shadow:0 10px 32px rgba(0,0,0,.45);
+                   }
+             - type: custom:mushroom-template-card
+               primary: >-
+                 {{ states('sensor.vevor_eml3500_24l_vevor_battery_soc')|int(0)
+                 }}%
+               secondary: Stato batteria
+               icon: >
+                 {% set s =
+                 states('sensor.vevor_eml3500_24l_vevor_battery_soc')|int(0) %}
+                 {% if s >= 90 %}mdi:battery{% elif s >= 60 %}mdi:battery-80{%
+                 elif s >= 40 %}mdi:battery-60{% elif s >= 20
+                 %}mdi:battery-40{% elif s > 0 %}mdi:battery-20{% else
+                 %}mdi:battery-outline{% endif %}
+               icon_color: >
+                 {% set s =
+                 states('sensor.vevor_eml3500_24l_vevor_battery_soc')|int(0) %}
+                 {% if s >= 80 %}green{% elif s >= 50 %}teal{% elif s >= 30
+                 %}amber{% else %}red{% endif %}
+               fill_container: true
+               card_mod:
+                 style: |
+                   ha-card{
+                     --ha-card-border-radius:18px;
+                     backdrop-filter:blur(14px) saturate(1.1);
+                     background:rgba(30,32,39,.55);
+                     border:1px solid rgba(255,255,255,.08);
+                     box-shadow:0 10px 32px rgba(0,0,0,.45);
+                   }
+     - type: grid
+       columns: 2
+       cards:
+         - type: vertical-stack
+           cards:
+             - type: markdown
+               content: '## Controlli & Setpoint'
+               card_mod:
+                 style: >
+                   ha-card { background: rgba(0,0,0,0); box-shadow: none;
+                   padding-bottom: 0; }
+             - type: entities
+               entities:
+                 - entity: select.vevor_eml3500_24l_vevor_battery_type
+                   name: Tipo batteria
+                 - entity: sensor.vevor_eml3500_24l_vevor_dcdc_temperature
+                   name: Temperatura batterie (comp.)
+                 - entity: number.vevor_eml3500_24l_vevor_maximum_charge_voltage
+                   name: Reg 323 – OVP (V)
+                 - entity: number.vevor_eml3500_24l_vevor_eq_charging_voltage
+                   name: Reg 324 – Absorb (V)
+                 - entity: number.vevor_eml3500_24l_vevor_floating_charge_voltage
+                   name: Reg 325 – Float (V)
+                 - entity: number.vevor_eml3500_24l_vevor_maximum_charge_current
+                   name: Max charge totale (A)
+                 - entity: >-
+                     number.vevor_eml3500_24l_vevor_maximum_mains_charging_current
+                   name: Max charge da rete (A)
+                 - type: divider
+                 - entity: number.vevor_eml3500_24l_vevor_output_voltage_setting
+                   name: Uscita 230 V (reg 320)
+                 - entity: number.vevor_eml3500_24l_vevor_output_frequency_setting
+                   name: Uscita 50 Hz (reg 321)
+               card_mod:
+                 style: |
+                   ha-card{
+                     --ha-card-border-radius:18px;
+                     backdrop-filter:blur(14px) saturate(1.1);
+                     background:rgba(30,32,39,.55);
+                     border:1px solid rgba(255,255,255,.08);
+                     box-shadow:0 10px 32px rgba(0,0,0,.45);
+                   }
+             - type: horizontal-stack
+               cards:
+                 - type: custom:mushroom-template-card
+                   primary: Power ON
+                   icon: mdi:power
+                   icon_color: green
+                   tap_action:
+                     action: call-service
+                     service: script.turn_on
+                     target:
+                       entity_id: script.inv_remote_power_on
+                 - type: custom:mushroom-template-card
+                   primary: Power OFF
+                   icon: mdi:power
+                   icon_color: red
+                   tap_action:
+                     action: call-service
+                     service: script.turn_on
+                     target:
+                       entity_id: script.inv_remote_power_off
+                 - type: custom:mushroom-template-card
+                   primary: 230 V / 50 Hz
+                   icon: mdi:flash
+                   icon_color: amber
+                   tap_action:
+                     action: call-service
+                     service: script.turn_on
+                     target:
+                       entity_id: script.inv_set_230v_50hz
+             - type: horizontal-stack
+               cards:
+                 - type: custom:mushroom-template-card
+                   primary: Applica setpoint FIAMM
+                   icon: mdi:battery-sync
+                   icon_color: teal
+                   tap_action:
+                     action: call-service
+                     service: script.turn_on
+                     target:
+                       entity_id: script.inv_apply_fiamm_setpoints
+                 - type: custom:mushroom-template-card
+                   primary: Forza EQ
+                   icon: mdi:battery-plus-variant
+                   icon_color: purple
+                   tap_action:
+                     action: call-service
+                     service: script.turn_on
+                     target:
+                       entity_id: script.inv_force_eq_once
+                 - type: custom:mushroom-template-card
+                   primary: Exit Fault
+                   icon: mdi:alert-circle-check
+                   icon_color: blue
+                   tap_action:
+                     action: call-service
+                     service: script.turn_on
+                     target:
+                       entity_id: script.inv_exit_fault_lock
+     - type: grid
+       columns: 2
+       cards:
+         - type: vertical-stack
+           cards:
+             - type: heading
+               heading: Allarmi & Avvisi
+               heading_style: title
+             - type: custom:mushroom-chips-card
+               chips:
+                 - type: template
+                   entity: sensor.vevor_eml3500_24l_vevor_faults
+                   icon: >
+                     {% set s = states('sensor.vevor_eml3500_24l_vevor_faults')
+                     %} {{ 'mdi:shield-alert' if s!='OK' else
+                     'mdi:shield-check' }}
+                   content: >-
+                     {{ 'Stato: ' ~
+                     states('sensor.vevor_eml3500_24l_vevor_faults') }}
+                   icon_color: >
+                     {% set s = states('sensor.vevor_eml3500_24l_vevor_faults')
+                     %} {% if s=='ERROR' %}red{% elif s=='WARN' %}amber{% else
+                     %}green{% endif %}
+                   tap_action:
+                     action: more-info
+                 - type: template
+                   entity: sensor.vevor_eml3500_24l_vevor_faults
+                   icon: mdi:alert-octagon
+                   content: '{{ states(''sensor.vevor_eml3500_24l_vevor_faults'') }}'
+                   icon_color: >-
+                     {{ 'red' if
+                     states('sensor.vevor_eml3500_24l_vevor_faults')!='OK' else
+                     'grey' }}
+                   tap_action:
+                     action: more-info
+                 - type: template
+                   entity: sensor.vevor_eml3500_24l_vevor_warnings
+                   icon: mdi:alert
+                   content: '{{ states(''sensor.vevor_eml3500_24l_vevor_warnings'') }}'
+                   icon_color: >-
+                     {{ 'amber' if
+                     states('sensor.vevor_eml3500_24l_vevor_warnings')!='OK'
+                     else 'grey' }}
+                   tap_action:
+                     action: more-info
+               card_mod:
+                 style: |
+                   ha-card{
+                     --ha-card-border-radius:18px;
+                     backdrop-filter:blur(14px) saturate(1.1);
+                     background:rgba(30,32,39,.55);
+                     border:1px solid rgba(255,255,255,.08);
+                     box-shadow:0 10px 32px rgba(0,0,0,.45);
+                   }
+             - type: custom:mushroom-template-card
+               primary: Guasti
+               secondary: '{{ states(''sensor.vevor_eml3500_24l_vevor_faults'') }}'
+               icon: mdi:alert-octagon
+               icon_color: >-
+                 {{ 'red' if
+                 states('sensor.vevor_eml3500_24l_vevor_faults')!='OK' else
+                 'grey' }}
+               fill_container: true
+               tap_action:
+                 action: more-info
+               card_mod:
+                 style: |
+                   ha-card{
+                     --ha-card-border-radius:18px;
+                     backdrop-filter:blur(14px) saturate(1.1);
+                     background:rgba(30,32,39,.55);
+                     border:1px solid rgba(255,255,255,.08);
+                     box-shadow:0 10px 32px rgba(0,0,0,.45);
+                   }
+             - type: custom:mushroom-template-card
+               primary: Avvisi
+               secondary: '{{ states(''sensor.vevor_eml3500_24l_vevor_warnings'') }}'
+               icon: mdi:alert
+               icon_color: >-
+                 {{ 'amber' if
+                 states('sensor.vevor_eml3500_24l_vevor_warnings')!='OK' else
+                 'grey' }}
+               fill_container: true
+               tap_action:
+                 action: more-info
+               card_mod:
+                 style: |
+                   ha-card{
+                     --ha-card-border-radius:18px;
+                     backdrop-filter:blur(14px) saturate(1.1);
+                     background:rgba(30,32,39,.55);
+                     border:1px solid rgba(255,255,255,.08);
+                     box-shadow:0 10px 32px rgba(0,0,0,.45);
+                   }
+         - type: vertical-stack
+           cards:
+             - type: entities
+               entities:
+                 - entity: sensor.vevor_eml3500_24l_vevor_faults
+                   name: Guasti presenti
+                 - entity: sensor.vevor_eml3500_24l_vevor_warnings
+                   name: Avvisi presenti
+               card_mod:
+                 style: |
+                   ha-card{
+                     --ha-card-border-radius:18px;
+                     backdrop-filter:blur(14px) saturate(1.1);
+                     background:rgba(30,32,39,.55);
+                     border:1px solid rgba(255,255,255,.08);
+                     box-shadow:0 10px 32px rgba(0,0,0,.45);
+                   }
+     - type: grid
+       cards:
+         - type: vertical-stack
+           cards:
+             - type: markdown
+               content: '## Telemetria & Stato'
+               card_mod:
+                 style: >
+                   ha-card { background: rgba(0,0,0,0); box-shadow: none;
+                   padding-bottom: 0; }
+             - type: entities
+               entities:
+                 - entity: sensor.vevor_eml3500_24l_vevor_power_flow_status
+                   name: Flussi (stato)
+                 - entity: sensor.vevor_eml3500_24l_vevor_pv_voltage
+                   name: PV Voltage
+                 - entity: sensor.vevor_eml3500_24l_vevor_pv_current
+                   name: PV Current
+                 - entity: sensor.vevor_eml3500_24l_vevor_inverter_voltage
+                   name: Tensione inverter
+                 - entity: sensor.vevor_eml3500_24l_vevor_mains_voltage
+                   name: Tensione rete
+                 - entity: sensor.vevor_eml3500_24l_vevor_battery_voltage
+                   name: Tensione batteria
+                 - entity: sensor.vevor_eml3500_24l_vevor_inverter_temperature
+                   name: Temperatura inverter
+                 - entity: sensor.vevor_eml3500_24l_vevor_dcdc_temperature
+                   name: Temperatura DC/DC
+               card_mod:
+                 style: |
+                   ha-card{
+                     --ha-card-border-radius:18px;
+                     backdrop-filter:blur(14px) saturate(1.1);
+                     background:rgba(30,32,39,.55);
+                     border:1px solid rgba(255,255,255,.08);
+                     box-shadow:0 10px 32px rgba(0,0,0,.45);
+                   }
+             - type: history-graph
+               hours_to_show: 24
+               entities:
+                 - sensor.vevor_eml3500_24l_vevor_pv_power
+                 - sensor.vevor_eml3500_24l_vevor_output_active_power
+                 - sensor.vevor_eml3500_24l_vevor_battery_power
+                 - sensor.vevor_eml3500_24l_vevor_battery_voltage
+               card_mod:
+                 style: |
+                   ha-card{
+                     --ha-card-border-radius:18px;
+                     backdrop-filter:blur(14px) saturate(1.1);
+                     background:rgba(30,32,39,.55);
+                     border:1px solid rgba(255,255,255,.08);
+                     box-shadow:0 10px 32px rgba(0,0,0,.45);
+                   }
+   header:
+     layout: center
+     badges_position: top
+     badges_wrap: scroll
+     card:
+       type: markdown
+       text_only: true
+       content: |-
+         # Inverter
+         Controllo e flussi del tuo impianto ⚡
+   background:
+     opacity: 90
+     alignment: center
+     size: cover
+     repeat: repeat
+     attachment: fixed
+     image: /api/image/serve/dd887696c41ff32df6dfe22cfed43c5c/original
+   cards: []
