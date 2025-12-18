@@ -6,8 +6,12 @@ from unittest.mock import AsyncMock, MagicMock, call
 import importlib
 import logging
 
-import paho.mqtt.client as mqtt
 import pytest
+
+paho = pytest.importorskip("paho")
+pymodbus = pytest.importorskip("pymodbus")
+
+import paho.mqtt.client as mqtt
 
 # Ensure pymodbus provides FramerType during tests
 framer_module = importlib.import_module("pymodbus.framer")
