@@ -1,0 +1,128 @@
+sensor.vevor_eml3500_24l_vevor_pv_current
+VEVOR EML3500-24L VEVOR PV Current
+1.7
+state_class: measurement
+unit_of_measurement: A
+device_class: current
+friendly_name: VEVOR EML3500-24L VEVOR PV Current
+descrizione: Misura: PV Current
+accesso: solo lettura
+registro_modbus: Average PV current
+unita: A
+slug: pv_current
+sensor.vevor_eml3500_24l_vevor_pv_energy
+VEVOR EML3500-24L VEVOR Energia prodotta dai pannelli
+0.0196
+state_class: total_increasing
+unit_of_measurement: kWh
+device_class: energy
+friendly_name: VEVOR EML3500-24L VEVOR Energia prodotta dai pannelli
+descrizione: Misura: Produzione fotovoltaica totale.
+accesso: solo lettura
+unita: kWh
+slug: pv_energy
+sensor.vevor_eml3500_24l_vevor_pv_energy_today
+VEVOR EML3500-24L VEVOR Energia FV prodotta oggi
+0.0196
+state_class: total
+unit_of_measurement: kWh
+device_class: energy
+friendly_name: VEVOR EML3500-24L VEVOR Energia FV prodotta oggi
+descrizione: Misura: Produzione fotovoltaica dalle 00:00.
+accesso: solo lettura
+unita: kWh
+slug: pv_energy_today
+sensor.vevor_eml3500_24l_vevor_pv_power
+VEVOR EML3500-24L VEVOR PV Power
+93.0
+state_class: measurement
+unit_of_measurement: W
+device_class: power
+friendly_name: VEVOR EML3500-24L VEVOR PV Power
+descrizione: Misura: PV Power
+accesso: solo lettura
+registro_modbus: Average PV power
+unita: W
+slug: pv_power
+sensor.vevor_eml3500_24l_vevor_pv_voltage
+VEVOR EML3500-24L VEVOR PV Voltage
+57.5
+state_class: measurement
+unit_of_measurement: V
+device_class: voltage
+friendly_name: VEVOR EML3500-24L VEVOR PV Voltage
+descrizione: Misura: PV Voltage
+accesso: solo lettura
+registro_modbus: Average PV voltage
+unita: V
+slug: pv_voltage
+sensor.vevor_eml3500_24l_vevor_rated_cell_count
+VEVOR EML3500-24L VEVOR Rated Cell Count
+2.0
+state_class: measurement
+unit_of_measurement: pcs
+friendly_name: VEVOR EML3500-24L VEVOR Rated Cell Count
+descrizione: Misura: Rated Cell Count
+accesso: solo lettura
+registro_modbus: Rated number of cells [J]
+unita: pcs
+slug: rated_cell_count
+sensor.vevor_eml3500_24l_vevor_rated_power
+VEVOR EML3500-24L VEVOR Rated Power
+3500.0
+state_class: measurement
+unit_of_measurement: W
+device_class: power
+friendly_name: VEVOR EML3500-24L VEVOR Rated Power
+descrizione: Misura: Rated Power
+accesso: solo lettura
+registro_modbus: Rated power
+unita: W
+slug: rated_power
+sensor.vevor_eml3500_24l_vevor_run_log
+VEVOR EML3500-24L VEVOR Run Log
+[129.0, 55569.0, 24.0, 189.0, 59403.0, 0.0, 2770.0, 0.0, 1597.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+friendly_name: VEVOR EML3500-24L VEVOR Run Log
+descrizione: Misura: Run Log
+accesso: solo lettura
+registro_modbus: Run the log
+slug: run_log
+sensor.vevor_eml3500_24l_vevor_warning_mask
+VEVOR EML3500-24L VEVOR Warning Mask
+Mains supply zero-crossing loss, Mains waveform is abnormal, Mains overvoltage, Mains undervoltage, The mains supply is too frequent, Mains underfrequency, PV undervoltage, Overtemperature, Low battery voltage, Battery is not connected, Overload, ...
+friendly_name: VEVOR EML3500-24L VEVOR Warning Mask
+descrizione: Misura: Warning Mask
+accesso: solo lettura
+registro_modbus: Warning Mask [I]
+slug: warning_mask
+sensor.vevor_eml3500_24l_vevor_warnings
+VEVOR EML3500-24L VEVOR Avvisi filtrati
+OK
+friendly_name: VEVOR EML3500-24L VEVOR Avvisi filtrati
+descrizione: Misura: Avvisi attivi considerando la maschera di esclusione.
+accesso: solo lettura
+registro_modbus: Obtain the warning code after shield processing
+slug: warnings
+sensor.vevor_eml3500_24l_vevor_working_mode
+VEVOR EML3500-24L VEVOR Working Mode
+Off-grid mode
+friendly_name: VEVOR EML3500-24L VEVOR Working Mode
+descrizione: Misura: Working Mode
+accesso: solo lettura
+registro_modbus: Working mode
+slug: working_mode
+update.vevor_eml3500_24l_rs232_wi_fi_bridge_update
+VEVOR EML3500-24L RS232 Wi-Fi bridge Update
+off
+auto_update: false
+display_precision: 0
+installed_version: 0.1.14
+in_progress: false
+latest_version: 0.1.14
+release_summary: null
+release_url: null
+skipped_version: null
+title: VEVOR EML3500-24L RS232 Wi-Fi bridge
+update_percentage: null
+friendly_name: VEVOR EML3500-24L RS232 Wi-Fi bridge Update
+supported_features: 29

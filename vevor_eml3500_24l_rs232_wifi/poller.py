@@ -1066,6 +1066,9 @@ def publish_discovery(
             "json_attributes_topic": f"{prefix}/{slug}/attributes",
         }
         if writable:
+            client.publish(
+                f"homeassistant/sensor/{prefix}_{slug}/config", "", retain=True
+            )
             command_topic = f"{prefix}/{slug}/set"
             if info.get("encoder") and info.get("decoder"):
                 decoder = info["decoder"]
