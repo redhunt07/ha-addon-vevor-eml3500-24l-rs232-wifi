@@ -60,8 +60,35 @@ def _parse_scale(unit: str) -> float:
         return 1.0
 
 
+def _parse_int(row: Dict[str, str], *keys: str, default: int = 0) -> int:
+    """Return the first integer value found among the provided keys."""
+
+    for key in keys:
+        raw = row.get(key)
+        if raw is None:
+            continue
+        try:
+            return int(raw)
+        except ValueError:
+            try:
+                return int(float(raw))
+            except ValueError:
+                continue
+    return default
+
+
 def load_register_definitions(csv_path: Path) -> Dict[str, RegisterDefinition]:
-    """Load register definitions from a CSV file."""
+    """Load register definitions from a CSV file.
+
+    The project ships two CSV variants:
+
+    * ``vevor_eml3500_24l_registers.csv`` with the compressed register list.
+    * ``vevor_eml3500_24l_registers_fully_expanded.csv`` containing every
+      register address expanded from the vendor spreadsheet.
+
+    The column names differ slightly between the two files, so this loader
+    accepts either set of headers.
+    """
 
     registers: Dict[str, RegisterDefinition] = {}
     with csv_path.open(newline="") as csvfile:
@@ -73,17 +100,25 @@ def load_register_definitions(csv_path: Path) -> Dict[str, RegisterDefinition]:
             name = row["Data name"].strip()
             unit = (row.get("Unit") or "").strip()
             data_format = (row.get("Data format") or "").strip()
-            try:
-                address = int(row.get("Start address") or 0)
-            except ValueError:
-                continue
-            try:
-                count = int(row.get("Number of registers") or 1)
-            except ValueError:
-                count = 1
+            address = _parse_int(row, "Start address", "Address", "Source Start address")
+            count = _parse_int(
+                row,
+                "Number of registers",
+                "Source Number of registers",
+                default=1,
+            )
             access = (row.get("Read/Write") or "").strip()
             remark = (row.get("Remark") or "").replace("\n", " ").strip()
             scale = _parse_scale(unit)
+            register_index = _parse_int(row, "RegisterIndex", default=0)
+
+            # The fully expanded CSV repeats each multi-register entry with a
+            # ``RegisterIndex`` column. We only want to keep the first (index 0)
+            # so we don't overwrite the base start address with the second word
+            # of a ULong or similar multi-register field.
+            if name in registers and register_index > 0:
+                continue
+
             registers[name] = RegisterDefinition(
                 name=name,
                 unit=unit,
@@ -100,7 +135,7 @@ def load_register_definitions(csv_path: Path) -> Dict[str, RegisterDefinition]:
 DEFAULT_REGISTER_CSV = (
     Path(__file__).resolve().parent.parent
     / "docs"
-    / "vevor_eml3500_24l_registers.csv"
+    / "vevor_eml3500_24l_registers_fully_expanded.csv"
 )
 
 
@@ -163,6 +198,16 @@ class ModbusRTUOverTCPClient:
                 )
                 if response.isError():
                     raise RuntimeError(f"Read failed for {name}: {response}")
+
+                if not getattr(response, "registers", None):
+                    raise RuntimeError(
+                        f"No data returned for {name} at {reg.address}"
+                    )
+                if len(response.registers) < reg.count:
+                    raise RuntimeError(
+                        f"Expected {reg.count} registers for {name} but received"
+                        f" {len(response.registers)}"
+                    )
 
                 if reg.data_format == "ULong":
                     value = (response.registers[0] << 16) + response.registers[1]

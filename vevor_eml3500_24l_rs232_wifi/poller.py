@@ -6,13 +6,19 @@ import argparse
 import asyncio
 import json
 import logging
+import re
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Dict, Any, Optional, Tuple
 
 import paho.mqtt.client as mqtt
 
-from .modbus_client import ModbusRTUOverTCPClient
+from .modbus_client import (
+    DEFAULT_REGISTER_CSV,
+    ModbusRTUOverTCPClient,
+    RegisterDefinition,
+    load_register_definitions,
+)
 from .fault_decoder import decode_faults, decode_warnings
 from .status_decoder import (
     decode_working_mode,
@@ -592,6 +598,72 @@ REGISTER_MAP = {
         "writable": True,
     },
 }
+
+
+def _device_class_from_unit(unit: str) -> Optional[str]:
+    """Infer a Home Assistant device class from a unit label."""
+
+    normalized = unit.lower().replace("°", "").replace(" ", "")
+    if normalized in {"v", "vac", "vdc"}:
+        return "voltage"
+    if normalized in {"a", "adc", "aac"}:
+        return "current"
+    if normalized in {"w", "kw"}:
+        return "power"
+    if normalized in {"va"}:
+        return "apparent_power"
+    if normalized in {"hz"}:
+        return "frequency"
+    if normalized in {"c", "celsius"}:
+        return "temperature"
+    if normalized in {"kwh", "wh"}:
+        return "energy"
+    return None
+
+
+def _slugify(name: str) -> str:
+    """Generate a slug-friendly identifier from a register name."""
+
+    return re.sub(r"[^a-z0-9]+", "_", name.lower()).strip("_") or "register"
+
+
+def _auto_register_map(
+    base_map: Dict[str, Dict[str, Any]],
+    definitions: Dict[str, RegisterDefinition],
+) -> Dict[str, Dict[str, Any]]:
+    """Create minimal entities for registers missing from the curated map."""
+
+    auto: Dict[str, Dict[str, Any]] = {}
+    for name, reg in definitions.items():
+        if name in base_map:
+            continue
+        if "reserved" in name.lower() or "invalid" in name.lower():
+            continue
+        slug = _slugify(name)
+        if not slug or slug in base_map or slug in auto:
+            suffix = 2
+            base_slug = slug or "register"
+            while f"{base_slug}_{suffix}" in base_map or f"{base_slug}_{suffix}" in auto:
+                suffix += 1
+            slug = f"{base_slug}_{suffix}"
+        entry: Dict[str, Any] = {
+            "register": name,
+            "name": name,
+            "description": reg.remark or name,
+        }
+        if reg.unit:
+            entry["unit"] = reg.unit
+            entry["state_class"] = "measurement"
+            if device_class := _device_class_from_unit(reg.unit):
+                entry["device_class"] = device_class
+        if "W" in reg.access:
+            entry["writable"] = True
+        auto[slug] = entry
+    return auto
+
+
+RAW_REGISTERS = load_register_definitions(DEFAULT_REGISTER_CSV)
+REGISTER_MAP = {**REGISTER_MAP, **_auto_register_map(REGISTER_MAP, RAW_REGISTERS)}
 
 WRITABLE_REGISTERS = {
     slug: info["register"]
