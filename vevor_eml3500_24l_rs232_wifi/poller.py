@@ -276,6 +276,29 @@ REGISTER_MAP = {
         "name": "Program Version",
         "entity_category": "diagnostic",
     },
+    "rated_power": {
+        "register": "Rated power",
+        "name": "Rated Power",
+        "unit": "W",
+        "device_class": "power",
+    },
+    "rated_cell_count": {
+        "register": "Rated number of cells [J]",
+        "name": "Rated Cell Count",
+        "unit": "pcs",
+    },
+    "device_type": {
+        "register": "Device type",
+        "name": "Device Type",
+    },
+    "device_serial_number": {
+        "register": "Device serial number",
+        "name": "Device Serial Number",
+    },
+    "program_version": {
+        "register": "Program version",
+        "name": "Program Version",
+    },
     "dcdc_temperature": {
         "register": "DCDC temperature",
         "name": "DCDC Temperature",
@@ -1217,6 +1240,9 @@ def publish_discovery(
         if entity_category:
             base["entity_category"] = entity_category
         if writable:
+            client.publish(
+                f"homeassistant/sensor/{prefix}_{slug}/config", "", retain=True
+            )
             command_topic = f"{prefix}/{slug}/set"
             if info.get("encoder") and info.get("decoder"):
                 decoder = info["decoder"]
