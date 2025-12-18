@@ -2,6 +2,12 @@
 
 Home Assistant add-on to communicate with and monitor the VEVOR EML3500-24L inverter via an RS232-to-WiFi bridge. Provides Modbus RTU over TCP polling, live telemetry (power, voltage, current, SOC), fault/status codes, and safe write commands. Includes auto-discovery, configurable update intervals, and robust reconnect/retry logic. MQTT export log.
 
+## Novità 0.1.14
+
+- Pubblicazione degli aggiornamenti con un'unica entità per ogni comando: l'oggetto scoperto in Home Assistant mostra sia il valore attuale sia il controllo (evitando duplicati `sensor`/`number`).
+- Descrizioni e attributi in italiano visibili da Home Assistant per tutti i sensori/controlli.
+- Contatori energetici estesi per distinguere quanta energia proviene da rete, FV o batteria e dove viene indirizzata (utenze o batteria), con versioni giornaliere che si azzerano a mezzanotte.
+
 ## Installation
 
 1. In Home Assistant, open **Settings → Add-ons → Add-on Store**.
@@ -308,55 +314,46 @@ When MQTT discovery is enabled, control entities such as `number` and `select` a
 
 ## Entities
 
-When discovery is enabled, the following entities are created in Home Assistant:
+When discovery is enabled, entities are created with Italian names/descriptions and writable items appear as a single object that shows the current value and lets you send a command (no more duplicate `sensor` + `number`).
 
-- `sensor.vevor_faults` – reports the most recent fault or `OK`.
-- `sensor.vevor_warnings` – reports the most recent warning or `OK`.
-- `sensor.vevor_working_mode` – current working mode.
-- `sensor.vevor_mains_voltage` – mains voltage.
-- `sensor.vevor_mains_frequency` – mains frequency.
-- `sensor.vevor_mains_power` – average mains power.
-- `sensor.vevor_inverter_voltage` – inverter output voltage.
-- `sensor.vevor_inverter_current` – inverter output current.
-- `sensor.vevor_inverter_frequency` – inverter output frequency.
-- `sensor.vevor_inverter_power` – inverter output power.
-- `sensor.vevor_inverter_charging_power` – inverter charging power.
-- `sensor.vevor_output_voltage` – output voltage.
-- `sensor.vevor_output_current` – output current.
-- `sensor.vevor_output_frequency` – output frequency.
-- `sensor.vevor_output_active_power` – output active power.
-- `sensor.vevor_output_apparent_power` – output apparent power.
-- `sensor.vevor_battery_voltage` – battery voltage.
-- `sensor.vevor_battery_current` – battery current.
-- `sensor.vevor_battery_power` – battery power.
-- `sensor.vevor_battery_current_filter_average` – battery current filter average.
-- `sensor.vevor_battery_soc` – battery state of charge.
-- `sensor.vevor_pv_voltage` – PV input voltage.
-- `sensor.vevor_pv_current` – PV input current.
-- `sensor.vevor_pv_power` – PV input power.
-- `sensor.vevor_pv_charging_power` – PV charging power.
-- `sensor.vevor_inverter_charging_current` – inverter charging current.
-- `sensor.vevor_pv_charging_current` – PV charging current.
-- `sensor.vevor_power_flow_status` – decoded power flow status.
-- `sensor.vevor_load_percent` – load percentage.
-- `sensor.vevor_dcdc_temperature` – DCDC temperature.
-- `sensor.vevor_inverter_temperature` – inverter temperature.
+**Stato e telemetria di base**
+
+- `sensor.vevor_faults`, `sensor.vevor_warnings`, `sensor.vevor_working_mode`.
+- Rete/inverter/carico: tensione, frequenza, corrente e potenza (`sensor.vevor_mains_voltage`, `sensor.vevor_inverter_power`, `sensor.vevor_output_active_power`, ecc.).
+- Batteria: `sensor.vevor_battery_voltage`, `sensor.vevor_battery_current`, `sensor.vevor_battery_power`, `sensor.vevor_battery_soc`, temperature interne.
+- Fotovoltaico: `sensor.vevor_pv_voltage`, `sensor.vevor_pv_current`, `sensor.vevor_pv_power`, correnti/potenze di carica.
+
+**Flussi di potenza direzionali**
+
+- `sensor.vevor_grid_import_power`, `sensor.vevor_grid_export_power`.
+- `sensor.vevor_battery_charge_power`, `sensor.vevor_battery_discharge_power`.
+- `sensor.vevor_load_power`, `sensor.vevor_pv_to_battery_power`, `sensor.vevor_pv_to_load_power`.
+- `sensor.vevor_grid_to_battery_power`, `sensor.vevor_grid_to_load_power`, `sensor.vevor_battery_to_load_power`.
+
+**Contatori energetici (kWh)**
+
+- Rete: `sensor.vevor_grid_import_energy`, `sensor.vevor_grid_export_energy`.
+- Fotovoltaico: `sensor.vevor_pv_energy`, `sensor.vevor_pv_to_battery_energy`, `sensor.vevor_pv_to_load_energy`.
+- Batteria: `sensor.vevor_battery_charge_energy`, `sensor.vevor_battery_discharge_energy`, `sensor.vevor_grid_to_battery_energy`.
+- Utenze: `sensor.vevor_load_energy`, `sensor.vevor_load_from_grid_energy`, `sensor.vevor_load_from_pv_energy`, `sensor.vevor_load_from_battery_energy`, `sensor.vevor_load_from_offgrid_energy`.
+- Ogni contatore ha il corrispettivo giornaliero (`*_today`) che si azzera automaticamente alle 00:00.
+
+**Controlli (scrivibili)**
+
+- I comandi vengono pubblicati come `number`, `select` o `switch` con la descrizione in italiano nel pannello Home Assistant; lo stato letto via Modbus resta visibile nella stessa entità.
 
 ## Energy dashboard
 
-The add-on now publishes long-term energy counters alongside the instantaneous power sensors. Use the following sensors as inputs to Home Assistant's Energy dashboard:
+The add-on now publishes long-term energy counters alongside the instantaneous power sensors così puoi sapere, su base giornaliera (00:00 → 00:00), quanta energia proviene da rete/FV/batteria e dove viene consumata.
 
-- `sensor.vevor_grid_import_energy` / `sensor.vevor_grid_export_energy` – lifetime grid import and export totals.
-- `sensor.vevor_pv_energy` – lifetime photovoltaic production.
-- `sensor.vevor_battery_charge_energy` / `sensor.vevor_battery_discharge_energy` – cumulative battery charge and discharge.
+Use the following sensors as inputs to Home Assistant's Energy dashboard:
 
-For convenience, the add-on also exposes daily-resetting counters (`*_today`) that you can visualise in dashboards:
+- Rete: `sensor.vevor_grid_import_energy` / `sensor.vevor_grid_export_energy`.
+- Fotovoltaico: `sensor.vevor_pv_energy` più i flussi `sensor.vevor_pv_to_load_energy` e `sensor.vevor_pv_to_battery_energy`.
+- Batteria: `sensor.vevor_battery_charge_energy`, `sensor.vevor_battery_discharge_energy`, `sensor.vevor_grid_to_battery_energy`.
+- Carico: `sensor.vevor_load_energy` con la ripartizione `sensor.vevor_load_from_grid_energy`, `sensor.vevor_load_from_pv_energy`, `sensor.vevor_load_from_battery_energy`, `sensor.vevor_load_from_offgrid_energy`.
 
-- `sensor.vevor_grid_import_energy_today`
-- `sensor.vevor_grid_export_energy_today`
-- `sensor.vevor_pv_energy_today`
-- `sensor.vevor_battery_charge_energy_today`
-- `sensor.vevor_battery_discharge_energy_today`
+For convenience, every sensor has a daily-resetting companion (`*_today`) that restarts at midnight and can be charted directly nei dashboard.
 
 To link the lifetime sensors in the Energy dashboard:
 
@@ -364,7 +361,7 @@ To link the lifetime sensors in the Energy dashboard:
 2. Under **Electricity grid**, select `sensor.vevor_grid_import_energy` for consumption and `sensor.vevor_grid_export_energy` for return (if applicable).
 3. Under **Solar production**, choose `sensor.vevor_pv_energy`.
 4. Under **Home batteries**, pick `sensor.vevor_battery_charge_energy` for charging and `sensor.vevor_battery_discharge_energy` for discharging.
-5. Save the dashboard and allow data to accumulate.
+5. Add any of the other flows above to custom dashboards/cards (e.g. energy-flow-card-plus) to visualise come la rete, il FV e la batteria alimentano le utenze nel corso delle 24 ore.
 
 ## RS232-to-WiFi bridge troubleshooting
 

@@ -58,11 +58,6 @@ REGISTER_MAP = {
         "description": "Avvisi attivi senza applicare la maschera di esclusione.",
         "decoder": decode_warnings,
     },
-    "warnings_unmasked": {
-        "register": "Obtain the warning code for unmasked processing",
-        "name": "Warnings (Unmasked)",
-        "decoder": decode_warnings,
-    },
     "working_mode": {
         "register": "Working mode",
         "name": "Working Mode",
