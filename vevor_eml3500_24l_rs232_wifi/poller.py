@@ -50,6 +50,11 @@ REGISTER_MAP = {
         "name": "Warnings",
         "decoder": decode_warnings,
     },
+    "warnings_unmasked": {
+        "register": "Obtain the warning code for unmasked processing",
+        "name": "Warnings (Unmasked)",
+        "decoder": decode_warnings,
+    },
     "working_mode": {
         "register": "Working mode",
         "name": "Working Mode",
@@ -201,6 +206,29 @@ REGISTER_MAP = {
         "register": "Percent of load",
         "name": "Load Percent",
         "unit": "%",
+    },
+    "rated_power": {
+        "register": "Rated power",
+        "name": "Rated Power",
+        "unit": "W",
+        "device_class": "power",
+    },
+    "rated_cell_count": {
+        "register": "Rated number of cells [J]",
+        "name": "Rated Cell Count",
+        "unit": "pcs",
+    },
+    "device_type": {
+        "register": "Device type",
+        "name": "Device Type",
+    },
+    "device_serial_number": {
+        "register": "Device serial number",
+        "name": "Device Serial Number",
+    },
+    "program_version": {
+        "register": "Program version",
+        "name": "Program Version",
     },
     "dcdc_temperature": {
         "register": "DCDC temperature",
@@ -439,6 +467,50 @@ REGISTER_MAP = {
         "encoder": encode_remote_switch,
         "writable": True,
     },
+    "force_eq_charge": {
+        "register": "Forcing the charge of Eq",
+        "name": "Force Eq Charge",
+        "writable": True,
+        "min": 0,
+        "max": 1,
+    },
+    "exit_fault_lock": {
+        "register": "Exits the fail-locked state",
+        "name": "Exit Fault Lock",
+        "writable": True,
+        "min": 0,
+        "max": 1,
+    },
+    "clear_records": {
+        "register": "Clear the record",
+        "name": "Clear Records",
+        "writable": True,
+        "min": 0,
+        "max": 0xFF,
+    },
+    "reset_user_parameters": {
+        "register": "Reset user parameters",
+        "name": "Reset User Parameters",
+        "writable": True,
+        "min": 0,
+        "max": 0xFF,
+    },
+    "protocol_identifier": {
+        "register": "Invalid data",
+        "name": "Protocol Identifier",
+    },
+    "fault_record_storage_info": {
+        "register": "Fault record storage information [K]",
+        "name": "Fault Record Storage Info",
+    },
+    "fault_record": {
+        "register": "Fault Record [M]",
+        "name": "Fault Record",
+    },
+    "run_log": {
+        "register": "Run the log",
+        "name": "Run Log",
+    },
     "fault_info_query_index": {
         "register": "Fault Information Query Index",
         "name": "Fault Information Query Index",
@@ -671,7 +743,12 @@ async def poll_once(client: ModbusRTUOverTCPClient) -> Tuple[Dict[str, Any], str
             raw_value = await client.read_register(register_name)
             decoder = info.get("decoder")
             if decoder:
-                decoded = decoder(int(raw_value))
+                decoder_input = raw_value
+                if isinstance(raw_value, list) and len(raw_value) == 2:
+                    decoder_input = (int(raw_value[0]) << 16) + int(raw_value[1])
+                decoded = decoder(int(decoder_input)) if isinstance(
+                    decoder_input, (float, int)
+                ) else decoder(decoder_input)
                 if isinstance(decoded, list):
                     value = _format_decoded_list(decoded)
                 else:
