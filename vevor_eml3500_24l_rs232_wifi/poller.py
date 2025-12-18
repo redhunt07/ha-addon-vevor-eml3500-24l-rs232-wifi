@@ -45,170 +45,236 @@ REGISTER_MAP = {
         "name": "Allarmi di guasto",
         "description": "Codici di guasto attivi segnalati dall'inverter.",
         "decoder": decode_faults,
+        "entity_category": "diagnostic",
     },
     "warnings": {
         "register": "Obtain the warning code after shield processing",
         "name": "Avvisi filtrati",
         "description": "Avvisi attivi considerando la maschera di esclusione.",
         "decoder": decode_warnings,
+        "entity_category": "diagnostic",
     },
     "warnings_unmasked": {
         "register": "Obtain the warning code for unmasked processing",
         "name": "Avvisi non filtrati",
         "description": "Avvisi attivi senza applicare la maschera di esclusione.",
         "decoder": decode_warnings,
+        "entity_category": "diagnostic",
     },
     "working_mode": {
         "register": "Working mode",
         "name": "Working Mode",
+        "entity_category": "diagnostic",
         "decoder": decode_working_mode,
     },
     "mains_voltage": {
         "register": "Mains voltage effective value",
         "name": "Mains Voltage",
         "unit": "V",
+        "device_class": "voltage",
+        "state_class": "measurement",
     },
     "mains_frequency": {
         "register": "Mains frequency",
         "name": "Mains Frequency",
         "unit": "Hz",
+        "device_class": "frequency",
+        "state_class": "measurement",
     },
     "mains_power": {
         "register": "Average mains power",
         "name": "Mains Power",
         "unit": "W",
+        "device_class": "power",
+        "state_class": "measurement",
     },
     "inverter_voltage": {
         "register": "Effective value of inverter voltage",
         "name": "Inverter Voltage",
         "unit": "V",
+        "device_class": "voltage",
+        "state_class": "measurement",
     },
     "inverter_current": {
         "register": "Effective value of inverter current",
         "name": "Inverter Current",
         "unit": "A",
+        "device_class": "current",
+        "state_class": "measurement",
     },
     "inverter_frequency": {
         "register": "Inverter frequency",
         "name": "Inverter Frequency",
         "unit": "Hz",
+        "device_class": "frequency",
+        "state_class": "measurement",
     },
     "inverter_power": {
         "register": "Inverter power average",
         "name": "Inverter Power",
         "unit": "W",
         "device_class": "power",
+        "state_class": "measurement",
     },
     "inverter_charging_power": {
         "register": "Inverter charging power",
         "name": "Inverter Charging Power",
         "unit": "W",
         "device_class": "power",
+        "state_class": "measurement",
     },
     "output_voltage": {
         "register": "Effective value of output voltage",
         "name": "Output Voltage",
         "unit": "V",
         "device_class": "voltage",
+        "state_class": "measurement",
     },
     "output_current": {
         "register": "Effective value of output current",
         "name": "Output Current",
         "unit": "A",
         "device_class": "current",
+        "state_class": "measurement",
     },
     "output_frequency": {
         "register": "Output frequency",
         "name": "Output Frequency",
         "unit": "Hz",
+        "device_class": "frequency",
+        "state_class": "measurement",
     },
     "output_active_power": {
         "register": "Output active power",
         "name": "Output Active Power",
         "unit": "W",
         "device_class": "power",
+        "state_class": "measurement",
     },
     "output_apparent_power": {
         "register": "Output apparent power",
         "name": "Output Apparent Power",
         "unit": "VA",
         "device_class": "apparent_power",
+        "state_class": "measurement",
     },
     "battery_voltage": {
         "register": "Average battery voltage",
         "name": "Battery Voltage",
         "unit": "V",
         "device_class": "voltage",
+        "state_class": "measurement",
     },
     "battery_current": {
         "register": "Average battery current",
         "name": "Battery Current",
         "unit": "A",
         "device_class": "current",
+        "state_class": "measurement",
     },
     "battery_power": {
         "register": "Average battery power",
         "name": "Battery Power",
         "unit": "W",
         "device_class": "power",
+        "state_class": "measurement",
     },
     "battery_current_filter_average": {
         "register": "Battery current filter average",
         "name": "Battery Current Filter Average",
         "unit": "A",
         "device_class": "current",
+        "state_class": "measurement",
     },
     "battery_soc": {
         "register": "Battery percentage",
         "name": "Battery SOC",
         "unit": "%",
         "device_class": "battery",
+        "state_class": "measurement",
     },
     "pv_voltage": {
         "register": "Average PV voltage",
         "name": "PV Voltage",
         "unit": "V",
         "device_class": "voltage",
+        "state_class": "measurement",
     },
     "pv_current": {
         "register": "Average PV current",
         "name": "PV Current",
         "unit": "A",
         "device_class": "current",
+        "state_class": "measurement",
     },
     "pv_power": {
         "register": "Average PV power",
         "name": "PV Power",
         "unit": "W",
         "device_class": "power",
+        "state_class": "measurement",
     },
     "pv_charging_power": {
         "register": "Average PV charging power",
         "name": "PV Charging Power",
         "unit": "W",
         "device_class": "power",
+        "state_class": "measurement",
     },
     "inverter_charging_current": {
         "register": "Average value of inverter charging current",
         "name": "Inverter Charging Current",
         "unit": "A",
         "device_class": "current",
+        "state_class": "measurement",
     },
     "pv_charging_current": {
         "register": "Average PV charging current",
         "name": "PV Charging Current",
         "unit": "A",
         "device_class": "current",
+        "state_class": "measurement",
     },
     "power_flow_status": {
         "register": "Power flow status",
         "name": "Power Flow Status",
         "decoder": decode_power_flow,
+        "entity_category": "diagnostic",
     },
     "load_percent": {
         "register": "Percent of load",
         "name": "Load Percent",
         "unit": "%",
+        "state_class": "measurement",
+    },
+    "rated_power": {
+        "register": "Rated power",
+        "name": "Rated Power",
+        "unit": "W",
+        "device_class": "power",
+        "state_class": "measurement",
+        "entity_category": "diagnostic",
+    },
+    "rated_cell_count": {
+        "register": "Rated number of cells [J]",
+        "name": "Rated Cell Count",
+        "unit": "pcs",
+        "entity_category": "diagnostic",
+    },
+    "device_type": {
+        "register": "Device type",
+        "name": "Device Type",
+        "entity_category": "diagnostic",
+    },
+    "device_serial_number": {
+        "register": "Device serial number",
+        "name": "Device Serial Number",
+        "entity_category": "diagnostic",
+    },
+    "program_version": {
+        "register": "Program version",
+        "name": "Program Version",
+        "entity_category": "diagnostic",
     },
     "rated_power": {
         "register": "Rated power",
@@ -238,12 +304,14 @@ REGISTER_MAP = {
         "name": "DCDC Temperature",
         "unit": "°C",
         "device_class": "temperature",
+        "state_class": "measurement",
     },
     "inverter_temperature": {
         "register": "Inverter temperature",
         "name": "Inverter Temperature",
         "unit": "°C",
         "device_class": "temperature",
+        "state_class": "measurement",
     },
     "battery_discharge_soc_limit": {
         "register": "Battery discharge SOC protection value in off-grid mode",
@@ -323,6 +391,7 @@ REGISTER_MAP = {
         "register": "Warning Mask [I]",
         "name": "Warning Mask",
         "decoder": decode_warnings,
+        "entity_category": "diagnostic",
     },
     "dry_contact": {
         "register": "Dry contact",
@@ -505,14 +574,17 @@ REGISTER_MAP = {
     "fault_record_storage_info": {
         "register": "Fault record storage information [K]",
         "name": "Fault Record Storage Info",
+        "entity_category": "diagnostic",
     },
     "fault_record": {
         "register": "Fault Record [M]",
         "name": "Fault Record",
+        "entity_category": "diagnostic",
     },
     "run_log": {
         "register": "Run the log",
         "name": "Run Log",
+        "entity_category": "diagnostic",
     },
     "fault_info_query_index": {
         "register": "Fault Information Query Index",
@@ -793,6 +865,97 @@ ENERGY_SENSOR_DAILY_MAP = {
 
 ALL_SENSORS = {**REGISTER_MAP, **ENERGY_SENSORS, **DERIVED_SENSORS}
 
+FRIENDLY_NAMES_IT = {
+    "working_mode": "Modalità di lavoro",
+    "mains_voltage": "Tensione rete",
+    "mains_frequency": "Frequenza rete",
+    "mains_power": "Potenza rete",
+    "inverter_voltage": "Tensione inverter",
+    "inverter_current": "Corrente inverter",
+    "inverter_frequency": "Frequenza inverter",
+    "inverter_power": "Potenza inverter",
+    "inverter_charging_power": "Potenza ricarica inverter",
+    "output_voltage": "Tensione uscita",
+    "output_current": "Corrente uscita",
+    "output_frequency": "Frequenza uscita",
+    "output_active_power": "Potenza attiva uscita",
+    "output_apparent_power": "Potenza apparente uscita",
+    "battery_voltage": "Tensione batteria",
+    "battery_current": "Corrente batteria",
+    "battery_power": "Potenza batteria",
+    "battery_current_filter_average": "Corrente batteria filtrata",
+    "battery_soc": "SOC batteria",
+    "pv_voltage": "Tensione FV",
+    "pv_current": "Corrente FV",
+    "pv_power": "Potenza FV",
+    "pv_charging_power": "Potenza di carica FV",
+    "inverter_charging_current": "Corrente di carica inverter",
+    "pv_charging_current": "Corrente di carica FV",
+    "power_flow_status": "Stato flussi di potenza",
+    "load_percent": "Percentuale carico",
+    "rated_power": "Potenza nominale",
+    "rated_cell_count": "Numero celle nominali",
+    "device_type": "Tipo dispositivo",
+    "device_serial_number": "Numero di serie",
+    "program_version": "Versione firmware",
+    "dcdc_temperature": "Temperatura DCDC",
+    "inverter_temperature": "Temperatura inverter",
+    "battery_discharge_soc_limit": "Limite SOC di scarica",
+    "device_name": "Nome dispositivo",
+    "output_mode": "Modalità di uscita",
+    "output_priority": "Priorità di uscita",
+    "input_voltage_range": "Range tensione ingresso",
+    "buzzer_mode": "Modalità cicalino",
+    "lcd_backlight": "Retroilluminazione LCD",
+    "lcd_return_home": "Ritorno automatico LCD",
+    "energy_saving_mode_switch": "Risparmio energetico",
+    "overload_auto_restart": "Riavvio automatico sovraccarico",
+    "over_temperature_auto_restart": "Riavvio automatico sovratemperatura",
+    "overload_bypass_enable": "Bypass sovraccarico",
+    "battery_eq_mode_enable": "Equalizzazione batteria abilitata",
+    "warning_mask": "Maschera avvisi",
+    "dry_contact": "Contatto pulito",
+    "output_voltage_setting": "Tensione di uscita impostata",
+    "output_frequency_setting": "Frequenza di uscita impostata",
+    "battery_type": "Tipo batteria",
+    "battery_overvoltage_protection": "Protezione sovratensione batteria",
+    "max_charge_voltage": "Tensione massima di carica",
+    "floating_charge_voltage": "Tensione di mantenimento",
+    "mains_discharge_recovery_point": "Recupero scarica in rete",
+    "mains_low_voltage_protection_point": "Protezione bassa tensione rete",
+    "off_grid_low_voltage_protection_point": "Protezione bassa tensione off‑grid",
+    "cv_to_float_wait_time": "Attesa CV → mantenimento",
+    "battery_charging_priority": "Priorità carica batteria",
+    "max_charge_current": "Corrente massima di carica",
+    "max_mains_charging_current": "Corrente massima di carica da rete",
+    "eq_charging_voltage": "Tensione carica equalizzazione",
+    "battery_eq_time": "Tempo equalizzazione batteria",
+    "battery_eq_cycle": "Ciclo equalizzazione batteria",
+    "battery_eq_time_on": "Durata equalizzazione",
+    "battery_eq_current_limit": "Limite corrente equalizzazione",
+    "battery_eq_voltage": "Tensione di equalizzazione",
+    "battery_eq_restore_voltage": "Ripristino tensione di equalizzazione",
+    "battery_eq_interval": "Intervallo equalizzazione",
+    "battery_low_alarm": "Allarme batteria bassa",
+    "low_voltage_power_off_point": "Soglia spegnimento bassa tensione",
+    "grid_voltage_recovery_point": "Recupero tensione di rete",
+    "grid_over_voltage_protection": "Protezione sovratensione rete",
+    "grid_under_voltage_protection": "Protezione sottotensione rete",
+    "grid_under_voltage_recovery_point": "Recupero sottotensione rete",
+    "grid_over_voltage_recovery_point": "Recupero sovratensione rete",
+    "backfeed_power_limit": "Limite immissione in rete",
+    "remote_switch": "Interruttore remoto",
+    "parallel_address": "Indirizzo parallelo",
+    "voltage_offset_calibration": "Offset calibrazione tensione",
+    "current_offset_calibration": "Offset calibrazione corrente",
+    "enable_dry_contact": "Abilita contatto pulito",
+    "dry_contact_status": "Stato contatto pulito",
+    "fault_record_storage_info": "Archivio registri guasto",
+    "fault_record": "Record di guasto",
+    "run_log": "Log di esercizio",
+    "fault_info_query_index": "Indice interrogazione guasto",
+}
+
 ENERGY_STATE_FILE = Path("energy_state.json")
 
 
@@ -839,10 +1002,16 @@ def _decode_value(info: Dict[str, Any], raw_value: Any) -> Any:
     return decoded
 
 
+def _friendly_name(slug: str, info: Dict[str, Any]) -> str:
+    """Return the Italian-friendly name for Home Assistant."""
+
+    return FRIENDLY_NAMES_IT.get(slug, info["name"])
+
+
 def _build_attributes(slug: str, info: Dict[str, Any]) -> Dict[str, Any]:
     """Return MQTT attributes payload with Italian description."""
 
-    descrizione = info.get("description") or info.get("name")
+    descrizione = info.get("description") or _friendly_name(slug, info)
     if info.get("writable"):
         descrizione = f"Comando/configurazione: {descrizione}"
     else:
@@ -1055,8 +1224,11 @@ def publish_discovery(
     }
     for slug, info in ALL_SENSORS.items():
         writable = info.get("writable")
+        entity_category = info.get("entity_category")
+        if not entity_category and writable:
+            entity_category = "config"
         base: Dict[str, Any] = {
-            "name": f"VEVOR {info['name']}",
+            "name": f"VEVOR {_friendly_name(slug, info)}",
             "state_topic": f"{prefix}/{slug}",
             "unique_id": f"{prefix}_{slug}",
             "device": device_info,
@@ -1065,6 +1237,8 @@ def publish_discovery(
             "payload_not_available": "offline",
             "json_attributes_topic": f"{prefix}/{slug}/attributes",
         }
+        if entity_category:
+            base["entity_category"] = entity_category
         if writable:
             client.publish(
                 f"homeassistant/sensor/{prefix}_{slug}/config", "", retain=True

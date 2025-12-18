@@ -317,6 +317,9 @@ When MQTT discovery is enabled, control entities such as `number` and `select` a
 
 When discovery is enabled, entities are created with Italian names/descriptions and writable items appear as a single object that shows the current value and lets you send a command (no more duplicate `sensor` + `number`).
 
+- I controlli (`number`, `select`, switch virtuali) sono etichettati con `entity_category: config` così finiscono nella sezione **Impostazioni dispositivo** della scheda Home Assistant.
+- I registri di diagnostica (allarmi, avvisi, seriale, firmware) sono pubblicati con categoria `diagnostic` per tenerli separati dalle misure principali.
+
 **Stato e telemetria di base**
 
 - `sensor.vevor_faults`, `sensor.vevor_warnings`, `sensor.vevor_working_mode`.
