@@ -4,6 +4,8 @@ import importlib
 
 import pytest
 
+pymodbus = pytest.importorskip("pymodbus")
+
 # Provide missing FramerType for pymodbus when using newer versions
 framer_module = importlib.import_module("pymodbus.framer")
 if not hasattr(framer_module, "FramerType"):

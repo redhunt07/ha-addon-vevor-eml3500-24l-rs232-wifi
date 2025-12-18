@@ -2,8 +2,9 @@
 
 Home Assistant add-on to communicate with and monitor the VEVOR EML3500-24L inverter via an RS232-to-WiFi bridge. Provides Modbus RTU over TCP polling, live telemetry (power, voltage, current, SOC), fault/status codes, and safe write commands. Includes auto-discovery, configurable update intervals, and robust reconnect/retry logic. MQTT export log.
 
-## Novità 0.1.14
+## Novità 0.1.15
 
+- Aggiornata la versione dell'add-on e documentate le dipendenze Python (`pymodbus`, `paho-mqtt`) necessarie per eseguire i test end-to-end del polling MQTT/Modbus.
 - Pubblicazione degli aggiornamenti con un'unica entità per ogni comando: l'oggetto scoperto in Home Assistant mostra sia il valore attuale sia il controllo (evitando duplicati `sensor`/`number`).
 - Descrizioni e attributi in italiano visibili da Home Assistant per tutti i sensori/controlli.
 - Contatori energetici estesi per distinguere quanta energia proviene da rete, FV o batteria e dove viene indirizzata (utenze o batteria), con versioni giornaliere che si azzerano a mezzanotte.
@@ -362,6 +363,12 @@ To link the lifetime sensors in the Energy dashboard:
 3. Under **Solar production**, choose `sensor.vevor_pv_energy`.
 4. Under **Home batteries**, pick `sensor.vevor_battery_charge_energy` for charging and `sensor.vevor_battery_discharge_energy` for discharging.
 5. Add any of the other flows above to custom dashboards/cards (e.g. energy-flow-card-plus) to visualise come la rete, il FV e la batteria alimentano le utenze nel corso delle 24 ore.
+
+## Sviluppo e test
+
+- Installa le dipendenze di sviluppo con `pip install -r requirements-dev.txt` per includere `pymodbus`, `paho-mqtt` e `pytest`.
+- I test saltano automaticamente se le librerie opzionali non sono disponibili, ma per verificare l'intero ciclo di polling MQTT/Modbus è consigliato installarle.
+- Esegui `python -m pytest` dalla root del repository per validare i decoder Modbus e la generazione dei payload MQTT/Home Assistant.
 
 ## RS232-to-WiFi bridge troubleshooting
 
