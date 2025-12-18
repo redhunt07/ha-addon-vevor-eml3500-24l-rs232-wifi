@@ -116,9 +116,9 @@ VEVOR EML3500-24L RS232 Wi-Fi bridge Update
 off
 auto_update: false
 display_precision: 0
-installed_version: 0.1.14
+installed_version: 0.1.18
 in_progress: false
-latest_version: 0.1.14
+latest_version: 0.1.18
 release_summary: null
 release_url: null
 skipped_version: null

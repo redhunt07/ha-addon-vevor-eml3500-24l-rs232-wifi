@@ -9,6 +9,14 @@ Home Assistant add-on to communicate with and monitor the VEVOR EML3500-24L inve
 - Descrizioni e attributi in italiano visibili da Home Assistant per tutti i sensori/controlli.
 - Contatori energetici estesi per distinguere quanta energia proviene da rete, FV o batteria e dove viene indirizzata (utenze o batteria), con versioni giornaliere che si azzerano a mezzanotte.
 
+## Novità 0.1.18
+
+- Incrementata la versione dell'add-on per distribuire su Home Assistant le correzioni al polling dei registri multi-word (conteggi decimali e controlli sulle risposte corte) introdotte nell'aggiornamento precedente.
+
+## Novità 0.1.17
+
+- Incrementata la versione dell'add-on per distribuire su Home Assistant l'aggiornamento che carica automaticamente la mappa registri completa (`vevor_eml3500_24l_registers_fully_expanded.csv`), esponendo via MQTT discovery tutti i sensori e i controlli non riservati.
+
 ## Installation
 
 1. In Home Assistant, open **Settings → Add-ons → Add-on Store**.
