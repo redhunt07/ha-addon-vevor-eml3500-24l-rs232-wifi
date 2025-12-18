@@ -42,177 +42,253 @@ logger = logging.getLogger(__name__)
 REGISTER_MAP = {
     "faults": {
         "register": "Equipment fault code",
-        "name": "Faults",
+        "name": "Allarmi di guasto",
+        "description": "Codici di guasto attivi segnalati dall'inverter.",
         "decoder": decode_faults,
+        "entity_category": "diagnostic",
     },
     "warnings": {
         "register": "Obtain the warning code after shield processing",
-        "name": "Warnings",
+        "name": "Avvisi filtrati",
+        "description": "Avvisi attivi considerando la maschera di esclusione.",
         "decoder": decode_warnings,
+        "entity_category": "diagnostic",
+    },
+    "warnings_unmasked": {
+        "register": "Obtain the warning code for unmasked processing",
+        "name": "Avvisi non filtrati",
+        "description": "Avvisi attivi senza applicare la maschera di esclusione.",
+        "decoder": decode_warnings,
+        "entity_category": "diagnostic",
     },
     "working_mode": {
         "register": "Working mode",
         "name": "Working Mode",
+        "entity_category": "diagnostic",
         "decoder": decode_working_mode,
     },
     "mains_voltage": {
         "register": "Mains voltage effective value",
         "name": "Mains Voltage",
         "unit": "V",
+        "device_class": "voltage",
+        "state_class": "measurement",
     },
     "mains_frequency": {
         "register": "Mains frequency",
         "name": "Mains Frequency",
         "unit": "Hz",
+        "device_class": "frequency",
+        "state_class": "measurement",
     },
     "mains_power": {
         "register": "Average mains power",
         "name": "Mains Power",
         "unit": "W",
+        "device_class": "power",
+        "state_class": "measurement",
     },
     "inverter_voltage": {
         "register": "Effective value of inverter voltage",
         "name": "Inverter Voltage",
         "unit": "V",
+        "device_class": "voltage",
+        "state_class": "measurement",
     },
     "inverter_current": {
         "register": "Effective value of inverter current",
         "name": "Inverter Current",
         "unit": "A",
+        "device_class": "current",
+        "state_class": "measurement",
     },
     "inverter_frequency": {
         "register": "Inverter frequency",
         "name": "Inverter Frequency",
         "unit": "Hz",
+        "device_class": "frequency",
+        "state_class": "measurement",
     },
     "inverter_power": {
         "register": "Inverter power average",
         "name": "Inverter Power",
         "unit": "W",
         "device_class": "power",
+        "state_class": "measurement",
     },
     "inverter_charging_power": {
         "register": "Inverter charging power",
         "name": "Inverter Charging Power",
         "unit": "W",
         "device_class": "power",
+        "state_class": "measurement",
     },
     "output_voltage": {
         "register": "Effective value of output voltage",
         "name": "Output Voltage",
         "unit": "V",
         "device_class": "voltage",
+        "state_class": "measurement",
     },
     "output_current": {
         "register": "Effective value of output current",
         "name": "Output Current",
         "unit": "A",
         "device_class": "current",
+        "state_class": "measurement",
     },
     "output_frequency": {
         "register": "Output frequency",
         "name": "Output Frequency",
         "unit": "Hz",
+        "device_class": "frequency",
+        "state_class": "measurement",
     },
     "output_active_power": {
         "register": "Output active power",
         "name": "Output Active Power",
         "unit": "W",
         "device_class": "power",
+        "state_class": "measurement",
     },
     "output_apparent_power": {
         "register": "Output apparent power",
         "name": "Output Apparent Power",
         "unit": "VA",
         "device_class": "apparent_power",
+        "state_class": "measurement",
     },
     "battery_voltage": {
         "register": "Average battery voltage",
         "name": "Battery Voltage",
         "unit": "V",
         "device_class": "voltage",
+        "state_class": "measurement",
     },
     "battery_current": {
         "register": "Average battery current",
         "name": "Battery Current",
         "unit": "A",
         "device_class": "current",
+        "state_class": "measurement",
     },
     "battery_power": {
         "register": "Average battery power",
         "name": "Battery Power",
         "unit": "W",
         "device_class": "power",
+        "state_class": "measurement",
     },
     "battery_current_filter_average": {
         "register": "Battery current filter average",
         "name": "Battery Current Filter Average",
         "unit": "A",
         "device_class": "current",
+        "state_class": "measurement",
     },
     "battery_soc": {
         "register": "Battery percentage",
         "name": "Battery SOC",
         "unit": "%",
         "device_class": "battery",
+        "state_class": "measurement",
     },
     "pv_voltage": {
         "register": "Average PV voltage",
         "name": "PV Voltage",
         "unit": "V",
         "device_class": "voltage",
+        "state_class": "measurement",
     },
     "pv_current": {
         "register": "Average PV current",
         "name": "PV Current",
         "unit": "A",
         "device_class": "current",
+        "state_class": "measurement",
     },
     "pv_power": {
         "register": "Average PV power",
         "name": "PV Power",
         "unit": "W",
         "device_class": "power",
+        "state_class": "measurement",
     },
     "pv_charging_power": {
         "register": "Average PV charging power",
         "name": "PV Charging Power",
         "unit": "W",
         "device_class": "power",
+        "state_class": "measurement",
     },
     "inverter_charging_current": {
         "register": "Average value of inverter charging current",
         "name": "Inverter Charging Current",
         "unit": "A",
         "device_class": "current",
+        "state_class": "measurement",
     },
     "pv_charging_current": {
         "register": "Average PV charging current",
         "name": "PV Charging Current",
         "unit": "A",
         "device_class": "current",
+        "state_class": "measurement",
     },
     "power_flow_status": {
         "register": "Power flow status",
         "name": "Power Flow Status",
         "decoder": decode_power_flow,
+        "entity_category": "diagnostic",
     },
     "load_percent": {
         "register": "Percent of load",
         "name": "Load Percent",
         "unit": "%",
+        "state_class": "measurement",
+    },
+    "rated_power": {
+        "register": "Rated power",
+        "name": "Rated Power",
+        "unit": "W",
+        "device_class": "power",
+        "state_class": "measurement",
+        "entity_category": "diagnostic",
+    },
+    "rated_cell_count": {
+        "register": "Rated number of cells [J]",
+        "name": "Rated Cell Count",
+        "unit": "pcs",
+        "entity_category": "diagnostic",
+    },
+    "device_type": {
+        "register": "Device type",
+        "name": "Device Type",
+        "entity_category": "diagnostic",
+    },
+    "device_serial_number": {
+        "register": "Device serial number",
+        "name": "Device Serial Number",
+        "entity_category": "diagnostic",
+    },
+    "program_version": {
+        "register": "Program version",
+        "name": "Program Version",
+        "entity_category": "diagnostic",
     },
     "dcdc_temperature": {
         "register": "DCDC temperature",
         "name": "DCDC Temperature",
         "unit": "°C",
         "device_class": "temperature",
+        "state_class": "measurement",
     },
     "inverter_temperature": {
         "register": "Inverter temperature",
         "name": "Inverter Temperature",
         "unit": "°C",
         "device_class": "temperature",
+        "state_class": "measurement",
     },
     "battery_discharge_soc_limit": {
         "register": "Battery discharge SOC protection value in off-grid mode",
@@ -292,6 +368,7 @@ REGISTER_MAP = {
         "register": "Warning Mask [I]",
         "name": "Warning Mask",
         "decoder": decode_warnings,
+        "entity_category": "diagnostic",
     },
     "dry_contact": {
         "register": "Dry contact",
@@ -439,6 +516,53 @@ REGISTER_MAP = {
         "encoder": encode_remote_switch,
         "writable": True,
     },
+    "force_eq_charge": {
+        "register": "Forcing the charge of Eq",
+        "name": "Force Eq Charge",
+        "writable": True,
+        "min": 0,
+        "max": 1,
+    },
+    "exit_fault_lock": {
+        "register": "Exits the fail-locked state",
+        "name": "Exit Fault Lock",
+        "writable": True,
+        "min": 0,
+        "max": 1,
+    },
+    "clear_records": {
+        "register": "Clear the record",
+        "name": "Clear Records",
+        "writable": True,
+        "min": 0,
+        "max": 0xFF,
+    },
+    "reset_user_parameters": {
+        "register": "Reset user parameters",
+        "name": "Reset User Parameters",
+        "writable": True,
+        "min": 0,
+        "max": 0xFF,
+    },
+    "protocol_identifier": {
+        "register": "Invalid data",
+        "name": "Protocol Identifier",
+    },
+    "fault_record_storage_info": {
+        "register": "Fault record storage information [K]",
+        "name": "Fault Record Storage Info",
+        "entity_category": "diagnostic",
+    },
+    "fault_record": {
+        "register": "Fault Record [M]",
+        "name": "Fault Record",
+        "entity_category": "diagnostic",
+    },
+    "run_log": {
+        "register": "Run the log",
+        "name": "Run Log",
+        "entity_category": "diagnostic",
+    },
     "fault_info_query_index": {
         "register": "Fault Information Query Index",
         "name": "Fault Information Query Index",
@@ -454,61 +578,183 @@ WRITABLE_REGISTERS = {
 
 ENERGY_SENSORS = {
     "grid_import_energy": {
-        "name": "Grid Import Energy",
+        "name": "Energia prelevata dalla rete",
+        "description": "Energia totale assorbita dalla rete elettrica.",
         "unit": "kWh",
         "device_class": "energy",
         "state_class": "total_increasing",
     },
     "grid_import_energy_today": {
-        "name": "Grid Import Energy Today",
+        "name": "Energia prelevata oggi dalla rete",
+        "description": "Energia assorbita dalla rete dalle 00:00.",
         "unit": "kWh",
         "device_class": "energy",
         "state_class": "total",
     },
     "grid_export_energy": {
-        "name": "Grid Export Energy",
+        "name": "Energia immessa in rete",
+        "description": "Energia totale inviata verso la rete elettrica.",
         "unit": "kWh",
         "device_class": "energy",
         "state_class": "total_increasing",
     },
     "grid_export_energy_today": {
-        "name": "Grid Export Energy Today",
+        "name": "Energia immessa oggi in rete",
+        "description": "Energia inviata verso la rete dalle 00:00.",
         "unit": "kWh",
         "device_class": "energy",
         "state_class": "total",
     },
     "pv_energy": {
-        "name": "PV Energy",
+        "name": "Energia prodotta dai pannelli",
+        "description": "Produzione fotovoltaica totale.",
         "unit": "kWh",
         "device_class": "energy",
         "state_class": "total_increasing",
     },
     "pv_energy_today": {
-        "name": "PV Energy Today",
+        "name": "Energia FV prodotta oggi",
+        "description": "Produzione fotovoltaica dalle 00:00.",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total",
+    },
+    "pv_to_battery_energy": {
+        "name": "Energia FV verso batteria",
+        "description": "Energia solare utilizzata per caricare la batteria.",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total_increasing",
+    },
+    "pv_to_battery_energy_today": {
+        "name": "Energia FV verso batteria oggi",
+        "description": "Energia solare in carica batteria dalle 00:00.",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total",
+    },
+    "pv_to_load_energy": {
+        "name": "Energia FV verso utenze",
+        "description": "Energia solare usata direttamente dal carico.",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total_increasing",
+    },
+    "pv_to_load_energy_today": {
+        "name": "Energia FV verso utenze oggi",
+        "description": "Energia solare diretta alle utenze dalle 00:00.",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total",
+    },
+    "grid_to_battery_energy": {
+        "name": "Energia di rete verso batteria",
+        "description": "Energia di rete impiegata per la carica batteria.",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total_increasing",
+    },
+    "grid_to_battery_energy_today": {
+        "name": "Energia di rete verso batteria oggi",
+        "description": "Energia di rete in carica batteria dalle 00:00.",
         "unit": "kWh",
         "device_class": "energy",
         "state_class": "total",
     },
     "battery_charge_energy": {
-        "name": "Battery Charge Energy",
+        "name": "Energia caricata in batteria",
+        "description": "Energia totale immessa nella batteria.",
         "unit": "kWh",
         "device_class": "energy",
         "state_class": "total_increasing",
     },
     "battery_charge_energy_today": {
-        "name": "Battery Charge Energy Today",
+        "name": "Energia caricata in batteria oggi",
+        "description": "Energia immessa in batteria dalle 00:00.",
         "unit": "kWh",
         "device_class": "energy",
         "state_class": "total",
     },
     "battery_discharge_energy": {
-        "name": "Battery Discharge Energy",
+        "name": "Energia prelevata dalla batteria",
+        "description": "Energia totale erogata dalla batteria.",
         "unit": "kWh",
         "device_class": "energy",
         "state_class": "total_increasing",
     },
     "battery_discharge_energy_today": {
-        "name": "Battery Discharge Energy Today",
+        "name": "Energia prelevata dalla batteria oggi",
+        "description": "Energia erogata dalla batteria dalle 00:00.",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total",
+    },
+    "load_energy": {
+        "name": "Consumo totale utenze",
+        "description": "Energia complessiva assorbita dal carico.",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total_increasing",
+    },
+    "load_energy_today": {
+        "name": "Consumo utenze oggi",
+        "description": "Energia consumata dalle utenze dalle 00:00.",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total",
+    },
+    "load_from_grid_energy": {
+        "name": "Consumo utenze da rete",
+        "description": "Quota di consumo coperta dalla rete elettrica.",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total_increasing",
+    },
+    "load_from_grid_energy_today": {
+        "name": "Consumo utenze da rete oggi",
+        "description": "Quota di consumo da rete dalle 00:00.",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total",
+    },
+    "load_from_pv_energy": {
+        "name": "Consumo utenze da fotovoltaico",
+        "description": "Quota di consumo coperta direttamente dai pannelli.",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total_increasing",
+    },
+    "load_from_pv_energy_today": {
+        "name": "Consumo utenze da FV oggi",
+        "description": "Quota FV per il carico dalle 00:00.",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total",
+    },
+    "load_from_battery_energy": {
+        "name": "Consumo utenze da batteria",
+        "description": "Quota di consumo coperta dalla batteria in scarica.",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total_increasing",
+    },
+    "load_from_battery_energy_today": {
+        "name": "Consumo utenze da batteria oggi",
+        "description": "Scarica batteria usata dal carico dalle 00:00.",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total",
+    },
+    "load_from_offgrid_energy": {
+        "name": "Consumo utenze off‑grid",
+        "description": "Quota di consumo coperta da fotovoltaico e batteria.",
+        "unit": "kWh",
+        "device_class": "energy",
+        "state_class": "total_increasing",
+    },
+    "load_from_offgrid_energy_today": {
+        "name": "Consumo utenze off‑grid oggi",
+        "description": "Energia fornita a carico da FV+batteria dalle 00:00.",
         "unit": "kWh",
         "device_class": "energy",
         "state_class": "total",
@@ -517,24 +763,64 @@ ENERGY_SENSORS = {
 
 DERIVED_SENSORS = {
     "grid_import_power": {
-        "name": "Grid Import Power",
+        "name": "Potenza importata da rete",
         "unit": "W",
         "device_class": "power",
+        "description": "Potenza assorbita istantanea dalla rete.",
     },
     "grid_export_power": {
-        "name": "Grid Export Power",
+        "name": "Potenza immessa in rete",
         "unit": "W",
         "device_class": "power",
+        "description": "Potenza inviata istantaneamente verso la rete.",
     },
     "battery_charge_power": {
-        "name": "Battery Charge Power",
+        "name": "Potenza di carica batteria",
         "unit": "W",
         "device_class": "power",
+        "description": "Potenza diretta in carica alla batteria.",
     },
     "battery_discharge_power": {
-        "name": "Battery Discharge Power",
+        "name": "Potenza di scarica batteria",
         "unit": "W",
         "device_class": "power",
+        "description": "Potenza fornita dalla batteria in uscita.",
+    },
+    "load_power": {
+        "name": "Potenza assorbita dal carico",
+        "unit": "W",
+        "device_class": "power",
+        "description": "Potenza totale richiesta dalle utenze.",
+    },
+    "pv_to_battery_power": {
+        "name": "Potenza FV verso batteria",
+        "unit": "W",
+        "device_class": "power",
+        "description": "Quota solare impegnata per caricare la batteria.",
+    },
+    "pv_to_load_power": {
+        "name": "Potenza FV verso utenze",
+        "unit": "W",
+        "device_class": "power",
+        "description": "Quota solare che alimenta direttamente il carico.",
+    },
+    "grid_to_battery_power": {
+        "name": "Potenza di rete verso batteria",
+        "unit": "W",
+        "device_class": "power",
+        "description": "Quota di rete che carica la batteria.",
+    },
+    "grid_to_load_power": {
+        "name": "Potenza di rete verso utenze",
+        "unit": "W",
+        "device_class": "power",
+        "description": "Quota di rete che alimenta direttamente il carico.",
+    },
+    "battery_to_load_power": {
+        "name": "Potenza batteria verso utenze",
+        "unit": "W",
+        "device_class": "power",
+        "description": "Quota di scarica batteria che alimenta le utenze.",
     },
 }
 
@@ -542,11 +828,110 @@ ENERGY_SENSOR_DAILY_MAP = {
     "grid_import_energy": "grid_import_energy_today",
     "grid_export_energy": "grid_export_energy_today",
     "pv_energy": "pv_energy_today",
+    "pv_to_battery_energy": "pv_to_battery_energy_today",
+    "pv_to_load_energy": "pv_to_load_energy_today",
+    "grid_to_battery_energy": "grid_to_battery_energy_today",
     "battery_charge_energy": "battery_charge_energy_today",
     "battery_discharge_energy": "battery_discharge_energy_today",
+    "load_energy": "load_energy_today",
+    "load_from_grid_energy": "load_from_grid_energy_today",
+    "load_from_pv_energy": "load_from_pv_energy_today",
+    "load_from_battery_energy": "load_from_battery_energy_today",
+    "load_from_offgrid_energy": "load_from_offgrid_energy_today",
 }
 
 ALL_SENSORS = {**REGISTER_MAP, **ENERGY_SENSORS, **DERIVED_SENSORS}
+
+FRIENDLY_NAMES_IT = {
+    "working_mode": "Modalità di lavoro",
+    "mains_voltage": "Tensione rete",
+    "mains_frequency": "Frequenza rete",
+    "mains_power": "Potenza rete",
+    "inverter_voltage": "Tensione inverter",
+    "inverter_current": "Corrente inverter",
+    "inverter_frequency": "Frequenza inverter",
+    "inverter_power": "Potenza inverter",
+    "inverter_charging_power": "Potenza ricarica inverter",
+    "output_voltage": "Tensione uscita",
+    "output_current": "Corrente uscita",
+    "output_frequency": "Frequenza uscita",
+    "output_active_power": "Potenza attiva uscita",
+    "output_apparent_power": "Potenza apparente uscita",
+    "battery_voltage": "Tensione batteria",
+    "battery_current": "Corrente batteria",
+    "battery_power": "Potenza batteria",
+    "battery_current_filter_average": "Corrente batteria filtrata",
+    "battery_soc": "SOC batteria",
+    "pv_voltage": "Tensione FV",
+    "pv_current": "Corrente FV",
+    "pv_power": "Potenza FV",
+    "pv_charging_power": "Potenza di carica FV",
+    "inverter_charging_current": "Corrente di carica inverter",
+    "pv_charging_current": "Corrente di carica FV",
+    "power_flow_status": "Stato flussi di potenza",
+    "load_percent": "Percentuale carico",
+    "rated_power": "Potenza nominale",
+    "rated_cell_count": "Numero celle nominali",
+    "device_type": "Tipo dispositivo",
+    "device_serial_number": "Numero di serie",
+    "program_version": "Versione firmware",
+    "dcdc_temperature": "Temperatura DCDC",
+    "inverter_temperature": "Temperatura inverter",
+    "battery_discharge_soc_limit": "Limite SOC di scarica",
+    "device_name": "Nome dispositivo",
+    "output_mode": "Modalità di uscita",
+    "output_priority": "Priorità di uscita",
+    "input_voltage_range": "Range tensione ingresso",
+    "buzzer_mode": "Modalità cicalino",
+    "lcd_backlight": "Retroilluminazione LCD",
+    "lcd_return_home": "Ritorno automatico LCD",
+    "energy_saving_mode_switch": "Risparmio energetico",
+    "overload_auto_restart": "Riavvio automatico sovraccarico",
+    "over_temperature_auto_restart": "Riavvio automatico sovratemperatura",
+    "overload_bypass_enable": "Bypass sovraccarico",
+    "battery_eq_mode_enable": "Equalizzazione batteria abilitata",
+    "warning_mask": "Maschera avvisi",
+    "dry_contact": "Contatto pulito",
+    "output_voltage_setting": "Tensione di uscita impostata",
+    "output_frequency_setting": "Frequenza di uscita impostata",
+    "battery_type": "Tipo batteria",
+    "battery_overvoltage_protection": "Protezione sovratensione batteria",
+    "max_charge_voltage": "Tensione massima di carica",
+    "floating_charge_voltage": "Tensione di mantenimento",
+    "mains_discharge_recovery_point": "Recupero scarica in rete",
+    "mains_low_voltage_protection_point": "Protezione bassa tensione rete",
+    "off_grid_low_voltage_protection_point": "Protezione bassa tensione off‑grid",
+    "cv_to_float_wait_time": "Attesa CV → mantenimento",
+    "battery_charging_priority": "Priorità carica batteria",
+    "max_charge_current": "Corrente massima di carica",
+    "max_mains_charging_current": "Corrente massima di carica da rete",
+    "eq_charging_voltage": "Tensione carica equalizzazione",
+    "battery_eq_time": "Tempo equalizzazione batteria",
+    "battery_eq_cycle": "Ciclo equalizzazione batteria",
+    "battery_eq_time_on": "Durata equalizzazione",
+    "battery_eq_current_limit": "Limite corrente equalizzazione",
+    "battery_eq_voltage": "Tensione di equalizzazione",
+    "battery_eq_restore_voltage": "Ripristino tensione di equalizzazione",
+    "battery_eq_interval": "Intervallo equalizzazione",
+    "battery_low_alarm": "Allarme batteria bassa",
+    "low_voltage_power_off_point": "Soglia spegnimento bassa tensione",
+    "grid_voltage_recovery_point": "Recupero tensione di rete",
+    "grid_over_voltage_protection": "Protezione sovratensione rete",
+    "grid_under_voltage_protection": "Protezione sottotensione rete",
+    "grid_under_voltage_recovery_point": "Recupero sottotensione rete",
+    "grid_over_voltage_recovery_point": "Recupero sovratensione rete",
+    "backfeed_power_limit": "Limite immissione in rete",
+    "remote_switch": "Interruttore remoto",
+    "parallel_address": "Indirizzo parallelo",
+    "voltage_offset_calibration": "Offset calibrazione tensione",
+    "current_offset_calibration": "Offset calibrazione corrente",
+    "enable_dry_contact": "Abilita contatto pulito",
+    "dry_contact_status": "Stato contatto pulito",
+    "fault_record_storage_info": "Archivio registri guasto",
+    "fault_record": "Record di guasto",
+    "run_log": "Log di esercizio",
+    "fault_info_query_index": "Indice interrogazione guasto",
+}
 
 ENERGY_STATE_FILE = Path("energy_state.json")
 
@@ -573,16 +958,94 @@ def _format_decoded_list(decoded: list[str]) -> str:
     return text
 
 
+def _decode_value(info: Dict[str, Any], raw_value: Any) -> Any:
+    """Decode a raw register value using the configured decoder."""
+
+    decoder = info.get("decoder")
+    if not decoder:
+        return raw_value
+
+    decoder_input = raw_value
+    if isinstance(raw_value, list) and len(raw_value) == 2:
+        decoder_input = (int(raw_value[0]) << 16) + int(raw_value[1])
+
+    decoded = (
+        decoder(int(decoder_input))
+        if isinstance(decoder_input, (float, int))
+        else decoder(decoder_input)
+    )
+    if isinstance(decoded, list):
+        return _format_decoded_list(decoded)
+    return decoded
+
+
+def _friendly_name(slug: str, info: Dict[str, Any]) -> str:
+    """Return the Italian-friendly name for Home Assistant."""
+
+    return FRIENDLY_NAMES_IT.get(slug, info["name"])
+
+
+def _build_attributes(slug: str, info: Dict[str, Any]) -> Dict[str, Any]:
+    """Return MQTT attributes payload with Italian description."""
+
+    descrizione = info.get("description") or _friendly_name(slug, info)
+    if info.get("writable"):
+        descrizione = f"Comando/configurazione: {descrizione}"
+    else:
+        descrizione = f"Misura: {descrizione}"
+
+    base = {
+        "descrizione": descrizione,
+        "accesso": "lettura/scrittura" if info.get("writable") else "solo lettura",
+    }
+    if register := info.get("register"):
+        base["registro_modbus"] = register
+    if unit := info.get("unit"):
+        base["unita"] = unit
+    base["slug"] = slug
+    return base
+
+
 def add_derived_power_values(data: Dict[str, Any]) -> None:
     """Derive directional power sensors for energy dashboards."""
 
     mains_power = _safe_float(data.get("mains_power", 0.0))
-    data["grid_import_power"] = mains_power if mains_power > 0 else 0.0
-    data["grid_export_power"] = -mains_power if mains_power < 0 else 0.0
-
+    pv_power = max(_safe_float(data.get("pv_power", 0.0)), 0.0)
+    output_power = max(
+        _safe_float(data.get("output_active_power", data.get("inverter_power", 0.0))),
+        0.0,
+    )
     battery_power = _safe_float(data.get("battery_power", 0.0))
-    data["battery_discharge_power"] = battery_power if battery_power > 0 else 0.0
-    data["battery_charge_power"] = -battery_power if battery_power < 0 else 0.0
+
+    grid_import_power = mains_power if mains_power > 0 else 0.0
+    grid_export_power = -mains_power if mains_power < 0 else 0.0
+    battery_discharge_power = battery_power if battery_power > 0 else 0.0
+    battery_charge_power = -battery_power if battery_power < 0 else 0.0
+
+    pv_to_battery = min(pv_power, battery_charge_power)
+    pv_remaining = pv_power - pv_to_battery
+    pv_to_load = min(pv_remaining, output_power)
+
+    remaining_charge = max(battery_charge_power - pv_to_battery, 0.0)
+    grid_to_battery = min(grid_import_power, remaining_charge)
+
+    remaining_load_after_pv = max(output_power - pv_to_load, 0.0)
+    grid_available_for_load = max(grid_import_power - grid_to_battery, 0.0)
+    grid_to_load = min(grid_available_for_load, remaining_load_after_pv)
+
+    remaining_load_after_pv_grid = max(remaining_load_after_pv - grid_to_load, 0.0)
+    battery_to_load = min(battery_discharge_power, remaining_load_after_pv_grid)
+
+    data["grid_import_power"] = grid_import_power
+    data["grid_export_power"] = grid_export_power
+    data["battery_discharge_power"] = battery_discharge_power
+    data["battery_charge_power"] = battery_charge_power
+    data["load_power"] = output_power
+    data["pv_to_battery_power"] = pv_to_battery
+    data["pv_to_load_power"] = pv_to_load
+    data["grid_to_battery_power"] = grid_to_battery
+    data["grid_to_load_power"] = grid_to_load
+    data["battery_to_load_power"] = battery_to_load
 
 
 def load_energy_state() -> Dict[str, Any]:
@@ -644,7 +1107,7 @@ def update_energy_state(
         _increment("grid_export_energy", energy)
         _increment(ENERGY_SENSOR_DAILY_MAP["grid_export_energy"], energy)
 
-    pv_power = _safe_float(data.get("pv_power", 0.0))
+    pv_power = max(_safe_float(data.get("pv_power", 0.0)), 0.0)
     if pv_power > 0:
         energy = pv_power / 1000.0 * hours
         _increment("pv_energy", energy)
@@ -660,6 +1123,52 @@ def update_energy_state(
         _increment("battery_charge_energy", energy)
         _increment(ENERGY_SENSOR_DAILY_MAP["battery_charge_energy"], energy)
 
+    pv_to_battery = _safe_float(data.get("pv_to_battery_power", 0.0))
+    if pv_to_battery > 0:
+        energy = pv_to_battery / 1000.0 * hours
+        _increment("pv_to_battery_energy", energy)
+        _increment(ENERGY_SENSOR_DAILY_MAP["pv_to_battery_energy"], energy)
+
+    grid_to_battery = _safe_float(data.get("grid_to_battery_power", 0.0))
+    if grid_to_battery > 0:
+        energy = grid_to_battery / 1000.0 * hours
+        _increment("grid_to_battery_energy", energy)
+        _increment(ENERGY_SENSOR_DAILY_MAP["grid_to_battery_energy"], energy)
+
+    pv_to_load = _safe_float(data.get("pv_to_load_power", 0.0))
+    if pv_to_load > 0:
+        energy = pv_to_load / 1000.0 * hours
+        _increment("pv_to_load_energy", energy)
+        _increment(ENERGY_SENSOR_DAILY_MAP["pv_to_load_energy"], energy)
+
+    grid_to_load = _safe_float(data.get("grid_to_load_power", 0.0))
+    if grid_to_load > 0:
+        energy = grid_to_load / 1000.0 * hours
+        _increment("load_from_grid_energy", energy)
+        _increment(ENERGY_SENSOR_DAILY_MAP["load_from_grid_energy"], energy)
+
+    battery_to_load = _safe_float(data.get("battery_to_load_power", 0.0))
+    if battery_to_load > 0:
+        energy = battery_to_load / 1000.0 * hours
+        _increment("load_from_battery_energy", energy)
+        _increment(ENERGY_SENSOR_DAILY_MAP["load_from_battery_energy"], energy)
+
+    if pv_to_load > 0 or battery_to_load > 0:
+        offgrid_energy = (pv_to_load + battery_to_load) / 1000.0 * hours
+        _increment("load_from_offgrid_energy", offgrid_energy)
+        _increment(ENERGY_SENSOR_DAILY_MAP["load_from_offgrid_energy"], offgrid_energy)
+
+    load_power = _safe_float(data.get("load_power", 0.0))
+    if load_power > 0:
+        energy = load_power / 1000.0 * hours
+        _increment("load_energy", energy)
+        _increment(ENERGY_SENSOR_DAILY_MAP["load_energy"], energy)
+
+    pv_only_load = pv_to_load / 1000.0 * hours
+    if pv_only_load > 0:
+        _increment("load_from_pv_energy", pv_only_load)
+        _increment(ENERGY_SENSOR_DAILY_MAP["load_from_pv_energy"], pv_only_load)
+
 
 async def poll_once(client: ModbusRTUOverTCPClient) -> Tuple[Dict[str, Any], str]:
     """Read all relevant registers and return slug-value mapping with timestamp."""
@@ -669,15 +1178,7 @@ async def poll_once(client: ModbusRTUOverTCPClient) -> Tuple[Dict[str, Any], str
         register_name = info["register"]
         try:
             raw_value = await client.read_register(register_name)
-            decoder = info.get("decoder")
-            if decoder:
-                decoded = decoder(int(raw_value))
-                if isinstance(decoded, list):
-                    value = _format_decoded_list(decoded)
-                else:
-                    value = decoded
-            else:
-                value = raw_value
+            value = _decode_value(info, raw_value)
         except Exception as exc:  # noqa: BLE001
             logger.error(
                 "Failed to read register %s: %s; data is stale", register_name, exc
@@ -700,15 +1201,21 @@ def publish_discovery(
     }
     for slug, info in ALL_SENSORS.items():
         writable = info.get("writable")
+        entity_category = info.get("entity_category")
+        if not entity_category and writable:
+            entity_category = "config"
         base: Dict[str, Any] = {
-            "name": f"VEVOR {info['name']}",
+            "name": f"VEVOR {_friendly_name(slug, info)}",
             "state_topic": f"{prefix}/{slug}",
             "unique_id": f"{prefix}_{slug}",
             "device": device_info,
             "availability_topic": f"{prefix}/availability",
             "payload_available": "online",
             "payload_not_available": "offline",
+            "json_attributes_topic": f"{prefix}/{slug}/attributes",
         }
+        if entity_category:
+            base["entity_category"] = entity_category
         if writable:
             command_topic = f"{prefix}/{slug}/set"
             if info.get("encoder") and info.get("decoder"):
@@ -751,6 +1258,11 @@ def publish_discovery(
                 payload["device_class"] = device_class
             topic = f"homeassistant/sensor/{prefix}_{slug}/config"
         client.publish(topic, json.dumps(payload), retain=True)
+        client.publish(
+            f"{prefix}/{slug}/attributes",
+            json.dumps(_build_attributes(slug, info)),
+            retain=True,
+        )
     last_update_payload = {
         "name": "VEVOR Last Update",
         "state_topic": f"{prefix}/last_update",
@@ -828,13 +1340,7 @@ async def handle_command(
                 new_value = await modbus.read_register(info["register"])
             except Exception:
                 continue
-            decoder = info.get("decoder")
-            if decoder:
-                decoded = decoder(int(new_value))
-                if isinstance(decoded, list):
-                    new_value = _format_decoded_list(decoded)
-                else:
-                    new_value = decoded
+            new_value = _decode_value(info, new_value)
             mqtt_client.publish(
                 f"{prefix}/{key}", str(new_value), retain=True
             )
