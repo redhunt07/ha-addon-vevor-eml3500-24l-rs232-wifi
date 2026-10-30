@@ -1,13 +1,35 @@
-# ha-addon-vevor-eml3500-24l-rs232-wifi
+# VEVOR EML3500-24L → Home Assistant
 
-Home Assistant add-on to communicate with and monitor the VEVOR EML3500-24L inverter via an RS232-to-WiFi bridge. Provides Modbus RTU over TCP polling, live telemetry (power, voltage, current, SOC), fault/status codes, and safe write commands. Includes auto-discovery, configurable update intervals, and robust reconnect/retry logic. MQTT export log.
+[![CI](https://github.com/redhunt07/ha-addon-vevor-eml3500-24l-rs232-wifi/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/redhunt07/ha-addon-vevor-eml3500-24l-rs232-wifi/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) [![Add-on 0.1.18](https://img.shields.io/badge/add--on-0.1.18-38bdf8.svg)](vevor_eml3500_24l_rs232_wifi/config.yaml) [![MQTT discovery](https://img.shields.io/badge/MQTT-discovery-8b5cf6.svg)](#mqtt-topics)
 
-## Novità 0.1.15
+Maintainer: [RedHunt07](https://github.com/redhunt07)
 
-- Aggiornata la versione dell'add-on e documentate le dipendenze Python (`pymodbus`, `paho-mqtt`) necessarie per eseguire i test end-to-end del polling MQTT/Modbus.
-- Pubblicazione degli aggiornamenti con un'unica entità per ogni comando: l'oggetto scoperto in Home Assistant mostra sia il valore attuale sia il controllo (evitando duplicati `sensor`/`number`).
-- Descrizioni e attributi in italiano visibili da Home Assistant per tutti i sensori/controlli.
-- Contatori energetici estesi per distinguere quanta energia proviene da rete, FV o batteria e dove viene indirizzata (utenze o batteria), con versioni giornaliere che si azzerano a mezzanotte.
+![VEVOR inverter telemetry for Home Assistant](docs/assets/header.svg)
+
+Connect a **VEVOR EML3500-24L inverter** to Home Assistant through an **RS232-to-Wi-Fi bridge**. The add-on polls Modbus RTU over TCP and publishes telemetry, decoded status and control entities through MQTT discovery.
+
+[Installation](#installation) · [Configuration](#configuration) · [Register map](docs/registers.md) · [Energy dashboard](#energy-dashboard) · [Contribute](CONTRIBUTING.md)
+
+## What you need
+
+- A Home Assistant installation with add-on support.
+- A VEVOR EML3500-24L inverter and a correctly configured RS232-to-Wi-Fi bridge.
+- An MQTT broker reachable by the add-on and Home Assistant.
+- Network access from Home Assistant to the bridge's configured TCP port.
+
+This is a **Home Assistant add-on**, installed through the Add-on Store repository flow. Telemetry and writable controls are documented separately below; write commands change inverter settings, so use values appropriate for your device and battery.
+
+## At a glance
+
+| Area | Included |
+| --- | --- |
+| Telemetry | Grid, inverter, load, battery and PV measurements |
+| Discovery | Home Assistant MQTT sensors and control entities |
+| Diagnostics | Fault, warning and power-flow decoding |
+| Energy | Directional power flows and energy counters |
+| Platforms declared by the add-on | amd64, aarch64, armv7, armhf, i386 |
+
+## Version notes
 
 ## Novità 0.1.18
 
@@ -17,10 +39,17 @@ Home Assistant add-on to communicate with and monitor the VEVOR EML3500-24L inve
 
 - Incrementata la versione dell'add-on per distribuire su Home Assistant l'aggiornamento che carica automaticamente la mappa registri completa (`vevor_eml3500_24l_registers_fully_expanded.csv`), esponendo via MQTT discovery tutti i sensori e i controlli non riservati.
 
+## Novità 0.1.15
+
+- Aggiornata la versione dell'add-on e documentate le dipendenze Python (`pymodbus`, `paho-mqtt`) necessarie per eseguire i test end-to-end del polling MQTT/Modbus.
+- Pubblicazione degli aggiornamenti con un'unica entità per ogni comando: l'oggetto scoperto in Home Assistant mostra sia il valore attuale sia il controllo (evitando duplicati `sensor`/`number`).
+- Descrizioni e attributi in italiano visibili da Home Assistant per tutti i sensori/controlli.
+- Contatori energetici estesi per distinguere quanta energia proviene da rete, FV o batteria e dove viene indirizzata (utenze o batteria), con versioni giornaliere che si azzerano a mezzanotte.
+
 ## Installation
 
 1. In Home Assistant, open **Settings → Add-ons → Add-on Store**.
-2. Use the menu in the top-right to add the repository URL for this add-on.
+2. Use the menu in the top-right to add this repository: `https://github.com/redhunt07/ha-addon-vevor-eml3500-24l-rs232-wifi`.
 3. Locate **VEVOR EML3500-24L RS232 Wi-Fi bridge** and click **Install**.
 4. Configure the options described below and start the add-on.
 5. Check the add-on logs to confirm successful connection to the bridge and MQTT broker.
@@ -388,3 +417,11 @@ To link the lifetime sensors in the Energy dashboard:
 - **Power cycle**: Restart the bridge and inverter if communication stalls.
 - **MQTT connection**: Ensure the broker address and credentials are correct.
 - **Add-on logs**: Review the log output for connection errors or malformed Modbus responses.
+
+## Contributing and support
+
+[Report a bug](https://github.com/redhunt07/ha-addon-vevor-eml3500-24l-rs232-wifi/issues/new?template=bug_report.yml) · [Suggest an improvement](https://github.com/redhunt07/ha-addon-vevor-eml3500-24l-rs232-wifi/issues/new?template=feature_request.yml) · [Contribute](CONTRIBUTING.md)
+
+For connection problems, include the add-on version, bridge model, serial settings and sanitized logs. Hardware reports are especially useful; omit MQTT credentials and device identifiers from public reports.
+
+Independent community project, not affiliated with VEVOR. [MIT license](LICENSE); existing copyright attribution is preserved.
