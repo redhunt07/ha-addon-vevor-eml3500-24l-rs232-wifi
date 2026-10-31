@@ -8,10 +8,9 @@ import logging
 
 import pytest
 
-paho = pytest.importorskip("paho")
+mqtt = pytest.importorskip("paho.mqtt.client")
 pymodbus = pytest.importorskip("pymodbus")
 
-import paho.mqtt.client as mqtt
 
 # Ensure pymodbus provides FramerType during tests
 framer_module = importlib.import_module("pymodbus.framer")
@@ -49,7 +48,11 @@ def test_publish_discovery_includes_device_metadata():
 def test_publish_discovery_select_and_number():
     client = MagicMock(spec=mqtt.Client)
     publish_discovery(client, prefix="test")
-    calls = {args[0]: json.loads(args[1]) for args, _ in client.publish.call_args_list}
+    calls = {
+        args[0]: json.loads(args[1])
+        for args, _ in client.publish.call_args_list
+        if args[1]  # Empty retained payloads remove obsolete discovery entries.
+    }
     select_payload = calls["homeassistant/select/test_output_priority/config"]
     assert select_payload["command_topic"] == "test/output_priority/set"
     assert "PV-mains-battery (SOL)" in select_payload["options"]
@@ -61,7 +64,11 @@ def test_publish_discovery_select_and_number():
 def test_publish_discovery_includes_energy_sensors():
     client = MagicMock(spec=mqtt.Client)
     publish_discovery(client, prefix="test")
-    calls = {args[0]: json.loads(args[1]) for args, _ in client.publish.call_args_list}
+    calls = {
+        args[0]: json.loads(args[1])
+        for args, _ in client.publish.call_args_list
+        if args[1]  # Empty retained payloads remove obsolete discovery entries.
+    }
     energy_expectations = {
         "grid_import_energy": "total_increasing",
         "grid_import_energy_today": "total",
@@ -92,7 +99,11 @@ def test_publish_discovery_includes_energy_sensors():
 def test_publish_discovery_includes_last_update_sensor():
     client = MagicMock(spec=mqtt.Client)
     publish_discovery(client, prefix="test")
-    calls = {args[0]: json.loads(args[1]) for args, _ in client.publish.call_args_list}
+    calls = {
+        args[0]: json.loads(args[1])
+        for args, _ in client.publish.call_args_list
+        if args[1]  # Empty retained payloads remove obsolete discovery entries.
+    }
     payload = calls["homeassistant/sensor/test_last_update/config"]
     assert payload["device_class"] == "timestamp"
 
@@ -100,7 +111,11 @@ def test_publish_discovery_includes_last_update_sensor():
 def test_publish_discovery_uses_sensor_for_warning_states():
     client = MagicMock(spec=mqtt.Client)
     publish_discovery(client, prefix="test")
-    calls = {args[0]: json.loads(args[1]) for args, _ in client.publish.call_args_list}
+    calls = {
+        args[0]: json.loads(args[1])
+        for args, _ in client.publish.call_args_list
+        if args[1]  # Empty retained payloads remove obsolete discovery entries.
+    }
 
     warnings_payload = calls["homeassistant/sensor/test_warnings/config"]
     warning_mask_payload = calls["homeassistant/sensor/test_warning_mask/config"]

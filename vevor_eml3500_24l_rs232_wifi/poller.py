@@ -258,35 +258,6 @@ REGISTER_MAP = {
         "name": "Rated Power",
         "unit": "W",
         "device_class": "power",
-        "state_class": "measurement",
-        "entity_category": "diagnostic",
-    },
-    "rated_cell_count": {
-        "register": "Rated number of cells [J]",
-        "name": "Rated Cell Count",
-        "unit": "pcs",
-        "entity_category": "diagnostic",
-    },
-    "device_type": {
-        "register": "Device type",
-        "name": "Device Type",
-        "entity_category": "diagnostic",
-    },
-    "device_serial_number": {
-        "register": "Device serial number",
-        "name": "Device Serial Number",
-        "entity_category": "diagnostic",
-    },
-    "program_version": {
-        "register": "Program version",
-        "name": "Program Version",
-        "entity_category": "diagnostic",
-    },
-    "rated_power": {
-        "register": "Rated power",
-        "name": "Rated Power",
-        "unit": "W",
-        "device_class": "power",
     },
     "rated_cell_count": {
         "register": "Rated number of cells [J]",
@@ -643,7 +614,10 @@ def _auto_register_map(
         if not slug or slug in base_map or slug in auto:
             suffix = 2
             base_slug = slug or "register"
-            while f"{base_slug}_{suffix}" in base_map or f"{base_slug}_{suffix}" in auto:
+            while (
+                f"{base_slug}_{suffix}" in base_map
+                or f"{base_slug}_{suffix}" in auto
+            ):
                 suffix += 1
             slug = f"{base_slug}_{suffix}"
         entry: Dict[str, Any] = {

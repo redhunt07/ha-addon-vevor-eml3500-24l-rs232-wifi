@@ -100,7 +100,9 @@ def load_register_definitions(csv_path: Path) -> Dict[str, RegisterDefinition]:
             name = row["Data name"].strip()
             unit = (row.get("Unit") or "").strip()
             data_format = (row.get("Data format") or "").strip()
-            address = _parse_int(row, "Start address", "Address", "Source Start address")
+            address = _parse_int(
+                row, "Start address", "Address", "Source Start address"
+            )
             count = _parse_int(
                 row,
                 "Number of registers",
